@@ -1,0 +1,451 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ABORT	memcpy.h	4;"	d
+ACTIVE	BTN_waitingTime.h	/^            ACTIVE$/;"	e	enum:BTN_Analysis::eWaitingState
+ADR_NAND_CMD	NAND_Ctrl_Spec.h	11;"	d
+ADR_NAND_CMD	NAND_MAN_Spec.h	11;"	d
+ADR_NAND_CMD	NAND_Spec.h	11;"	d
+ADR_NAND_DATA	NAND_Ctrl_Spec.h	12;"	d
+ADR_NAND_DATA	NAND_MAN_Spec.h	12;"	d
+ADR_NAND_DATA	NAND_Spec.h	12;"	d
+Addr	SubReq_def.h	/^    uint64 	Addr;			\/\/ Start page address$/;"	m	struct:BitMap_t
+Addr	ssd_struct.h	/^    uint Addr;$/;"	m	struct:sCacheTrans_t
+BITWIDTH_NAND_CTRL	NAND_Ctrl_Spec.h	14;"	d
+BITWIDTH_NAND_CTRL	NAND_MAN_Spec.h	14;"	d
+BITWIDTH_NAND_CTRL	NAND_Spec.h	14;"	d
+BIT_FOR_BLOCK	NAND_Ctrl_Spec.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT; \/\/15$/;"	v
+BIT_FOR_BLOCK	NAND_Ctrl_Spec.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT;$/;"	v
+BIT_FOR_BLOCK	NAND_MAN_Spec.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT; \/\/13$/;"	v
+BIT_FOR_BLOCK	NAND_MAN_Spec.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT;$/;"	v
+BIT_FOR_BLOCK	NAND_Spec.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT; \/\/16$/;"	v
+BIT_FOR_BLOCK	NAND_Spec.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT;$/;"	v
+BIT_FOR_CHANNEL	NAND_Ctrl_Spec.h	/^const int BIT_FOR_CHANNEL = BIT_FOR_WAY + WAY_PER_CHANNEL_BIT;$/;"	v
+BIT_FOR_CHANNEL	NAND_Ctrl_Spec.h	/^const int BIT_FOR_CHANNEL = SECTOR_PER_PAGE_BIT;       \/\/5$/;"	v
+BIT_FOR_CHANNEL	NAND_MAN_Spec.h	/^const int BIT_FOR_CHANNEL = BIT_FOR_WAY + WAY_PER_CHANNEL_BIT;$/;"	v
+BIT_FOR_CHANNEL	NAND_MAN_Spec.h	/^const int BIT_FOR_CHANNEL = SECTOR_PER_PAGE_BIT;       \/\/4$/;"	v
+BIT_FOR_CHANNEL	NAND_Spec.h	/^const int BIT_FOR_CHANNEL = BIT_FOR_WAY + WAY_PER_CHANNEL_BIT;$/;"	v
+BIT_FOR_CHANNEL	NAND_Spec.h	/^const int BIT_FOR_CHANNEL = SECTOR_PER_PAGE_BIT;       \/\/4$/;"	v
+BIT_FOR_PAGE	NAND_Ctrl_Spec.h	/^const int BIT_FOR_PAGE = BIT_FOR_WAY + WAY_PER_CHANNEL_BIT; \/\/9$/;"	v
+BIT_FOR_PAGE	NAND_Ctrl_Spec.h	/^const int BIT_FOR_PAGE = SECTOR_PER_PAGE_BIT;$/;"	v
+BIT_FOR_PAGE	NAND_MAN_Spec.h	/^const int BIT_FOR_PAGE = BIT_FOR_WAY + WAY_PER_CHANNEL_BIT; \/\/7$/;"	v
+BIT_FOR_PAGE	NAND_MAN_Spec.h	/^const int BIT_FOR_PAGE = SECTOR_PER_PAGE_BIT;$/;"	v
+BIT_FOR_PAGE	NAND_Spec.h	/^const int BIT_FOR_PAGE = BIT_FOR_WAY + WAY_PER_CHANNEL_BIT; \/\/10$/;"	v
+BIT_FOR_PAGE	NAND_Spec.h	/^const int BIT_FOR_PAGE = SECTOR_PER_PAGE_BIT;$/;"	v
+BIT_FOR_WAY	NAND_Ctrl_Spec.h	/^const int BIT_FOR_WAY = BIT_FOR_BLOCK + BLOCK_PER_WAY_BIT;$/;"	v
+BIT_FOR_WAY	NAND_Ctrl_Spec.h	/^const int BIT_FOR_WAY = BIT_FOR_CHANNEL + CHANNEL_PER_SSD_BIT;  \/\/7$/;"	v
+BIT_FOR_WAY	NAND_MAN_Spec.h	/^const int BIT_FOR_WAY = BIT_FOR_BLOCK + BLOCK_PER_WAY_BIT;$/;"	v
+BIT_FOR_WAY	NAND_MAN_Spec.h	/^const int BIT_FOR_WAY = BIT_FOR_CHANNEL + CHANNEL_PER_SSD_BIT;  \/\/7$/;"	v
+BIT_FOR_WAY	NAND_Spec.h	/^const int BIT_FOR_WAY = BIT_FOR_BLOCK + BLOCK_PER_WAY_BIT;$/;"	v
+BIT_FOR_WAY	NAND_Spec.h	/^const int BIT_FOR_WAY = BIT_FOR_CHANNEL + CHANNEL_PER_SSD_BIT;  \/\/7$/;"	v
+BLOCK_PER_WAY_BIT	NAND_Ctrl_Spec.h	/^const int BLOCK_PER_WAY_BIT = 10;$/;"	v
+BLOCK_PER_WAY_BIT	NAND_MAN_Spec.h	/^const int BLOCK_PER_WAY_BIT = 10;$/;"	v
+BLOCK_PER_WAY_BIT	NAND_Spec.h	/^const int BLOCK_PER_WAY_BIT = 10;$/;"	v
+BLOCK_SIZE	NAND_Ctrl_Spec.h	/^const int BLOCK_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK);$/;"	v
+BLOCK_SIZE	NAND_MAN_Spec.h	/^const int BLOCK_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK);$/;"	v
+BLOCK_SIZE	NAND_Spec.h	/^const int BLOCK_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK);$/;"	v
+BTN_Analysis	BTN_waitingTime.h	/^    namespace BTN_Analysis{$/;"	n
+BTN_DISSUETIME_H__	trackByID_node.h	2;"	d
+BUFFER_BUSY	NAND_Struct.h	/^    BUFFER_BUSY = 0,$/;"	e	enum:NAND_Cmd_Buffer_Status
+BUFFER_READY	NAND_Struct.h	/^    BUFFER_READY = 1,$/;"	e	enum:NAND_Cmd_Buffer_Status
+BUSY_WAITING	BTN_waitingTime.h	/^            BUSY_WAITING,$/;"	e	enum:BTN_Analysis::eWaitingState
+BWC	NAND_Ctrl_Spec.h	4;"	d
+BWC	NAND_MAN_Spec.h	4;"	d
+BWC	NAND_Spec.h	4;"	d
+BYTE_PER_SECTOR_BIT	NAND_Ctrl_Spec.h	/^const int BYTE_PER_SECTOR_BIT = 9;$/;"	v
+BYTE_PER_SECTOR_BIT	NAND_MAN_Spec.h	/^const int BYTE_PER_SECTOR_BIT = 9;$/;"	v
+BYTE_PER_SECTOR_BIT	NAND_Spec.h	/^const int BYTE_PER_SECTOR_BIT = 9;$/;"	v
+BitMap_t	SubReq_def.h	/^typedef struct BitMap_t{$/;"	s
+BitMap_t	SubReq_def.h	/^}BitMap_t;$/;"	t	typeref:struct:BitMap_t
+BufferReq_t	ssd_struct.h	/^}BufferReq_t;$/;"	t	typeref:struct:sBufferReq_t
+CACHE_DATA_REGION_OFFSET	buffer_ctrl.h	7;"	d
+CHANNEL_PER_SSD_BIT	NAND_Ctrl_Spec.h	/^const int CHANNEL_PER_SSD_BIT = 2;$/;"	v
+CHANNEL_PER_SSD_BIT	NAND_MAN_Spec.h	/^const int CHANNEL_PER_SSD_BIT = 2;$/;"	v
+CHANNEL_PER_SSD_BIT	NAND_Spec.h	/^const int CHANNEL_PER_SSD_BIT = 2;$/;"	v
+CLOCK_PERIOD	IF_Spec.h	6;"	d
+CLOCK_PERIOD_NS	SubReq_def.h	8;"	d
+CMD	ssd_struct.h	/^    CMD                 ,$/;"	e	enum:eWriteSlaveState
+CMD_BUS_TIME_CONSUMED	global_flag.h	/^double CMD_BUS_TIME_CONSUMED[3] = {0};$/;"	v
+CMD_BUS_TOTAL_BW	global_flag.h	10;"	d
+CMD_OP	trackByID_node.h	/^        enum CMD_OP{$/;"	g	namespace:SSDmetric
+CMD_READ	trackByID_node.h	/^          CMD_READ = 1$/;"	e	enum:SSDmetric::CMD_OP
+CMD_WRITE	trackByID_node.h	/^          CMD_WRITE = 0,$/;"	e	enum:SSDmetric::CMD_OP
+COMMAND	ssd_struct.h	/^}COMMAND;$/;"	t	typeref:struct:__anon2
+COMPARISON	IF_Spec.h	25;"	d
+CPU_SIDE_CALLBACK_OFFSET	buffer_ctrl.h	6;"	d
+CacheCMD	ssd_struct.h	/^}CacheCMD;$/;"	t	typeref:struct:sCacheCMD
+CacheTrans_t	ssd_struct.h	/^}CacheTrans_t;$/;"	t	typeref:struct:sCacheTrans_t
+Chip_Select	NAND_Struct.h	/^	Chip_Select         = 99 \/\/ Added by jun$/;"	e	enum:NAND_CMD_SET
+CombRead	SubReq_def.h	/^    CombRead = 0,$/;"	e	enum:__anon3
+CombType	SubReq_def.h	/^}CombType;$/;"	t	typeref:enum:__anon3
+CombWrite	SubReq_def.h	/^    CombWrite = 1$/;"	e	enum:__anon3
+Copyback	NAND_Struct.h	/^	Copyback            = 4,$/;"	e	enum:NAND_CMD_SET
+Copyback_Program	NAND_Struct.h	/^	Copyback_Program    = 5,$/;"	e	enum:NAND_CMD_SET
+Copyback_Read	NAND_Struct.h	/^	Copyback_Read       = 6,$/;"	e	enum:NAND_CMD_SET
+DATA_ADDR	IF_Spec.h	16;"	d
+DATA_BUS_TIME_CONSUMED	global_flag.h	/^double DATA_BUS_TIME_CONSUMED[3] = {0};$/;"	v
+DATA_BUS_TOTAL_BW	global_flag.h	11;"	d
+DATA_PAGE_SIZE	NAND_Ctrl_Spec.h	/^const int DATA_PAGE_SIZE = 16384;$/;"	v
+DATA_PAGE_SIZE	NAND_MAN_Spec.h	/^const int DATA_PAGE_SIZE = 16384;$/;"	v
+DATA_PAGE_SIZE	NAND_Spec.h	/^const int DATA_PAGE_SIZE = 16384;$/;"	v
+DEVIF_DEBUG	global_flag.h	16;"	d
+DEV_AND_TIME	NAND_Ctrl_Spec.h	10;"	d
+DEV_AND_TIME	NAND_MAN_Spec.h	10;"	d
+DEV_AND_TIME	NAND_Spec.h	10;"	d
+DEV_IF	BTN_waitingTime.h	/^            DEV_IF,$/;"	e	enum:BTN_Analysis::eModuleType
+DEV_IF	trackByID_node.h	/^            DEV_IF = 1,$/;"	e	enum:SSDmetric::eModuleType
+DRAM_CMD	ssd_struct.h	/^}DRAM_CMD;$/;"	t	typeref:enum:eDRAM_CMD
+DRAM_DEBUG	global_flag.h	18;"	d
+DRAM_NOTHING	ssd_struct.h	/^    DRAM_NOTHING    =   31$/;"	e	enum:eDRAM_CMD
+DRAM_READ	ssd_struct.h	/^    DRAM_READ,$/;"	e	enum:eDRAM_CMD
+DRAM_STATS	global_flag.h	/^long long int DRAM_STATS[2][2] = {0}; \/\/2 : Cache Buffer\/Metadata, 2: Write\/Read$/;"	v
+DRAM_WRITE	ssd_struct.h	/^    DRAM_WRITE      =   0,$/;"	e	enum:eDRAM_CMD
+DRAM_ctrl	BTN_waitingTime.h	/^            DRAM_ctrl,$/;"	e	enum:BTN_Analysis::eModuleType
+DRAM_ctrl	trackByID_node.h	/^            DRAM_ctrl = 3,$/;"	e	enum:SSDmetric::eModuleType
+DramInfo	NAND_Struct.h	/^    CacheCMD        DramInfo;$/;"	m	struct:NAND_Cmd_Buffer
+Erase	NAND_Struct.h	/^	Erase               = 3,$/;"	e	enum:NAND_CMD_SET
+HOST	ssd_struct.h	/^    HOST        = 0,$/;"	e	enum:eSOURCE_DEVICE
+HOSTIF_DEBUG	global_flag.h	15;"	d
+HOST_IF	BTN_waitingTime.h	/^            HOST_IF,$/;"	e	enum:BTN_Analysis::eModuleType
+HOST_IF	trackByID_node.h	/^            HOST_IF = 0,$/;"	e	enum:SSDmetric::eModuleType
+HOST_NOTHING	ssd_struct.h	/^    HOST_NOTHING    =   127$/;"	e	enum:eHOST_REQ_OP
+HOST_READ	ssd_struct.h	/^    HOST_READ       =   1,$/;"	e	enum:eHOST_REQ_OP
+HOST_REQ_OP	ssd_struct.h	/^}HOST_REQ_OP;$/;"	t	typeref:enum:eHOST_REQ_OP
+HOST_SIDE_CALLBACK_OFFSET	buffer_ctrl.h	9;"	d
+HOST_WRITE	ssd_struct.h	/^    HOST_WRITE      =   0,$/;"	e	enum:eHOST_REQ_OP
+IDEnd	trackByID_node.h	/^                void IDEnd(){$/;"	f	class:SSDmetric::nodeReqID
+IDFinish	trackByID.h	/^    void trackByID::IDFinish(int id){$/;"	f	class:SSDmetric::trackByID
+IDLE	BTN_waitingTime.h	/^            IDLE,$/;"	e	enum:BTN_Analysis::eWaitingState
+IDLE	ssd_struct.h	/^    IDLE        =       0,$/;"	e	enum:eWriteSlaveState
+IF_BANDWIDTH	IF_Spec.h	7;"	d
+Id	ssd_struct.h	/^    uint            Id;         \/\/ sub-read requests requiring response$/;"	m	struct:sReadSubResp_t
+Id	ssd_struct.h	/^    uint            Id;$/;"	m	struct:sSubReq_t
+Id	ssd_struct.h	/^    uint Id;$/;"	m	struct:sCacheTrans_t
+KILO	SubReq_def.h	6;"	d
+Len	ssd_struct.h	/^    uint Len;$/;"	m	struct:sCacheTrans_t
+MAP_CMD_BUSY	NAND_Struct.h	/^    MAP_CMD_BUSY = 2,$/;"	e	enum:NAND_Cmd_Buffer_Status
+MAP_CMD_READY	NAND_Struct.h	/^    MAP_CMD_READY = 3,$/;"	e	enum:NAND_Cmd_Buffer_Status
+MASK_BLOCK	NAND_Ctrl_Spec.h	/^const int MASK_BLOCK = ((0x1 << BLOCK_PER_WAY_BIT) - 1) << BIT_FOR_BLOCK;$/;"	v
+MASK_BLOCK	NAND_MAN_Spec.h	/^const int MASK_BLOCK = ((0x1 << BLOCK_PER_WAY_BIT) - 1) << BIT_FOR_BLOCK;$/;"	v
+MASK_BLOCK	NAND_Spec.h	/^const int MASK_BLOCK = ((0x1 << BLOCK_PER_WAY_BIT) - 1) << BIT_FOR_BLOCK;$/;"	v
+MASK_CHANNEL	NAND_Ctrl_Spec.h	/^const int MASK_CHANNEL = ((0x1 << CHANNEL_PER_SSD_BIT) - 1) << BIT_FOR_CHANNEL;$/;"	v
+MASK_CHANNEL	NAND_MAN_Spec.h	/^const int MASK_CHANNEL = ((0x1 << CHANNEL_PER_SSD_BIT) - 1) << BIT_FOR_CHANNEL;$/;"	v
+MASK_CHANNEL	NAND_Spec.h	/^const int MASK_CHANNEL = ((0x1 << CHANNEL_PER_SSD_BIT) - 1) << BIT_FOR_CHANNEL;$/;"	v
+MASK_PAGE	NAND_Ctrl_Spec.h	/^const int MASK_PAGE = ((0x1 << PAGE_PER_BLOCK_BIT) - 1) << BIT_FOR_PAGE;$/;"	v
+MASK_PAGE	NAND_MAN_Spec.h	/^const int MASK_PAGE = ((0x1 << PAGE_PER_BLOCK_BIT) - 1) << BIT_FOR_PAGE;$/;"	v
+MASK_PAGE	NAND_Spec.h	/^const int MASK_PAGE = ((0x1 << PAGE_PER_BLOCK_BIT) - 1) << BIT_FOR_PAGE;$/;"	v
+MASK_WAY	NAND_Ctrl_Spec.h	/^const int MASK_WAY = ((0x1 << WAY_PER_CHANNEL_BIT) - 1) << BIT_FOR_WAY;$/;"	v
+MASK_WAY	NAND_MAN_Spec.h	/^const int MASK_WAY = ((0x1 << WAY_PER_CHANNEL_BIT) - 1) << BIT_FOR_WAY;$/;"	v
+MASK_WAY	NAND_Spec.h	/^const int MASK_WAY = ((0x1 << WAY_PER_CHANNEL_BIT) - 1) << BIT_FOR_WAY;$/;"	v
+MAX_ADDR	IF_Spec.h	22;"	d
+MAX_REQ_LEN	ssd_struct.h	18;"	d
+MEMORY_SIZE	IF_Spec.h	18;"	d
+MERGE_WAIT	NAND_Struct.h	/^    MERGE_WAIT = 6$/;"	e	enum:NAND_Cmd_Buffer_Status
+MapTable_Copyback	NAND_Struct.h	/^    MapTable_Copyback   = 9,$/;"	e	enum:NAND_CMD_SET
+MapTable_Copyback_Pgm	NAND_Struct.h	/^    MapTable_Copyback_Pgm = 10,$/;"	e	enum:NAND_CMD_SET
+MapTable_Copyback_Rd	NAND_Struct.h	/^    MapTable_Copyback_Rd = 11,$/;"	e	enum:NAND_CMD_SET
+MapTable_Erase	NAND_Struct.h	/^    MapTable_Erase = 12,$/;"	e	enum:NAND_CMD_SET
+MapTable_Program	NAND_Struct.h	/^    MapTable_Program    = 8,$/;"	e	enum:NAND_CMD_SET
+MapTable_Read	NAND_Struct.h	/^    MapTable_Read       = 7, \/\/ iAddr1: nand \/\/ iAddr2: memory \/\/ iAddr3: offset (byte) \/\/ iAddr4: length (byte)$/;"	e	enum:NAND_CMD_SET
+NAND	ssd_struct.h	/^    NAND $/;"	e	enum:eSOURCE_DEVICE
+NANDCtrl_DEBUG	global_flag.h	20;"	d
+NAND_CLK_PERIOD	NAND_Ctrl_Spec.h	16;"	d
+NAND_CLK_PERIOD	NAND_MAN_Spec.h	16;"	d
+NAND_CLK_PERIOD	NAND_Spec.h	16;"	d
+NAND_CMD_SET	NAND_Struct.h	/^typedef enum NAND_CMD_SET$/;"	g
+NAND_CMD_SET	NAND_Struct.h	/^}NAND_CMD_SET;$/;"	t	typeref:enum:NAND_CMD_SET
+NAND_CTRL_CLK_PERIOD	NAND_Ctrl_Spec.h	15;"	d
+NAND_CTRL_CLK_PERIOD	NAND_MAN_Spec.h	15;"	d
+NAND_CTRL_CLK_PERIOD	NAND_Spec.h	15;"	d
+NAND_Cmd	NAND_Struct.h	/^typedef struct NAND_Cmd{$/;"	s
+NAND_Cmd	NAND_Struct.h	/^}NAND_Cmd;$/;"	t	typeref:struct:NAND_Cmd
+NAND_Cmd_Buffer	NAND_Struct.h	/^typedef struct NAND_Cmd_Buffer{$/;"	s
+NAND_Cmd_Buffer	NAND_Struct.h	/^}NAND_Cmd_Buffer;$/;"	t	typeref:struct:NAND_Cmd_Buffer
+NAND_Cmd_Buffer_Status	NAND_Struct.h	/^typedef enum NAND_Cmd_Buffer_Status{$/;"	g
+NAND_Cmd_Buffer_Status	NAND_Struct.h	/^}NAND_Cmd_Buffer_Status;$/;"	t	typeref:enum:NAND_Cmd_Buffer_Status
+NAND_DATA_BUFFER_MAX_SIZE	NAND_Spec.h	/^const int NAND_DATA_BUFFER_MAX_SIZE = 20*DATA_PAGE_SIZE;$/;"	v
+NAND_DEBUG	global_flag.h	19;"	d
+NAND_I_O_BITWIDTH	NAND_Ctrl_Spec.h	/^const int NAND_I_O_BITWIDTH = 8;$/;"	v
+NAND_I_O_BITWIDTH	NAND_MAN_Spec.h	/^const int NAND_I_O_BITWIDTH = 8;$/;"	v
+NAND_I_O_BITWIDTH	NAND_Spec.h	/^const int NAND_I_O_BITWIDTH = 8;$/;"	v
+NAND_Manager	BTN_waitingTime.h	/^            NAND_Manager,$/;"	e	enum:BTN_Analysis::eModuleType
+NAND_Manager	trackByID_node.h	/^            NAND_Manager = 4,$/;"	e	enum:SSDmetric::eModuleType
+NAND_SIDE_CALLBACK_OFFSET	buffer_ctrl.h	10;"	d
+NAND_STATS	global_flag.h	/^long long int NAND_STATS[13][4][4][1024] = {0}; \/\/12 : # of nand opcodes, 4 : # channel, 4 : # way, 1024 : # of blocks$/;"	v
+NAND_TIMING	NAND_Ctrl_Spec.h	/^typedef enum NAND_TIMING$/;"	g
+NAND_TIMING	NAND_Ctrl_Spec.h	/^}NAND_TIMING;$/;"	t	typeref:enum:NAND_TIMING
+NAND_TIMING	NAND_MAN_Spec.h	/^typedef enum NAND_TIMING$/;"	g
+NAND_TIMING	NAND_MAN_Spec.h	/^}NAND_TIMING;$/;"	t	typeref:enum:NAND_TIMING
+NAND_TIMING	NAND_Spec.h	/^typedef enum NAND_TIMING$/;"	g
+NAND_TIMING	NAND_Spec.h	/^}NAND_TIMING;$/;"	t	typeref:enum:NAND_TIMING
+NEED_COPY	NAND_Struct.h	/^    NEED_COPY = 4,$/;"	e	enum:NAND_Cmd_Buffer_Status
+NOTHING	ssd_struct.h	/^    NOTHING     =       63$/;"	e	enum:eWriteSlaveState
+NUM_MODULES	BTN_waitingTime.h	/^            NUM_MODULES$/;"	e	enum:BTN_Analysis::eModuleType
+NUM_MODULES	trackByID_node.h	/^            NUM_MODULES = 5$/;"	e	enum:SSDmetric::eModuleType
+NUM_OF_BLOCK_PER_WAY	NAND_Ctrl_Spec.h	/^const int NUM_OF_BLOCK_PER_WAY = 1024;$/;"	v
+NUM_OF_BLOCK_PER_WAY	NAND_MAN_Spec.h	/^const int NUM_OF_BLOCK_PER_WAY = 1024;$/;"	v
+NUM_OF_BLOCK_PER_WAY	NAND_Spec.h	/^const int NUM_OF_BLOCK_PER_WAY = 1024;$/;"	v
+NUM_OF_CHANNEL	NAND_Ctrl_Spec.h	/^const int NUM_OF_CHANNEL = 4;$/;"	v
+NUM_OF_CHANNEL	NAND_MAN_Spec.h	/^const int NUM_OF_CHANNEL = 4;$/;"	v
+NUM_OF_CHANNEL	NAND_Spec.h	/^const int NUM_OF_CHANNEL = 4;$/;"	v
+NUM_OF_CORE	global_flag.h	8;"	d
+NUM_OF_PAGE_PER_BLOCK	NAND_Ctrl_Spec.h	/^const int NUM_OF_PAGE_PER_BLOCK = 64;$/;"	v
+NUM_OF_PAGE_PER_BLOCK	NAND_MAN_Spec.h	/^const int NUM_OF_PAGE_PER_BLOCK = 64;$/;"	v
+NUM_OF_PAGE_PER_BLOCK	NAND_Spec.h	/^const int NUM_OF_PAGE_PER_BLOCK = 64;$/;"	v
+NUM_OF_WAY	NAND_Ctrl_Spec.h	/^const int NUM_OF_WAY = 4; $/;"	v
+NUM_OF_WAY	NAND_MAN_Spec.h	/^const int NUM_OF_WAY = 4; $/;"	v
+NUM_OF_WAY	NAND_Spec.h	/^const int NUM_OF_WAY = 4; $/;"	v
+Nothing	NAND_Struct.h	/^	Nothing             = 0,$/;"	e	enum:NAND_CMD_SET
+OP	ssd_struct.h	/^}OP;$/;"	t	typeref:enum:__anon1
+Op	ssd_struct.h	/^    HOST_REQ_OP     Op;             \/\/ opcode$/;"	m	struct:sReq_t
+Op	ssd_struct.h	/^    uint Op;$/;"	m	struct:sCacheTrans_t
+PAGE_PER_BLOCK_BIT	NAND_Ctrl_Spec.h	/^const int PAGE_PER_BLOCK_BIT = 6;$/;"	v
+PAGE_PER_BLOCK_BIT	NAND_MAN_Spec.h	/^const int PAGE_PER_BLOCK_BIT = 6;$/;"	v
+PAGE_PER_BLOCK_BIT	NAND_Spec.h	/^const int PAGE_PER_BLOCK_BIT = 6;$/;"	v
+PAGE_SIZE	NAND_Ctrl_Spec.h	/^const int PAGE_SIZE = (DATA_PAGE_SIZE + SPARE_PAGE_SIZE);$/;"	v
+PAGE_SIZE	NAND_MAN_Spec.h	/^const int PAGE_SIZE = (DATA_PAGE_SIZE + SPARE_PAGE_SIZE);$/;"	v
+PAGE_SIZE	NAND_Spec.h	/^const int PAGE_SIZE = (DATA_PAGE_SIZE + SPARE_PAGE_SIZE);$/;"	v
+Program	NAND_Struct.h	/^	Program             = 1,$/;"	e	enum:NAND_CMD_SET
+Q_SIZE	IF_Spec.h	12;"	d
+READ_BOTH	ssd_struct.h	/^    READ_BOTH = 3,$/;"	e	enum:__anon1
+READ_DRAM	ssd_struct.h	/^    READ_DRAM = 0,$/;"	e	enum:__anon1
+READ_Q_LIMIT_FACTOR	buffer_ctrl.h	15;"	d
+READ_Q_SIZE	buffer_ctrl.h	12;"	d
+READ_SLAVE	ssd_struct.h	/^    READ_SLAVE = 2,$/;"	e	enum:__anon1
+REQUEST_ADDR	IF_Spec.h	15;"	d
+Read	NAND_Struct.h	/^	Read                = 2,$/;"	e	enum:NAND_CMD_SET
+ReadResp_t	ssd_struct.h	/^}ReadResp_t;$/;"	t	typeref:struct:sReadResp_t
+ReadSubResp_t	ssd_struct.h	/^}ReadSubResp_t;$/;"	t	typeref:struct:sReadSubResp_t
+ReqType	SubReq_def.h	/^}ReqType;$/;"	t	typeref:enum:__anon4
+Req_t	ssd_struct.h	/^}Req_t;$/;"	t	typeref:struct:sReq_t
+SECTOR_PER_PAGE	SubReq_def.h	11;"	d
+SECTOR_PER_PAGE_BIT	NAND_Ctrl_Spec.h	/^const int SECTOR_PER_PAGE_BIT = 5;$/;"	v
+SECTOR_PER_PAGE_BIT	NAND_MAN_Spec.h	/^const int SECTOR_PER_PAGE_BIT = 5;$/;"	v
+SECTOR_PER_PAGE_BIT	NAND_Spec.h	/^const int SECTOR_PER_PAGE_BIT = 5;$/;"	v
+SECTOR_SIZE_BYTE	SubReq_def.h	7;"	d
+SECTOR_SIZE_BYTE	buffer_ctrl.h	18;"	d
+SOFTWARE_FLAG	global_flag.h	/^bool SOFTWARE_FLAG = false;$/;"	v
+SOFTWARE_TIME	global_flag.h	/^double SOFTWARE_TIME[2] = {0};$/;"	v
+SOFTWARE_count	global_flag.h	/^long long int SOFTWARE_count = 0;$/;"	v
+SOURCE_DEVICE	ssd_struct.h	/^}SOURCE_DEVICE;$/;"	t	typeref:enum:eSOURCE_DEVICE
+SPARE_PAGE_SIZE	NAND_Ctrl_Spec.h	/^const int SPARE_PAGE_SIZE = 128;$/;"	v
+SPARE_PAGE_SIZE	NAND_MAN_Spec.h	/^const int SPARE_PAGE_SIZE = 128;$/;"	v
+SPARE_PAGE_SIZE	NAND_Spec.h	/^const int SPARE_PAGE_SIZE = 128;$/;"	v
+SSDmetric	trackByID.h	/^namespace SSDmetric{$/;"	n
+SSDmetric	trackByID_node.h	/^    namespace SSDmetric{$/;"	n
+SUB_DEBUG	global_flag.h	17;"	d
+SWtime_prev	global_flag.h	/^static double SWtime_prev = 0;$/;"	v
+SourceDevice	ssd_struct.h	/^    SOURCE_DEVICE SourceDevice;$/;"	m	struct:sCacheCMD
+SubList	trackByID_node.h	/^                std::vector<nodeSubReq> SubList;$/;"	m	class:SSDmetric::nodeReqID
+SubReqMan	BTN_waitingTime.h	/^            SubReqMan,$/;"	e	enum:BTN_Analysis::eModuleType
+SubReqMan	trackByID_node.h	/^            SubReqMan = 2,$/;"	e	enum:SSDmetric::eModuleType
+SubReq_t	ssd_struct.h	/^}SubReq_t;$/;"	t	typeref:struct:sSubReq_t
+TOTAL_WAY_SIZE	NAND_Ctrl_Spec.h	/^const int TOTAL_WAY_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK * NUM_OF_BLOCK_PER_WAY);$/;"	v
+TOTAL_WAY_SIZE	NAND_MAN_Spec.h	/^const int TOTAL_WAY_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK * NUM_OF_BLOCK_PER_WAY);$/;"	v
+TOTAL_WAY_SIZE	NAND_Spec.h	/^const int TOTAL_WAY_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK * NUM_OF_BLOCK_PER_WAY);$/;"	v
+TRANSFER	BTN_waitingTime.h	/^            TRANSFER,$/;"	e	enum:BTN_Analysis::eWaitingState
+T_BER	NAND_Ctrl_Spec.h	/^    T_BER = 3500000$/;"	e	enum:NAND_TIMING
+T_BER	NAND_MAN_Spec.h	/^    T_BER = 3500000$/;"	e	enum:NAND_TIMING
+T_BER	NAND_Spec.h	/^    T_BER = 3500000$/;"	e	enum:NAND_TIMING
+T_PROG	NAND_Ctrl_Spec.h	/^    T_PROG = 660000,$/;"	e	enum:NAND_TIMING
+T_PROG	NAND_MAN_Spec.h	/^    T_PROG = 660000,$/;"	e	enum:NAND_TIMING
+T_PROG	NAND_Spec.h	/^    T_PROG = 660000,$/;"	e	enum:NAND_TIMING
+T_R	NAND_Ctrl_Spec.h	/^    T_R = 45000,$/;"	e	enum:NAND_TIMING
+T_R	NAND_MAN_Spec.h	/^    T_R = 45000,$/;"	e	enum:NAND_TIMING
+T_R	NAND_Spec.h	/^    T_R = 45000,$/;"	e	enum:NAND_TIMING
+UNIT_OF_REQUEST	IF_Spec.h	9;"	d
+UNIT_OF_REQUEST	ssd_struct.h	136;"	d
+UPDATE_SLAVE	ssd_struct.h	/^    UPDATE_SLAVE = 5$/;"	e	enum:__anon1
+Valid	SubReq_def.h	/^    uchar	Valid[SECTOR_PER_PAGE];$/;"	m	struct:BitMap_t
+WAY_PER_CHANNEL_BIT	NAND_Ctrl_Spec.h	/^const int WAY_PER_CHANNEL_BIT = 2;$/;"	v
+WAY_PER_CHANNEL_BIT	NAND_MAN_Spec.h	/^const int WAY_PER_CHANNEL_BIT = 2;$/;"	v
+WAY_PER_CHANNEL_BIT	NAND_Spec.h	/^const int WAY_PER_CHANNEL_BIT = 2;$/;"	v
+WIRE_WIDTH	IF_Spec.h	8;"	d
+WRITE_COMPLETE	NAND_Struct.h	/^    WRITE_COMPLETE = 5,$/;"	e	enum:NAND_Cmd_Buffer_Status
+WRITE_DRAM	ssd_struct.h	/^    WRITE_DRAM = 1,$/;"	e	enum:__anon1
+WRITE_Q_LIMIT_FACTOR	buffer_ctrl.h	16;"	d
+WRITE_Q_SIZE	buffer_ctrl.h	13;"	d
+WRITE_SLAVE	ssd_struct.h	/^    WRITE_SLAVE = 4,$/;"	e	enum:__anon1
+Waiting	NAND_Struct.h	/^	Waiting             = 100,$/;"	e	enum:NAND_CMD_SET
+_ADDR_CPU2_BASE_	NAND_Struct.h	37;"	d
+_ADDR_DATA_DRAM_	NAND_Struct.h	25;"	d
+_ADDR_DATA_SUBM_	NAND_Struct.h	26;"	d
+_ADDR_DEVIF_BASE_	NAND_Struct.h	12;"	d
+_ADDR_DRAM_BASE_	NAND_Struct.h	16;"	d
+_ADDR_DRAM_STATEINFORM_	NAND_Struct.h	36;"	d
+_ADDR_IRQ_BASE_	NAND_Struct.h	13;"	d
+_ADDR_MEMCON_BASE_	NAND_Struct.h	14;"	d
+_ADDR_NUMS_BASE_	NAND_Struct.h	11;"	d
+_ADDR_SUB_BASE_	NAND_Struct.h	15;"	d
+_CACHE_BUFFER_STRUCT_H_	Cache_Buffer_Struct.h	2;"	d
+_CMDMASTER_OFFSET_NANDSIDE_	NAND_Struct.h	20;"	d
+_DATAMASTER_OFFSET_NANDSIDE_	NAND_Struct.h	30;"	d
+_NAND_DATA_BUFFER_MAX_SIZE	NAND_Struct.h	51;"	d
+_NAND_SPEC_H_	NAND_Ctrl_Spec.h	2;"	d
+_NAND_SPEC_H_	NAND_MAN_Spec.h	2;"	d
+_NAND_SPEC_H_	NAND_Spec.h	2;"	d
+_NAND_STRUCT_H_	NAND_Struct.h	2;"	d
+_OFFSET_DRAM_ADDR_	NAND_Struct.h	39;"	d
+_OFFSET_DRAM_LENGTH_	NAND_Struct.h	40;"	d
+_OFFSET_DRAM_REQ_ID_	NAND_Struct.h	41;"	d
+_OFFSET_NAND_ADDR1_	NAND_Struct.h	43;"	d
+_OFFSET_NAND_ADDR2_	NAND_Struct.h	44;"	d
+_OFFSET_NAND_ADDR3_	NAND_Struct.h	45;"	d
+_OFFSET_NAND_ADDR4_	NAND_Struct.h	46;"	d
+_OFFSET_NAND_CMD_	NAND_Struct.h	42;"	d
+_SSD_STRUCT_H_	ssd_struct.h	15;"	d
+_SUBREQ_DEF_H_	SubReq_def.h	2;"	d
+__BOTTLENECK_METRIC_H__	BTN_waitingTime.h	2;"	d
+__BUFFER_CTLR_H__	buffer_ctrl.h	2;"	d
+__DTL_MEMCPY_H__	memcpy.h	2;"	d
+__GLOBAL_FLAG_H__	global_flag.h	2;"	d
+__IF_SPEC_H__	IF_Spec.h	2;"	d
+active_time	BTN_waitingTime.h	/^                double active_time;$/;"	m	class:BTN_Analysis::waiting_time
+busy_waiting	BTN_waitingTime.h	/^                double busy_waiting;$/;"	m	class:BTN_Analysis::waiting_time
+change_state	BTN_waitingTime.h	/^        void waiting_time::change_state(eWaitingState cur_state){$/;"	f	class:BTN_Analysis::waiting_time
+cmd	NAND_Struct.h	/^    NAND_Cmd        cmd;$/;"	m	struct:NAND_Cmd_Buffer
+cmd	ssd_struct.h	/^    CacheCMD        cmd;$/;"	m	struct:sSubReq_t
+cmd	ssd_struct.h	/^    CacheTrans_t cmd;$/;"	m	struct:sCacheCMD
+combineReq	SubReq_def.h	/^    combineReq = 2$/;"	e	enum:__anon4
+cpBitMap	SubReq_def.h	/^    uchar*          cpBitMap;           \/\/ bitmap indicating completion of sub-req$/;"	m	struct:sIntReq_t
+cpData	SubReq_def.h	/^    uchar *cpData;$/;"	m	struct:sSubReqWithData_t
+cpData	ssd_struct.h	/^    uchar*          cpData;         \/\/ data pointer, e.g. readResp.cpData = new uchar[readResp.subReq.iLen * SECTOR_SIZE_BYTE]; $/;"	m	struct:sReadResp_t
+cpData	ssd_struct.h	/^    uchar*          cpData;         \/\/ data pointer, e.g. readResp.cpData = new uchar[readResp.subReq.iLen * SECTOR_SIZE_BYTE]; $/;"	m	struct:sReadSubResp_t
+cpDataBuf	SubReq_def.h	/^    uchar*          cpDataBuf;          \/\/ data buffer for each register        $/;"	m	struct:sIntReq_t
+dIssueTime	ssd_struct.h	/^    double          dIssueTime;     \/\/ moment when this request comes into SSD$/;"	m	struct:sReq_t
+dIssueTime	ssd_struct.h	/^    double          dIssueTime;     \/\/ when this sub-request issued$/;"	m	struct:sSubReq_t
+data	NAND_Struct.h	/^    unsigned char   *data;$/;"	m	struct:NAND_Cmd_Buffer
+done	trackByID.h	/^    void trackByID::done(int id, int lba_offset, int len, eModuleType module, double time){$/;"	f	class:SSDmetric::trackByID
+done	trackByID_node.h	/^                void done(double time){$/;"	f	class:SSDmetric::nodeModule
+done	trackByID_node.h	/^                void done(eModuleType module, double time){$/;"	f	class:SSDmetric::nodeSubReq
+done	trackByID_node.h	/^                void done(int subID, eModuleType module, double time){$/;"	f	class:SSDmetric::nodeReqID
+dram_bitmap	ssd_struct.h	/^    uint dram_bitmap;$/;"	m	struct:__anon2
+dram_id	ssd_struct.h	/^    uint dram_id;$/;"	m	struct:__anon2
+dummyReq	SubReq_def.h	/^    dummyReq = 0,$/;"	e	enum:__anon4
+dumptrace	trackByID_node.h	/^                virtual void dumptrace(ofstream &fp){$/;"	f	class:SSDmetric::nodeModule
+dumptrace	trackByID_node.h	/^                void dumptrace (ofstream &fp){$/;"	f	class:SSDmetric::nodeModuleResp
+dumptrace	trackByID_node.h	/^                void dumptrace(ofstream &fp){$/;"	f	class:SSDmetric::nodeReqID
+dumptrace	trackByID_node.h	/^                void dumptrace(ofstream &fp){$/;"	f	class:SSDmetric::nodeSubReq
+eDRAM_CMD	ssd_struct.h	/^typedef enum eDRAM_CMD{$/;"	g
+eHOST_REQ_OP	ssd_struct.h	/^typedef enum eHOST_REQ_OP{$/;"	g
+eModuleType	BTN_waitingTime.h	/^        enum eModuleType{$/;"	g	namespace:BTN_Analysis
+eModuleType	trackByID_node.h	/^        enum eModuleType{$/;"	g	namespace:SSDmetric
+eSOURCE_DEVICE	ssd_struct.h	/^typedef enum eSOURCE_DEVICE{$/;"	g
+eWSState	ssd_struct.h	/^}eWSState;$/;"	t	typeref:enum:eWriteSlaveState
+eWaitingState	BTN_waitingTime.h	/^        enum eWaitingState{$/;"	g	namespace:BTN_Analysis
+eWriteSlaveState	ssd_struct.h	/^typedef enum eWriteSlaveState{$/;"	g
+end	BTN_waitingTime.h	/^        void waiting_time::end(){$/;"	f	class:BTN_Analysis::waiting_time
+end	trackByID_node.h	/^                bool end;$/;"	m	class:SSDmetric::nodeModule
+end	trackByID_node.h	/^                bool end;$/;"	m	class:SSDmetric::nodeReqID
+finishTime	trackByID_node.h	/^                double finishTime;$/;"	m	class:SSDmetric::nodeModule
+fp	trackByID.h	/^            ofstream fp;$/;"	m	class:SSDmetric::trackByID
+g_initialize_end	global_flag.h	/^bool        g_initialize_end = false;$/;"	v
+g_isCacheReady	global_flag.h	/^bool        g_isCacheReady = false;$/;"	v
+g_isFtlReady	global_flag.h	/^bool        g_isFtlReady = false;$/;"	v
+hostReq	SubReq_def.h	/^    hostReq = 1,$/;"	e	enum:__anon4
+hostReq	ssd_struct.h	/^    Req_t           hostReq;         \/\/ host read requests requiring response$/;"	m	struct:sReadResp_t
+iAddr	ssd_struct.h	/^    uint64          iAddr;          \/\/ address (unit: sector)$/;"	m	struct:sReq_t
+iAddr1	NAND_Struct.h	/^    unsigned int iAddr1;$/;"	m	struct:NAND_Cmd
+iAddr2	NAND_Struct.h	/^    unsigned int iAddr2;$/;"	m	struct:NAND_Cmd
+iAddr3	NAND_Struct.h	/^    unsigned int iAddr3;$/;"	m	struct:NAND_Cmd
+iAddr4	NAND_Struct.h	/^    unsigned int iAddr4;$/;"	m	struct:NAND_Cmd
+iFileNumber	NAND_Ctrl_Spec.h	/^unsigned int iFileNumber;$/;"	v
+iFileNumber	NAND_MAN_Spec.h	/^unsigned int iFileNumber;$/;"	v
+iFileNumber	NAND_Spec.h	/^unsigned int iFileNumber;$/;"	v
+iId	ssd_struct.h	/^    uint            iId;            \/\/ unique identification of one req$/;"	m	struct:sReq_t
+iLen	ssd_struct.h	/^    uint            iLen;           \/\/ length (sector count)$/;"	m	struct:sReq_t
+iLen	ssd_struct.h	/^    uint            iLen;           \/\/ length (sector count)$/;"	m	struct:sSubReq_t
+iNextSector	SubReq_def.h	/^    uint            iNextSector;        \/\/ indicate the next sector to be handled $/;"	m	struct:sIntReq_t
+iStartAddr	ssd_struct.h	/^    uint64          iStartAddr;     \/\/ start address (unit: sector)  $/;"	m	struct:sSubReq_t
+id	trackByID_node.h	/^                int id;$/;"	m	class:SSDmetric::nodeReqID
+id_front	trackByID.h	/^            int id_front;$/;"	m	class:SSDmetric::trackByID
+idle_time	BTN_waitingTime.h	/^                double idle_time;$/;"	m	class:BTN_Analysis::waiting_time
+insertID	trackByID.h	/^    void trackByID::insertID(int id, int len, uint op){$/;"	f	class:SSDmetric::trackByID
+isCMDTrans	ssd_struct.h	/^    bool isCMDTrans;$/;"	m	struct:sCacheCMD
+isDataReady	ssd_struct.h	/^    bool isDataReady;$/;"	m	struct:sCacheCMD
+isEnd	trackByID_node.h	/^                bool isEnd(){$/;"	f	class:SSDmetric::nodeReqID
+isMapTable	NAND_Struct.h	/^    unsigned int    isMapTable;$/;"	m	struct:NAND_Cmd_Buffer
+isTrans	ssd_struct.h	/^    bool      isTrans;$/;"	m	struct:sBufferReq_t
+last_time	BTN_waitingTime.h	/^                double last_time;$/;"	m	class:BTN_Analysis::waiting_time
+lba	ssd_struct.h	/^    uint lba;$/;"	m	struct:sCacheTrans_t
+lba_offset	trackByID_node.h	/^                int lba_offset;$/;"	m	class:SSDmetric::nodeSubReq
+len	ssd_struct.h	/^    uint            len;$/;"	m	struct:sReadSubResp_t
+logical_addr	ssd_struct.h	/^    uint            logical_addr; \/\/ sub-read requests requiring response$/;"	m	struct:sReadSubResp_t
+mapAddr	NAND_Struct.h	/^    unsigned int    mapAddr;$/;"	m	struct:NAND_Cmd_Buffer
+mapLength	NAND_Struct.h	/^    unsigned int    mapLength;$/;"	m	struct:NAND_Cmd_Buffer
+mapOffset	NAND_Struct.h	/^    unsigned int    mapOffset;$/;"	m	struct:NAND_Cmd_Buffer
+memcpy	memcpy.h	/^static inline void memcpy(scml2::memory<unsigned int> &target, void* src, int length)$/;"	f
+memcpy	memcpy.h	/^static inline void memcpy(scml2::memory_alias<unsigned int> &target, void* src, int length)$/;"	f
+memcpy	memcpy.h	/^static inline void memcpy(scml2::reg<unsigned int> target, void* &src, int length)$/;"	f
+memcpy	memcpy.h	/^static inline void memcpy(void* target, scml2::memory<unsigned int> &src, int length)$/;"	f
+memcpy	memcpy.h	/^static inline void memcpy(void* target, scml2::memory_alias<unsigned int> &src, int length)$/;"	f
+memcpy	memcpy.h	/^static inline void memcpy(void* target, scml2::reg<unsigned int> &src, int length)$/;"	f
+module	trackByID_node.h	/^                eModuleType module;$/;"	m	class:SSDmetric::nodeModule
+nodeModule	trackByID_node.h	/^                nodeModule(eModuleType module){$/;"	f	class:SSDmetric::nodeModule
+nodeModule	trackByID_node.h	/^        class nodeModule {$/;"	c	namespace:SSDmetric
+nodeModuleResp	trackByID_node.h	/^                nodeModuleResp(eModuleType module)$/;"	f	class:SSDmetric::nodeModuleResp
+nodeModuleResp	trackByID_node.h	/^        class nodeModuleResp : public nodeModule {$/;"	c	namespace:SSDmetric
+nodeReqID	trackByID_node.h	/^                nodeReqID(int id, int len, CMD_OP op){$/;"	f	class:SSDmetric::nodeReqID
+nodeReqID	trackByID_node.h	/^        class nodeReqID {$/;"	c	namespace:SSDmetric
+nodeSubReq	trackByID_node.h	/^                nodeSubReq(int offset, CMD_OP op){$/;"	f	class:SSDmetric::nodeSubReq
+nodeSubReq	trackByID_node.h	/^        class nodeSubReq{$/;"	c	namespace:SSDmetric
+numSubReq	trackByID_node.h	/^                int numSubReq;$/;"	m	class:SSDmetric::nodeReqID
+op	ssd_struct.h	/^    OP op;$/;"	m	struct:__anon2
+op	trackByID_node.h	/^                CMD_OP op;$/;"	m	class:SSDmetric::nodeReqID
+op	trackByID_node.h	/^                CMD_OP op;$/;"	m	class:SSDmetric::nodeSubReq
+opCode	NAND_Struct.h	/^    NAND_CMD_SET opCode;$/;"	m	struct:NAND_Cmd
+oriReq	ssd_struct.h	/^    Req_t           oriReq;         \/\/ parent req$/;"	m	struct:sSubReq_t
+printWaitingTime	BTN_waitingTime.h	/^        void waiting_time::printWaitingTime(){$/;"	f	class:BTN_Analysis::waiting_time
+readTimeList	trackByID_node.h	/^                std::vector<nodeModuleResp> readTimeList;$/;"	m	class:SSDmetric::nodeSubReq
+req	SubReq_def.h	/^    Req_t           req;                \/\/ parent req$/;"	m	struct:sIntReq_t
+reqList	trackByID.h	/^            std::deque<nodeReqID> reqList;$/;"	m	class:SSDmetric::trackByID
+reqType	SubReq_def.h	/^    ReqType    reqType;    \/\/$/;"	m	struct:sSubReqWithData_t
+respDone	trackByID.h	/^    void trackByID::respDone(int id, int lba_offset, int len, eModuleType module, double time){$/;"	f	class:SSDmetric::trackByID
+respDone	trackByID_node.h	/^                void respDone(double time){$/;"	f	class:SSDmetric::nodeModuleResp
+respDone	trackByID_node.h	/^                void respDone(eModuleType module, double time){$/;"	f	class:SSDmetric::nodeSubReq
+respDone	trackByID_node.h	/^                void respDone(int subID, eModuleType module, double time){$/;"	f	class:SSDmetric::nodeReqID
+respEnd	trackByID_node.h	/^                bool respEnd;$/;"	m	class:SSDmetric::nodeModuleResp
+respFinishTime	trackByID_node.h	/^                double respFinishTime;$/;"	m	class:SSDmetric::nodeModuleResp
+respStart	trackByID.h	/^    void trackByID::respStart(int id, int lba_offset, int len, eModuleType module, double time){$/;"	f	class:SSDmetric::trackByID
+respStart	trackByID_node.h	/^                void respStart(double time){$/;"	f	class:SSDmetric::nodeModuleResp
+respStart	trackByID_node.h	/^                void respStart(eModuleType module, double time){$/;"	f	class:SSDmetric::nodeSubReq
+respStart	trackByID_node.h	/^                void respStart(int subID, eModuleType module, double time){$/;"	f	class:SSDmetric::nodeReqID
+respStartTime	trackByID_node.h	/^                double respStartTime;$/;"	m	class:SSDmetric::nodeModuleResp
+sBufferReq_t	ssd_struct.h	/^typedef struct sBufferReq_t{$/;"	s
+sCacheCMD	ssd_struct.h	/^typedef struct sCacheCMD{$/;"	s
+sCacheTrans_t	ssd_struct.h	/^typedef struct sCacheTrans_t{$/;"	s
+sIntReq_t	SubReq_def.h	/^   }sIntReq_t;$/;"	t	typeref:struct:sIntReq_t
+sIntReq_t	SubReq_def.h	/^typedef struct sIntReq_t{$/;"	s
+sReadResp_t	ssd_struct.h	/^typedef struct sReadResp_t{$/;"	s
+sReadSubResp_t	ssd_struct.h	/^typedef struct sReadSubResp_t{$/;"	s
+sReq_t	ssd_struct.h	/^typedef struct sReq_t{$/;"	s
+sSubReqWithData_t	SubReq_def.h	/^typedef struct sSubReqWithData_t{$/;"	s
+sSubReqWithData_t	SubReq_def.h	/^}sSubReqWithData_t;$/;"	t	typeref:struct:sSubReqWithData_t
+sSubReq_t	ssd_struct.h	/^typedef struct sSubReq_t{$/;"	s
+slave_addr	ssd_struct.h	/^    uint slave_addr;$/;"	m	struct:__anon2
+slave_bitmap	ssd_struct.h	/^    uint slave_bitmap;$/;"	m	struct:__anon2
+start	BTN_waitingTime.h	/^        void waiting_time::start(){$/;"	f	class:BTN_Analysis::waiting_time
+start	trackByID.h	/^    void trackByID::start(int id, int lba_offset, int len, eModuleType module, double time){$/;"	f	class:SSDmetric::trackByID
+start	trackByID_node.h	/^                void start(double time){$/;"	f	class:SSDmetric::nodeModule
+start	trackByID_node.h	/^                void start(eModuleType module, double time){$/;"	f	class:SSDmetric::nodeSubReq
+start	trackByID_node.h	/^                void start(int subID, eModuleType module, double time){$/;"	f	class:SSDmetric::nodeReqID
+startFlag	BTN_waitingTime.h	/^                bool startFlag;$/;"	m	class:BTN_Analysis::waiting_time
+startTime	trackByID_node.h	/^                double startTime;$/;"	m	class:SSDmetric::nodeModule
+state	BTN_waitingTime.h	/^                eWaitingState state;$/;"	m	class:BTN_Analysis::waiting_time
+state	NAND_Struct.h	/^    NAND_Cmd_Buffer_Status state;$/;"	m	struct:NAND_Cmd_Buffer
+state	SubReq_def.h	/^    bool            state;$/;"	m	struct:sIntReq_t
+subReq	SubReq_def.h	/^    sSubReq_t *subReq;$/;"	m	struct:sSubReqWithData_t
+subReq	ssd_struct.h	/^    sSubReq_t subReq;$/;"	m	struct:sBufferReq_t
+trackByID	trackByID.h	/^    class trackByID {$/;"	c	namespace:SSDmetric
+trackByID	trackByID.h	/^    trackByID::trackByID(string const & filename) : fp(filename.c_str(), ios::out){\/\/warning : imported using const from web without understanding, may cause problems (that I can't solve) $/;"	f	class:SSDmetric::trackByID
+transfer_time	BTN_waitingTime.h	/^                double transfer_time;$/;"	m	class:BTN_Analysis::waiting_time
+uchar	ssd_struct.h	/^typedef unsigned char uchar;$/;"	t
+uint	ssd_struct.h	/^typedef unsigned int uint;$/;"	t
+updateTime	BTN_waitingTime.h	/^        void waiting_time::updateTime(){$/;"	f	class:BTN_Analysis::waiting_time
+waiting_time	BTN_waitingTime.h	/^                waiting_time(){$/;"	f	class:BTN_Analysis::waiting_time
+waiting_time	BTN_waitingTime.h	/^        class waiting_time {$/;"	c	namespace:BTN_Analysis
+writeTimeList	trackByID_node.h	/^                std::vector<nodeModule> writeTimeList;$/;"	m	class:SSDmetric::nodeSubReq
+~waiting_time	BTN_waitingTime.h	/^                ~waiting_time(){};                $/;"	f	class:BTN_Analysis::waiting_time

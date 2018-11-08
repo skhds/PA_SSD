@@ -1,0 +1,795 @@
+//--------------------------------------------------------------                //%
+// Important:  The template for this file was generated                         //%
+//  automatically and can only be re-generated if rules                         //%
+//  are followed when editing:                                                  //%
+// 1. Do not modify any line containing //%                                     //%
+// 2. Only insert your lines of code between 2 lines                            //%
+//    containing "//% user begin" and "//% user end"                            //%
+//                                                                              //%
+// :generate:date: Wed Jan 15 2014 11:26:30                                     //%
+// :generate:version: 2010.1.0-dev                                              //%
+//--------------------------------------------------------------                //%
+                                                                                //%
+#ifndef __NAND_MANAGER_H__                                                      //%
+#define __NAND_MANAGER_H__                                                      //%
+                                                                                //%USERBEGIN MODEL_DEBUG_ENABLE
+#if defined(DEBUG) || defined(DBG_SCP)
+# define DBG_SCP_NAND_MANAGER
+#endif
+                                                                                //%USEREND MODEL_DEBUG_ENABLE
+                                                                                //%
+#include <scml2.h>                                                              //%
+#include <systemc>                                                              //%
+#include "scmlinc/scml_property.h"                                              //%
+#include "scmlinc/scml_command_processor.h"                                     //%
+                                                                                //%USERBEGIN HEADER_H
+// TODO: Insert your includes, declarations, etc. here.
+//#include "NAND_Struct.h"
+#include "./header/ssd_struct.h"
+#include "./header/memcpy.h"
+#include "./header/NAND_Spec.h"
+
+#define ABORT(cond,msg) {\
+    if(cond){ \
+        std::cout << "[" << sc_core::sc_time_stamp() << "] " <<  __FILE__ << ":" << __LINE__ << " " << msg << std::endl;   \
+        sc_stop();} }
+
+#define DEBUG(msg) { /*std::cout << "[" << this->basename() << " - " << sc_core::sc_time_stamp() << "] [" << __FUNCTION__ << "] " << msg << std::endl;*/ }
+
+
+                                                                                //%USEREND HEADER_H
+                                                                                //%
+//------------------------                                                      //%
+// Module Interface                                                             //%
+//------------------------                                                      //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL=4 >                                         //%
+class NAND_Manager :                                                            //%
+	public sc_core::sc_module                                               //%
+                                                                                //%USERBEGIN INHERITANCE
+    // TODO: Specify class inheritance here. Start each line with a , character
+                                                                                //%USEREND INHERITANCE
+                                                                                //%
+{                                                                               //%
+public:                                                                         //%
+	// constructor                                                          //%
+	NAND_Manager( const sc_core::sc_module_name & n ,                       //%
+		unsigned int nand_cmd_queue_size = 5,                                 //%
+		unsigned int test_param2 = 5678) ;                              //%
+	SC_HAS_PROCESS( NAND_Manager );                                         //%
+	// destructor                                                           //%
+	virtual ~NAND_Manager();                                                //%
+private:                                                                        //%
+	// disable default and copy constructors by making them private         //%
+	NAND_Manager() ;                                                        //%
+	NAND_Manager( const NAND_Manager& ) ;                                   //%
+	NAND_Manager & operator= ( const NAND_Manager& ) ;                      //%
+public:                                                                         //%
+	// method called at end of elaboration of design -- for initialization  //%
+	virtual void end_of_elaboration();                                      //%
+	// initialization methods for ports & registers                         //%
+	virtual void initPorts();                                               //%
+	virtual void initRegisters();                                           //%
+	// method to handle interactive commands -- for dynamic instrumentation //%
+	virtual std::string commandProcessor(const std::vector<std::string>& cmd);//%
+public:                                                                         //%
+	// Port declarations                                                    //%
+	sc_core::sc_in< bool > Reset_Neg;                                       //%
+	tlm::tlm_target_socket< 32 > Bus_Slave;                                 //%
+	scml2::initiator_socket< 32 > Bus_Master;                               //%
+	sc_core::sc_out< bool > Cmd_Intr;                                       //%
+	sc_core::sc_out< bool > Map_Data_Intr;                                  //%
+	tlm::tlm_target_socket< 32 > Cache_Slave;                               //%
+	scml2::initiator_socket< 32 > Cache_Master;                             //%
+	sc_core::sc_out< bool > Cache_RnB;                                      //%
+	scml2::initiator_socket< 32 > NAND_Master[NUM_CHANNEL];                 //%
+	sc_core::sc_in< unsigned int > NAND_RnB[NUM_CHANNEL];                   //%
+protected:                                                                      //%
+                                                                                //%
+	// Parameter/Property declarations                                      //%
+	scml_property< unsigned int > nand_cmd_queue_size_;                              //%
+	scml_property< unsigned int > test_param2_;                             //%
+                                                                                //%
+protected:                                                                      //%
+                                                                                //%
+	// Memory declarations                                                  //%
+	scml2::memory< unsigned int > R_Bus;                                    //%
+	  scml2::reg< unsigned int > R_Bus_id;                                  //%
+	  scml2::reg< unsigned int > R_Bus_op;                                  //%
+	  scml2::reg< unsigned int > R_Bus_addr;                                //%
+	  scml2::reg< unsigned int > R_Bus_len;                                 //%
+	  scml2::reg< unsigned int > R_Bus_dummy1;                              //%
+	  scml2::reg< unsigned int > R_Bus_dummy2;                              //%
+	  scml2::reg< unsigned int > R_Bus_dummy3;                              //%
+	  scml2::reg< unsigned int > R_Bus_dummy4;                              //%
+	  scml2::memory_alias< unsigned int > R_Bus_nand_cmd;                   //%
+	  scml2::reg< unsigned int > R_Bus_nand_cmd_status;                     //%
+	  scml2::reg< unsigned int > R_Bus_int;                                 //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > Bus_Slave_R_Bus_adapter;            //%
+	scml2::memory< unsigned int > R_Cache;                                  //%
+	  scml2::memory_alias< unsigned int > R_Cache_cmd;                      //%
+	  scml2::memory_alias< unsigned int > R_Cache_data;                     //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > Cache_Slave_R_Cache_adapter;        //%
+                                                                                //%
+public:                                                                         //%
+	// Process declarations                                                 //%
+	void                                                                    //%
+	Reset_Neg_Handler();                                                    //%
+                                                                                //%
+protected:                                                                      //%
+	// Memory callback declarations                                         //%
+	void                                                                    //%
+	Bus_Interrupt_Callback(                                                 //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	Cache_Callback(                                                         //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	// support for message logging                                          //%
+	void initMessageLogging();                                              //%
+	void REPORT_MSG(std::string sev, std::string msg);                      //%
+	void DBG_MSG(std::string msg)   { REPORT_MSG("debug",msg); }            //%
+	void WARN_MSG(std::string msg)  { REPORT_MSG("warn",msg); }             //%
+	void ERROR_MSG(std::string msg) { REPORT_MSG("error",msg); }            //%
+	void FATAL_MSG(std::string msg) { REPORT_MSG("fatal",msg); }            //%
+                                                                                //%USERBEGIN MEMBER_DECLS
+    enum DbgCategories { GENERAL = 0, PORTS, REGS } ;
+    bool dbgFlag[sizeof(DbgCategories)];
+
+    // TODO: Insert declarations of member data and functions here.
+
+
+    void NAND_Queue_Handler();
+
+    // PARAMETERS ----
+    unsigned int NAND_CMD_QUEUE_SIZE;
+    // PARAMETERS ----
+
+    SubReq_t        CacheRequest;
+
+    NAND_Cmd_Buffer *NandQueue[NUM_CHANNEL];
+    unsigned int    iNandQueueOutgoingPtr[NUM_CHANNEL];
+    unsigned int    iNandQueueCount[NUM_CHANNEL];
+
+    unsigned char   cNandDataBuffer[NUM_CHANNEL][PAGE_SIZE];
+    bool            bNandDataBufferUsed[NUM_CHANNEL];
+    
+    unsigned char   cMapTableBuffer[PAGE_SIZE];
+    unsigned int    iSelectedChannel;
+
+    sc_event eNandQueueInsert[NUM_CHANNEL];
+    sc_event eNandQueueDelete[NUM_CHANNEL];
+
+    inline unsigned int get_NAND_Channel(unsigned int addr)
+    {
+        return (addr & MASK_CHANNEL) >> BIT_FOR_CHANNEL & (NUM_OF_CHANNEL-1);
+    }
+    inline unsigned int get_NAND_Way(unsigned int addr)
+    {
+        return (addr & MASK_WAY) >> BIT_FOR_WAY & (NUM_OF_WAY-1);
+    }
+    inline unsigned int set_NAND_CMD_Status(unsigned int status)
+    {
+        switch(status)
+        {
+            case BUFFER_BUSY:
+                R_Bus_nand_cmd_status = R_Bus_nand_cmd_status | (1<<0);
+                break;
+            case BUFFER_READY:
+                R_Bus_nand_cmd_status = R_Bus_nand_cmd_status & (0xffffffff-(1<<0));
+                break;
+            case MAP_CMD_BUSY:
+                R_Bus_nand_cmd_status = R_Bus_nand_cmd_status | (1<<1);
+                break;
+            case MAP_CMD_READY:
+                R_Bus_nand_cmd_status = R_Bus_nand_cmd_status & (0xffffffff-(1<<1));
+                break;
+        }
+    }
+                                                                                //%USEREND MEMBER_DECLS
+};                                                                              //%
+                                                                                //%
+//------------------------                                                      //%
+// Module Implementation                                                        //%
+//------------------------                                                      //%
+                                                                                //%USERBEGIN HEADER_CPP
+// TODO: Insert your includes, declarations, etc. here.
+                                                                                //%USEREND HEADER_CPP
+                                                                                //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+NAND_Manager< NUM_CHANNEL >::NAND_Manager( const sc_core::sc_module_name & n,   //%
+		unsigned int nand_cmd_queue_size,                                        //%
+		unsigned int test_param2)                                       //%
+		: sc_core::sc_module(n)                                         //%
+,                                                                               //%
+ Reset_Neg("Reset_Neg"),                                                        //%
+ Bus_Slave("Bus_Slave"),                                                        //%
+ Bus_Master("Bus_Master"),                                                      //%
+ Cmd_Intr("Cmd_Intr"),                                                          //%
+ Map_Data_Intr("Map_Data_Intr"),                                                //%
+ Cache_Slave("Cache_Slave"),                                                    //%
+ Cache_Master("Cache_Master"),                                                  //%
+ Cache_RnB("Cache_RnB"),                                                        //%
+ Bus_Slave_R_Bus_adapter("Bus_Slave_R_Bus_adapter", Bus_Slave),                 //%
+ Cache_Slave_R_Cache_adapter("Cache_Slave_R_Cache_adapter", Cache_Slave),       //%
+ nand_cmd_queue_size_("nand_cmd_queue_size", nand_cmd_queue_size),                                         //%
+ test_param2_("test_param2", test_param2),                                      //%
+ R_Bus("R_Bus", 266ULL),                                                        //%
+  R_Bus_id("R_Bus_id", R_Bus, 0LL ),                                            //%
+  R_Bus_op("R_Bus_op", R_Bus, 1LL ),                                            //%
+  R_Bus_addr("R_Bus_addr", R_Bus, 2LL ),                                        //%
+  R_Bus_len("R_Bus_len", R_Bus, 3LL ),                                          //%
+  R_Bus_dummy1("R_Bus_dummy1", R_Bus, 4LL ),                                    //%
+  R_Bus_dummy2("R_Bus_dummy2", R_Bus, 5LL ),                                    //%
+  R_Bus_dummy3("R_Bus_dummy3", R_Bus, 6LL ),                                    //%
+  R_Bus_dummy4("R_Bus_dummy4", R_Bus, 7LL ),                                    //%
+  R_Bus_nand_cmd("R_Bus_nand_cmd", R_Bus, 8LL, 256LL ),                         //%
+  R_Bus_nand_cmd_status("R_Bus_nand_cmd_status", R_Bus, 264LL ),                //%
+  R_Bus_int("R_Bus_int", R_Bus, 265LL )                                         //%
+,                                                                               //%
+ R_Cache("R_Cache", 2304ULL),                                                   //%
+  R_Cache_cmd("R_Cache_cmd", R_Cache, 0LL, 256LL ),                             //%
+  R_Cache_data("R_Cache_data", R_Cache, 256LL, 2048LL )                         //%
+                                                                                //%
+                                                                                //%USERBEGIN INITIALIZER
+    // TODO: Add your class initialization here.
+                                                                                //%USEREND INITIALIZER
+                                                                                //%
+{                                                                               //%
+ // declare processes and their sensitivities                                   //%
+	SC_THREAD(Reset_Neg_Handler);                                           //%
+	 sensitive << Reset_Neg.neg() ;                                         //%
+	 dont_initialize();                                                     //%
+
+    for(unsigned int i=0; i<NUM_CHANNEL; i++){
+        SC_THREAD(NAND_Queue_Handler);
+         sensitive << eNandQueueInsert[i];
+         dont_initialize();
+    }
+	
+                                                                                //%
+	// bind target ports to memories                                        //%
+	Bus_Slave_R_Bus_adapter(R_Bus);                                         //%
+	Cache_Slave_R_Cache_adapter(R_Cache);                                   //%
+                                                                                //%
+ // setup memory callbacks                                                      //%
+	// - Memory: R_Bus                                                      //%
+	scml2::set_callback(                                                    //%
+		R_Bus_int,                                                      //%
+		SCML2_CALLBACK(Bus_Interrupt_Callback),                         //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: R_Cache                                                    //%
+	scml2::set_callback(                                                    //%
+		R_Cache,                                                        //%
+		SCML2_CALLBACK(Cache_Callback),                                 //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+                                                                                //%
+                                                                                //%
+#ifdef SCML_COMMAND_PROCESSOR_H                                                 //%
+	SCML_COMMAND_PROCESSOR(commandProcessor);                               //%
+	SCML_ADD_COMMAND("debug",0,6,"debug [-+][general|regs|ports|all]", "Turn on/off debug flags");//%
+#endif // SCML_COMMAND_PROCESSOR_H                                              //%
+                                                                                //%
+    initMessageLogging();                                                       //%
+                                                                                //%USERBEGIN CONSTRUCTOR
+
+    // TODO: Add constructor code here.
+    if ( dbgFlag[GENERAL] ) DBG_MSG("Created " + (std::string)this->basename());
+
+    NAND_CMD_QUEUE_SIZE = nand_cmd_queue_size;
+    for(unsigned int i=0; i<NUM_CHANNEL; i++)
+    {
+        NandQueue[i] = new NAND_Cmd_Buffer[NAND_CMD_QUEUE_SIZE];
+    }
+
+                                                                                //%USEREND CONSTRUCTOR
+                                                                                //%
+}                                                                               //%
+// destructor                                                                   //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+NAND_Manager< NUM_CHANNEL >::~NAND_Manager()                                    //%
+{                                                                               //%
+                                                                                //%USERBEGIN DESTRUCTOR
+
+    // TODO: Add destructor code here.
+
+    for(unsigned int i=0; i<NUM_CHANNEL; i++)
+    {
+        delete NandQueue[i];
+    }
+                                                                                //%USEREND DESTRUCTOR
+}                                                                               //%
+// initialization method for ports                                              //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::initPorts()                                        //%
+{                                                                               //%
+	Cmd_Intr.initialize(0x0);                                               //%
+	Map_Data_Intr.initialize(0x0);                                          //%
+	Cache_RnB.initialize(0x0);                                              //%
+}                                                                               //%
+// initialization method for registers                                          //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::initRegisters()                                    //%
+{                                                                               //%
+    R_Bus.initialize(0x0);                                                      //%
+    R_Bus_id.initialize(0x0);                                                   //%
+    R_Bus_op.initialize(0x0);                                                   //%
+    R_Bus_addr.initialize(0x0);                                                 //%
+    R_Bus_len.initialize(0x0);                                                  //%
+    R_Bus_dummy1.initialize(0x0);                                               //%
+    R_Bus_dummy2.initialize(0x0);                                               //%
+    R_Bus_dummy3.initialize(0x0);                                               //%
+    R_Bus_dummy4.initialize(0x0);                                               //%
+    R_Bus_nand_cmd.initialize(0x0);                                             //%
+    R_Bus_nand_cmd_status.initialize(0x0);                                      //%
+    R_Bus_int.initialize(0x0);                                                  //%
+    R_Cache.initialize(0x0);                                                    //%
+    R_Cache_cmd.initialize(0x0);                                                //%
+    R_Cache_data.initialize(0x0);                                               //%
+}                                                                               //%
+//This method is invoked after the design is fully elaborated, but              //%
+// before simulation begins.                                                    //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::end_of_elaboration()                               //%
+{                                                                               //%
+                                                                                //%USERBEGIN END_OF_ELAB
+    // TODO: Add end_of_elaboration code here.
+    this->initRegisters();
+    this->initPorts();
+                                                                                //%USEREND END_OF_ELAB
+}                                                                               //%
+// command processing method                                                    //%
+//  During simulation, this command may be called to handle                     //%
+//  interactive commands -- for dynamic instrumentation of the instance.        //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+std::string                                                                     //%
+NAND_Manager< NUM_CHANNEL >::commandProcessor(const std::vector< std::string >& cmd)//%
+{                                                                               //%
+                                                                                //%USERBEGIN CMD_PROCESSOR
+    // TODO: Add commandProcessor code here.
+    //  The default code generated here handles toggling off/on the
+    //  default debug instrumentation flags: GENERAL, PORTS, and REGS.
+
+    std::string command = cmd[0];
+    std::ostringstream outs;
+
+    if (command == "debug") {
+        bool print_usage_flag = false;
+        std::string debug_cmd;
+
+        if ((cmd.size() == 1) || (cmd[1] == "?")) {
+            print_usage_flag = true;
+        } else {
+            int i = 1;
+            while (i < cmd.size()) {
+                bool flag = true;
+                if ((cmd[i] == "-") || (cmd[i] == "+")) {
+                    if (cmd[i] == "-") {
+                        flag = false;
+                    }
+                    i++;
+                }
+                debug_cmd = cmd[i];
+                if ((debug_cmd[0] == '+') || (debug_cmd[0] == '-')) {
+                    if (debug_cmd[0] == '-') {
+                        flag = false;
+                    }
+                    debug_cmd = debug_cmd.substr(1,debug_cmd.size()-1);
+                }
+                if (debug_cmd == "all") {
+		    for ( int jj = 0; jj<sizeof(DbgCategories); jj++ ) {
+		    	dbgFlag[jj] = flag;
+		    }
+                } else if (debug_cmd == "general") {
+                    dbgFlag[GENERAL] = flag;
+                } else if (debug_cmd == "ports" || debug_cmd == "pins") {
+                    dbgFlag[PORTS] = flag;
+                } else if (debug_cmd == "regs") {
+                    dbgFlag[REGS] = flag;
+                } else {
+		    DBG_MSG(std::string("ERROR: Unknown Option:") + debug_cmd);
+                    print_usage_flag = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        outs << "Current debug options:"
+            << (dbgFlag[GENERAL] ? " general" : "")
+            << (dbgFlag[PORTS] ? " ports" : "")
+            << (dbgFlag[REGS] ? " regs" : "")
+            << ((dbgFlag[GENERAL] || dbgFlag[PORTS] || dbgFlag[REGS] )? "" : " Off")
+            << std::endl;
+        if (print_usage_flag) {
+            outs << "Usage: debug [-+][general|ports|regs|all]" << std::endl;
+            outs << " Example1: 'debug -ports' toggles OFF the debug flag for ports." << std::endl;
+            outs << " Example2: 'debug ports regs' toggles ON the flags for ports & registers." << std::endl;
+        }
+    }
+    return outs.str();
+                                                                                //%USEREND CMD_PROCESSOR
+}                                                                               //%
+                                                                                //%
+// initialization method for logging messages                                   //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+                                                                                //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::initMessageLogging()                               //%
+{                                                                               //%
+                                                                                //%USERBEGIN MODEL_DEBUG_INIT
+    // toggle on/off debugging flags
+    for (int i=0;i<sizeof(DbgCategories);i++) {
+#ifdef DBG_SCP_NAND_MANAGER
+        dbgFlag[i] = true;
+#else
+        dbgFlag[i] = false;
+#endif
+    }
+                                                                                //%USEREND MODEL_DEBUG_INIT
+                                                                                //%
+}                                                                               //%
+// method for logging messages                                                  //%
+template < unsigned int NUM_CHANNEL >                                           //%
+                                                                                //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::REPORT_MSG(std::string sev, std::string msg)       //%
+{                                                                               //%
+                                                                                //%USERBEGIN REPORT_MSG
+    std::cout << sev << ": " << msg << " [" << this->basename() << "@" << sc_core::sc_time_stamp() << "]" << std::endl;
+                                                                                //%USEREND REPORT_MSG
+                                                                                //%
+}                                                                               //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::Reset_Neg_Handler()                                //%
+                                                                                //%USERBEGIN Reset_Neg_Handler
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "Reset_Neg_Handler invoked because of event on port Reset_Neg" );
+    
+    do{
+        for(unsigned int i=0; i<NUM_CHANNEL; i++)
+        {
+            iNandQueueOutgoingPtr[i] = 0;
+            iNandQueueCount[i] = 0;
+            bNandDataBufferUsed[i] = false;
+        }
+
+        for(unsigned int i=0; i<NUM_CHANNEL;i++)
+        {
+            iSelectedChannel = i;
+            eNandQueueInsert[i].notify();
+            wait(SC_ZERO_TIME); // because of wait function here, reset handler should be sc_thread.
+        }
+
+        Cmd_Intr.write(0);
+        Map_Data_Intr.write(0);
+        Cache_RnB.write(1);
+
+        wait();
+    }while(1);
+}
+
+                                                                                //%USEREND Reset_Neg_Handler
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::Bus_Interrupt_Callback(                            //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory R_Bus_int";          //%
+    scml2::reg< unsigned int >& m = this->R_Bus_int;                            //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN Bus_Interrupt_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND)
+    {
+        unsigned int iCurrentInterrupt = *(unsigned int*)ptr;
+
+        DEBUG("Bus Interrupt Callback is Called. Current Interrupt Value is " << iCurrentInterrupt);
+
+        //ABORT(iCurrentInterrupt>0x03, "Unknown interrupt value");
+
+        if(iCurrentInterrupt & (1 << 0) ) // Command decoding interrupt
+        {
+            NAND_Cmd_Buffer Nand_Command;
+            memcpy( &Nand_Command, R_Bus_nand_cmd, sizeof(NAND_Cmd_Buffer)-sizeof(SubReq_t));   // Copy decoded command to NAND command
+            memcpy( &Nand_Command.subReq, &CacheRequest, sizeof(SubReq_t));                    // Copy cache request to the NAND command
+
+            unsigned int iChannel   = get_NAND_Channel(Nand_Command.cmd.iAddr1);
+            unsigned int iWay       = get_NAND_Way(Nand_Command.cmd.iAddr1);
+
+            DEBUG("ARM has sent NAND command to channel " << iChannel << " way " << iWay << ". Is Map Command? " << (Nand_Command.isMapTable?"Yes":"No"));
+
+            set_NAND_CMD_Status(BUFFER_BUSY);
+            if(Nand_Command.isMapTable)
+            {
+                set_NAND_CMD_Status(MAP_CMD_BUSY);
+            }
+    
+            // The condition for NAND Channel Buffer is Required. If it is required, callback should wait for channel buffer is free.
+            bool bNandChannelBufferRequired = (Nand_Command.isMapTable==0) && ((Nand_Command.cmd.opCode == Program) || (Nand_Command.cmd.opCode == Read));
+            while(iNandQueueCount[iChannel]==NAND_CMD_QUEUE_SIZE || (bNandDataBufferUsed[iChannel] && bNandChannelBufferRequired))
+            {
+                wait(eNandQueueDelete[iChannel]);
+            }
+            if(bNandChannelBufferRequired) // When NAND Channel Buffer is available, move R_Cache_data to the buffer and set the flag
+            {
+                memcpy(cNandDataBuffer[iChannel], R_Cache_data, PAGE_SIZE);
+                bNandDataBufferUsed[iChannel] = true;
+            }
+
+            // Move the NAND Command (decoded by ARM) to NAND Channel Queue.
+            memcpy( &NandQueue[iChannel][(iNandQueueOutgoingPtr[iChannel] + iNandQueueCount[iChannel]) % NAND_CMD_QUEUE_SIZE], &Nand_Command, sizeof(NAND_Cmd_Buffer));
+            iNandQueueCount[iChannel]++;
+            eNandQueueInsert[iChannel].notify();
+
+            set_NAND_CMD_Status(BUFFER_READY);
+        }
+        if(iCurrentInterrupt & (1 << 1) ) // Last command decoding finish interrupt. Command Interrupt Clear
+        {
+            //ABORT( (Cmd_Intr.read() & (1 << 0) )==0 , "Error in Interrupt Clear (0x02). Cmd_Intr is already cleared");
+            Cmd_Intr.write(0);
+            Cache_RnB.write(1);
+            //cout << "Cache_Buffer RnB : 1" << endl;
+        }
+
+        if(iCurrentInterrupt & (1 << 2))
+        {
+            ABORT( (Cmd_Intr.read() & (1 << 0) )==0 , "Error in Interrupt Clear (0x02). Cmd_Intr is already cleared");
+            Cmd_Intr.write(0);
+        }
+       
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND Bus_Interrupt_Callback
+}                                                                               //%
+                                                                                //%
+template < unsigned int NUM_CHANNEL >                                           //%
+void                                                                            //%
+NAND_Manager< NUM_CHANNEL >::Cache_Callback(                                    //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory R_Cache";            //%
+    scml2::memory< unsigned int >& m = this->R_Cache;                           //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN Cache_Callback
+    static bool bWriteCommandEntered = false;
+    static bool bWriteDataEntered = false;
+    static bool bReadCommandEntered = false;
+
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the Cache_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+
+    ABORT(Cache_RnB.read() == 0, "Writing Cache Register while Cache_RnB is busy is not allowed");
+    ABORT(adr != 0x00, "Only address 0x00 is allowed");
+    
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        if(!bWriteCommandEntered) // read or write command
+        {
+            memcpy(&CacheRequest, ptr, sizeof(SubReq_t));
+
+            ABORT(CacheRequest.oriReq.Op != HOST_WRITE && CacheRequest.oriReq.Op != HOST_READ,
+                    "Error Handling Cache_Callback. Not a valid host request op: " << CacheRequest.oriReq.Op);
+
+            if(CacheRequest.oriReq.Op==HOST_WRITE)
+            {
+                DEBUG("Write command is requested");
+                bWriteCommandEntered = true;
+            }
+            else // HOST_READ
+            {
+                DEBUG("Read command is requested");
+                bReadCommandEntered = true;
+            }
+
+            ABORT((CacheRequest.oriReq.Op == HOST_READ) && bWriteCommandEntered,
+                    "Read command is not allowed while write data phase");
+
+            wait(100, SC_NS); // ***************************************************** wait time for read/write command
+        }
+        else // data for write command
+        {
+            DEBUG("Write data is entered. The data length is " << len);
+            memcpy( R_Cache_data, ptr, len);
+            bWriteDataEntered = true;
+            wait(1000, SC_NS); // ***************************************************** wait time for write data
+        }
+
+        if((bWriteCommandEntered && bWriteDataEntered) || bReadCommandEntered) // write / read command start
+        {
+            R_Bus_id = CacheRequest.oriReq.iId;
+            R_Bus_addr = CacheRequest.iStartAddr;
+            R_Bus_len = CacheRequest.iLen;
+            R_Bus_op = CacheRequest.oriReq.Op;
+
+            bReadCommandEntered = bWriteCommandEntered = bWriteDataEntered = false;
+            
+            /*cout << " < NAND MANAGER >" << endl;
+            cout << "\t ID : " << CacheRequest.oriReq.iId << endl;
+            cout << "\t OP : " << CacheRequest.oriReq.Op << endl;
+            cout << "\t ADDR : " << CacheRequest.iStartAddr << endl;
+            cout << "\t LEN : " << CacheRequest.iLen << endl;*/
+            Cmd_Intr.write(1);
+            Cache_RnB.write(0);
+
+            //cout << "Cache_Buffer RnB : 0" << endl;
+        }
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        ABORT(1, "Reading this memory is not allowed");
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND Cache_Callback
+}                                                                               //%
+                                                                                //%
+                                                                                //%USERBEGIN MEMBER_DEFNS
+// TODO: Insert definitions of your member functions, etc. here.
+template < unsigned int NUM_CHANNEL >
+void NAND_Manager< NUM_CHANNEL >::NAND_Queue_Handler()
+{
+    unsigned int iChannel = iSelectedChannel;
+    unsigned int *ipCount = &iNandQueueCount[iChannel];
+    unsigned int *ipHead   = &iNandQueueOutgoingPtr[iChannel];
+
+    while(1)
+    {
+        wait();
+        DEBUG("[Channel " << iChannel << "] is notified. Channel Queue count is " << *ipCount);
+
+        while(*ipCount > 0)
+        {
+            NAND_Cmd_Buffer* currentCmd = &NandQueue[iChannel][*ipHead];
+            unsigned int iWay = get_NAND_Way(currentCmd->cmd.iAddr1);
+            while((NAND_RnB[iChannel].read()&(1<<iWay))==0)
+            {
+                DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting For NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());
+                wait(NAND_RnB[iChannel].value_changed_event());
+            }
+
+            if(currentCmd->cmd.opCode==Read)
+            {
+                DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Reading data command is sent to NAND Controller");
+                NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&currentCmd->cmd, sizeof(NAND_Cmd));
+                    
+                while((NAND_RnB[iChannel].read()&(1<<iWay))==0){
+                    DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting for NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());
+                    wait(NAND_RnB[iChannel].value_changed_event());
+                }
+                
+                if(currentCmd->isMapTable)
+                {
+                    NAND_Master[iChannel].read(ADR_NAND_DATA, (void*)cMapTableBuffer, PAGE_SIZE);
+                    Bus_Master.write(currentCmd->mapAddr, (void*)cMapTableBuffer, PAGE_SIZE);
+                    set_NAND_CMD_Status(MAP_CMD_READY);
+                    DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Read data is written to DRAM (mapdata)");
+                }
+                else
+                {
+                    NAND_Master[iChannel].read(ADR_NAND_DATA, (void*)cNandDataBuffer[iChannel], PAGE_SIZE);
+
+                    // Generate data structure for read data to cache buffer
+                    ReadSubResp_t rData;
+                    memcpy( &rData.subReq, &currentCmd->subReq, sizeof(SubReq_t));
+                    rData.cpData = cNandDataBuffer[iChannel];
+                    // Send the structure to cache buffer
+                    
+                    /*cout << " < NAND MANAGER : Return part  >" << endl;
+                    cout << "\tID : " << rData.subReq.oriReq.iId << endl;
+                    cout << "\tOP : " << rData.subReq.oriReq.Op << endl;
+                    cout << "\tADDR : " << rData.subReq.iStartAddr << endl;
+                    cout << "\tLEN : " << rData.subReq.iLen << endl;*/
+                     
+                    Cache_Master.write(0x00, (void*)&rData, sizeof(ReadSubResp_t));
+
+                    bNandDataBufferUsed[iChannel] = false;
+
+                    DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Read data is sent to Cache Buffer Module");
+//                    for(unsigned int i=0; i<currentCmd->subReq.iLen; i++)
+//                        DEBUG("[NAND Ch " << iChannel << "] Read Data Offset " << i << ": " << (unsigned int)*(((unsigned char*)rData.cpData)+512*i) << "  :  " << (unsigned int)*(((unsigned char*)rData.cpData)+512*i+32));
+                }
+            }
+            else if(currentCmd->cmd.opCode==Program)
+            {
+                if(currentCmd->isMapTable)
+                {
+                    DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Writing data from DRAM (mapdata)");
+                    Bus_Master.read(currentCmd->mapAddr, (void*)cMapTableBuffer, PAGE_SIZE);
+                    set_NAND_CMD_Status(MAP_CMD_READY);
+                    NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&currentCmd->cmd, sizeof(NAND_Cmd));
+                    NAND_Master[iChannel].write(ADR_NAND_DATA, (void*)cMapTableBuffer, PAGE_SIZE);
+                }
+                else
+                {
+                    DEBUG("[Ch " << iChannel << " Wy " << "] Writing data from Cache Buffer Register");
+                    NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&currentCmd->cmd, sizeof(NAND_Cmd));
+                    NAND_Master[iChannel].write(ADR_NAND_DATA, (void*)cNandDataBuffer[iChannel], PAGE_SIZE);
+                    bNandDataBufferUsed[iChannel] = false;
+                }
+//                for(unsigned int i=0; i<currentCmd->subReq.iLen; i++)
+//                    DEBUG("[NAND Ch " << iChannel << "] Written Data Offset " << i << ": " << (unsigned int)*(((unsigned char*)cNandDataBuffer[iChannel])+512*i)  << "  :  " << (unsigned int)*(((unsigned char*)cNandDataBuffer[iChannel])+512*i+32));
+            }
+            else
+            {
+                DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Opcode " << currentCmd->cmd.opCode << " is sent to NAND Controller");
+                NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&currentCmd->cmd, sizeof(NAND_Cmd));
+            }
+
+            *ipHead = ((*ipHead)+1) % NAND_CMD_QUEUE_SIZE;
+            *ipCount = (*ipCount)-1;
+            eNandQueueDelete[iChannel].notify();
+        }
+    }
+}
+
+                                                                                //%USEREND MEMBER_DEFNS
+                                                                                //%
+                                                                                //%
+//----------------------------------------------------------------------        //%
+// 'Orphaned' code section                                                      //%
+//                                                                              //%
+// This section contains code snippets saved from previous versions of          //%
+// the model because they may have been user-written and they could             //%
+// not be associated with any tagged code sections when the                     //%
+// code was re-generated.                                                       //%
+//                                                                              //%
+// The most likely reason for this is that before the code was                  //%
+// re-generated, a function name was changed. Now, the section of code          //%
+// that was associated with the old name cannot be re-associated with           //%
+// the new name.  In that case, the recommended course of actions is            //%
+// to simply copy the relevant lines out of this section back into the          //%
+// function whose name has been changed.                                        //%
+#ifdef ORPHANED_CODE                                                            //%
+                                                                                //%USERBEGIN ORPHANED_CODE
+
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+                                                                                //%USEREND ORPHANED_CODE
+#endif // ORPHANED_CODE                                                         //%
+                                                                                //%USERBEGIN FOOTER_H
+
+                                                                                //%USEREND FOOTER_H
+#endif // __NAND_MANAGER_H__                                                    //%

@@ -1,0 +1,93 @@
+#ifndef __GLOBAL_FLAG_H__
+#define __GLOBAL_FLAG_H__
+
+#include "BTN_waitingTime.h"
+#include "trackByID.h"
+
+
+#define NUM_OF_CORE 1
+
+#define CMD_BUS_TOTAL_BW 1.6 //in B/ns (400MHz - 32bit)
+#define DATA_BUS_TOTAL_BW 1.6 //in B/ns (400MHz - 32bit)
+
+/*
+#define DRAM_PAGE 4096 // in B
+#define DRAM_READ_BW 1.71799 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.72 GB/s) note : PRAM bw is not exact 
+#define DRAM_WRITE_BW 1.71799 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.144 GB/s) PRAM bw = DRAM bw * DRAM lat / PRAM lat
+#define DRAM_READ_LATENCY 45 // in ns (DRAM : 45 ns, PRAM : 100 ns)
+#define DRAM_WRITE_LATENCY 45 // in ns (DRAM : 45 ns, PRAM : 500 ns)
+*/
+
+#define DRAM_PAGE 4096 // in B
+#define DRAM_READ_BW 1.6 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.72 GB/s) note : PRAM bw is not exact 
+#define DRAM_WRITE_BW 1.6 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.144 GB/s) PRAM bw = DRAM bw * DRAM lat / PRAM lat
+#define PRAM_READ_BW 0.2 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.72 GB/s) note : PRAM bw is not exact 
+#define PRAM_WRITE_BW 0.2 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.144 GB/s) PRAM bw = DRAM bw * DRAM lat / PRAM lat
+
+#define CACHE_READ_LATENCY 100 // in ns (DRAM : 45 ns, PRAM : 100 ns)
+#define CACHE_WRITE_LATENCY 500 // in ns (DRAM : 45 ns, PRAM : 100 ns)
+#define META_READ_LATENCY 100 // in ns (DRAM : 45 ns, PRAM : 500 ns)
+#define META_WRITE_LATENCY 500 // in ns (DRAM : 45 ns, PRAM : 500 ns)
+#define CURRENT_DRAM_SIZE 0//MB
+
+#define HOSTIF_DEBUG 0 
+#define DEVIF_DEBUG 0
+#define SUB_DEBUG 0
+#define DRAM_DEBUG 0
+#define NAND_DEBUG 0
+#define NANDCtrl_DEBUG 0 
+
+enum eCacheStat{
+  
+    TOTAL_LEN = 0,
+    TOTAL_ENERGY = 1,
+    CacheStatMAX = 2   
+
+};
+
+enum eCacheType{
+  
+    BUFFER = 0,
+    META = 1,
+    CacheTypeMAX   
+
+};
+
+enum eCacheOp{
+  
+    cacheWRITE = 0,
+    cacheREAD = 1,
+    cacheOpMAX   
+
+};
+
+long long int NAND_STATS[13][4][4][1024] = {0}; //12 : # of nand opcodes, 4 : # channel, 4 : # way, 1024 : # of blocks
+long long int DRAM_STATS[CacheStatMAX][CacheTypeMAX][cacheOpMAX] = {0}; //2 : Cache Buffer/Metadata, 2: Write/Read
+
+SSDmetric::trackByID testTrack("../results/test_result.txt");//skhds
+
+
+typedef enum CACHE_METHOD{
+    DRAM_ONLY=0,
+    PRAM_ONLY=1,
+    HYBRID=2
+}cache_method;
+
+CACHE_METHOD CACHE_BUFFER_METHOD=PRAM_ONLY;
+
+double CMD_BUS_TIME_CONSUMED[3] = {0};
+double DATA_BUS_TIME_CONSUMED[3] = {0};
+
+double SOFTWARE_TIME[2] = {0};
+static double SWtime_prev = 0;
+long long int SOFTWARE_count = 0;
+bool SOFTWARE_FLAG = false;
+
+bool        g_isFtlReady = false;
+bool        g_isCacheReady = false;
+
+bool        g_initialize_end = false;
+
+
+
+#endif

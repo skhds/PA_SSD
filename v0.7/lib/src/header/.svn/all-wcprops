@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/mcssd_platform/!svn/ver/6/trunk/lib/src/header
+END
+NAND_Spec.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/mcssd_platform/!svn/ver/7/trunk/lib/src/header/NAND_Spec.h
+END
+memcpy.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/mcssd_platform/!svn/ver/2/trunk/lib/src/header/memcpy.h
+END
+ssd_struct.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mcssd_platform/!svn/ver/2/trunk/lib/src/header/ssd_struct.h
+END
+SubReq_def.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/mcssd_platform/!svn/ver/2/trunk/lib/src/header/SubReq_def.h
+END
+Cache_Buffer_Struct.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/mcssd_platform/!svn/ver/6/trunk/lib/src/header/Cache_Buffer_Struct.h
+END
+NAND_Struct.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/mcssd_platform/!svn/ver/2/trunk/lib/src/header/NAND_Struct.h
+END
+IF_Spec.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/mcssd_platform/!svn/ver/6/trunk/lib/src/header/IF_Spec.h
+END

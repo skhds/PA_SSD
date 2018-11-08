@@ -1,0 +1,282 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ASM	Makefile	/^ASM = armasm$/;"	m
+ASMFLAGS	Makefile	/^ASMFLAGS = $/;"	m
+Add_Evict_Page	cache_buffer.c	/^void Add_Evict_Page(NODE* ptr) {$/;"	f
+BOOT_DIR	Makefile	/^BOOT_DIR = .$/;"	m
+CACHE_LRU_POLICY	cache_buffer.h	9;"	d
+CODEBASE	Makefile	/^CODEBASE = 0x0$/;"	m
+COMMAND	cache_buffer.h	/^}COMMAND;$/;"	t	typeref:struct:__anon4
+CORE_DEFINES	Makefile	/^CORE_DEFINES = $/;"	m
+CORE_INCLUDES	Makefile	/^CORE_INCLUDES = $/;"	m
+CORE_LIBRARIES	Makefile	/^CORE_LIBRARIES = boot.o --ro-base ${CODEBASE} --rw-base ${DATABASE} --first 'boot.o(_CWR_BOOT_CODE)' $/;"	m
+CXX	Makefile	/^CXX = armcc$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS = -g -O0 $/;"	m
+Cache_Buffer	cache_buffer.c	/^void Cache_Buffer(uint addr, uint len, uint op)$/;"	f
+Cache_Buffer_Full	cache_buffer.c	/^uint Cache_Buffer_Full(){$/;"	f
+Create_Command	cache_buffer.c	/^void Create_Command(OP op, uint slave_addr, uint slave_bitmap, uint dram_id, uint dram_bitmap)$/;"	f
+DATABASE	Makefile	/^DATABASE = 0x80000$/;"	m
+DEC_M_QUEUE	queue.h	10;"	d
+DISASSEMBLY_FILE	Makefile	/^DISASSEMBLY_FILE = sim.dis$/;"	m
+DOUBLE	bare_utils.h	35;"	d
+DOUBLE_	bare_utils.c	/^unsigned int DOUBLE_(double d, unsigned int b){$/;"	f
+DRAM	struct_sim_if.h	/^    DRAM = 1,$/;"	e	enum:__anon1
+DRAM_Addr	struct_sim_if.h	/^    uint        DRAM_Addr;$/;"	m	struct:sSubReq_t
+DestType	struct_sim_if.h	/^}DestType;$/;"	t	typeref:enum:__anon1
+ENTRY_SIZE	cache_buffer.h	15;"	d
+EVICT_BACK_NODE	cache_buffer.h	28;"	d
+EVICT_FRONT_NODE	cache_buffer.h	27;"	d
+EVICT_MAX	cache_buffer.h	31;"	d
+EVICT_SENT	cache_buffer.h	/^    EVICT_SENT = 3$/;"	e	enum:__anon2
+EVICT_STATE	cache_buffer.h	/^}EVICT_STATE;$/;"	t	typeref:enum:__anon2
+EVICT_WAITING	cache_buffer.h	/^    EVICT_WAITING = 2,$/;"	e	enum:__anon2
+EvictDoneEmpty	cache_buffer.c	/^uint EvictDoneEmpty(){$/;"	f
+FLOAT	bare_utils.c	/^unsigned int FLOAT(float f){$/;"	f
+FREE	cache_buffer.h	/^    FREE = 0,$/;"	e	enum:__anon2
+FREE_BACK_NODE	cache_buffer.h	22;"	d
+FREE_FRONT_NODE	cache_buffer.h	21;"	d
+Free_Evict_Nodes	cache_buffer.c	/^void Free_Evict_Nodes(){$/;"	f
+HASH_MAX	cache_buffer.h	16;"	d
+HASH_NODE	cache_buffer.h	/^typedef struct HASH_NODE{$/;"	s
+HASH_NODE	cache_buffer.h	/^}HASH_NODE;$/;"	t	typeref:struct:HASH_NODE
+HOST_NOTHING	struct_sim_if.h	/^	HOST_NOTHING = 127$/;"	e	enum:eHOST_REQ_OP
+HOST_READ	struct_sim_if.h	/^	HOST_READ = 1,$/;"	e	enum:eHOST_REQ_OP
+HOST_REQ_OP	struct_sim_if.h	/^}HOST_REQ_OP;$/;"	t	typeref:enum:eHOST_REQ_OP
+HOST_WRITE	struct_sim_if.h	/^	HOST_WRITE = 0,$/;"	e	enum:eHOST_REQ_OP
+Hash_Delete_Node	cache_buffer.c	/^HASH_NODE* Hash_Delete_Node(HASH_NODE* node)$/;"	f
+Hash_Find_And_Delete_Node	cache_buffer.c	/^HASH_NODE* Hash_Find_And_Delete_Node(HASH_NODE* front, uint addr)$/;"	f
+Hash_Find_Node	cache_buffer.c	/^HASH_NODE* Hash_Find_Node(HASH_NODE* front, uint addr)$/;"	f
+Hash_Pop_Front	cache_buffer.c	/^HASH_NODE* Hash_Pop_Front(HASH_NODE* front) $/;"	f
+Hash_Push_Front	cache_buffer.c	/^void Hash_Push_Front(HASH_NODE* front, HASH_NODE* node)$/;"	f
+IN_BUFFER	cache_buffer.h	/^    IN_BUFFER = 1,$/;"	e	enum:__anon2
+Insert_EvictDone	cache_buffer.c	/^void Insert_EvictDone(uint id){$/;"	f
+LD	Makefile	/^LD = armlink$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS = --map --first=boot.o\\(_CWR_BOOT_CODE\\)$/;"	m
+LINKER_OPTIONS	Makefile	/^LINKER_OPTIONS = $/;"	m
+LIST_SIZE	cache_buffer.h	20;"	d
+List_Find_Node	cache_buffer.c	/^NODE* List_Find_Node(NODE* front, uint addr)$/;"	f
+List_Init	cache_buffer.c	/^void List_Init()$/;"	f
+List_Is_Empty	cache_buffer.c	/^uint List_Is_Empty(NODE* front)$/;"	f
+List_Pop_Back	cache_buffer.c	/^NODE* List_Pop_Back(NODE* back)$/;"	f
+List_Pop_Front	cache_buffer.c	/^NODE* List_Pop_Front(NODE* front)$/;"	f
+List_Pop_Middle	cache_buffer.c	/^NODE* List_Pop_Middle(NODE* evict_node)$/;"	f
+List_Push_Back	cache_buffer.c	/^void List_Push_Back(NODE* back, NODE* n)$/;"	f
+List_Push_Front	cache_buffer.c	/^void List_Push_Front(NODE* front, NODE* n)$/;"	f
+M_CHECKEMPTY	queue.h	36;"	d
+M_CHECKFULL	queue.h	34;"	d
+M_CREATEQUEUE	queue.h	26;"	d
+M_GETELE	queue.h	46;"	d
+M_INITQUEUE	queue.h	29;"	d
+M_POP	queue.h	43;"	d
+M_PUSH	queue.h	38;"	d
+NAND	struct_sim_if.h	/^    NAND = 2$/;"	e	enum:__anon1
+NODE	cache_buffer.h	/^typedef struct NODE{$/;"	s
+NODE	cache_buffer.h	/^}NODE;$/;"	t	typeref:struct:NODE
+NOTHING	cache_buffer.h	12;"	d
+OP	cache_buffer.h	/^}OP;$/;"	t	typeref:enum:__anon3
+Op	struct_sim_if.h	/^	HOST_REQ_OP Op;$/;"	m	struct:sReq_t
+PAGE_SIZE	cache_buffer.h	38;"	d
+Print_Node_Count	cache_buffer.c	/^uint Print_Node_Count(NODE* front){$/;"	f
+Print_Node_Counts	cache_buffer.c	/^void Print_Node_Counts(){$/;"	f
+READ_BOTH	cache_buffer.h	/^	READ_BOTH = 3,$/;"	e	enum:__anon3
+READ_DRAM	cache_buffer.h	/^	READ_DRAM = 1,$/;"	e	enum:__anon3
+READ_SLAVE	cache_buffer.h	/^	READ_SLAVE = 2,$/;"	e	enum:__anon3
+REF_M_INIT	queue.h	22;"	d
+REF_M_QUEUE	queue.h	8;"	d
+Read_Page	cache_buffer.c	/^void Read_Page(uint addr, uint offset, uint size)$/;"	f
+Req_t	struct_sim_if.h	/^}Req_t;$/;"	t	typeref:struct:sReq_t
+SECTOR_PER_LINE	cache_buffer.h	35;"	d
+SECTOR_PER_PAGE	cache_buffer.h	36;"	d
+SECTOR_SIZE	cache_buffer.h	34;"	d
+SW_RT_ADDR_TRANS	bare_utils.h	/^	SW_RT_ADDR_TRANS,$/;"	e	enum:eSoftwareRoutineId
+SW_RT_DYN_WL	bare_utils.h	/^	SW_RT_DYN_WL$/;"	e	enum:eSoftwareRoutineId
+SW_RT_FORE_GC	bare_utils.h	/^	SW_RT_FORE_GC,$/;"	e	enum:eSoftwareRoutineId
+SW_RT_FTL	bare_utils.h	/^	SW_RT_FTL = 0,$/;"	e	enum:eSoftwareRoutineId
+SYMFILE	Makefile	/^SYMFILE = .\/symfile$/;"	m
+SubReq_t	struct_sim_if.h	/^}SubReq_t;$/;"	t	typeref:struct:sSubReq_t
+UINT64	bare_utils.h	34;"	d
+UINT64_	bare_utils.c	/^unsigned int UINT64_(unsigned long long int uint64, unsigned int b){$/;"	f
+UPDATE_SLAVE	cache_buffer.h	/^	UPDATE_SLAVE = 5 \/\/ read slave and modify with dram contents and re-write nand$/;"	e	enum:__anon3
+USED_BACK_NODE	cache_buffer.h	25;"	d
+USED_FRONT_NODE	cache_buffer.h	24;"	d
+USED_MAX	cache_buffer.h	30;"	d
+Unknown	struct_sim_if.h	/^    Unknown = 0,$/;"	e	enum:__anon1
+WRITE_DRAM	cache_buffer.h	/^	WRITE_DRAM = 0,$/;"	e	enum:__anon3
+WRITE_SLAVE	cache_buffer.h	/^	WRITE_SLAVE = 4,$/;"	e	enum:__anon3
+Write_Page	cache_buffer.c	/^void Write_Page(uint addr, uint offset, uint size)$/;"	f
+_ADDR_CACHE_BUFFER_BASE_	sfr_addr.h	97;"	d
+_ADDR_CPU1_BASE_	sfr_addr.h	58;"	d
+_ADDR_DEV_IF_BASE_	sfr_addr.h	90;"	d
+_ADDR_HEAP_BASE_	bare_utils.h	28;"	d
+_ADDR_HEAP_LIMIT_	bare_utils.h	29;"	d
+_ADDR_HEAP_SIZE_	bare_utils.h	30;"	d
+_ADDR_INTCTRL_BASE_	sfr_addr.h	77;"	d
+_ADDR_MEMCTRL_BASE_	sfr_addr.h	71;"	d
+_ADDR_NAND_MAN_BASE_	sfr_addr.h	31;"	d
+_ADDR_PRINT_CHAR_	bare_utils.h	8;"	d
+_ADDR_PRINT_DOUBLE_LSB_	bare_utils.h	16;"	d
+_ADDR_PRINT_DOUBLE_MSB_	bare_utils.h	15;"	d
+_ADDR_PRINT_FLOAT_	bare_utils.h	10;"	d
+_ADDR_PRINT_HEX_	bare_utils.h	12;"	d
+_ADDR_PRINT_INT64HEX_LSB_	bare_utils.h	18;"	d
+_ADDR_PRINT_INT64HEX_MSB_	bare_utils.h	17;"	d
+_ADDR_PRINT_INT64_LSB_	bare_utils.h	14;"	d
+_ADDR_PRINT_INT64_MSB_	bare_utils.h	13;"	d
+_ADDR_PRINT_INT_	bare_utils.h	9;"	d
+_ADDR_RAM_BASE_	sfr_addr.h	17;"	d
+_ADDR_ROM_BASE_	sfr_addr.h	14;"	d
+_ADDR_SUB_REQ_BASE_	sfr_addr.h	19;"	d
+_CRTDBG_MAP_ALLOC	common_header.h	4;"	d
+_DEBUG_PRINT_LV_	compile_flag.h	12;"	d
+_DEBUG_PRINT_LV_	compile_flag.h	8;"	d
+_INTERVAL_CACHE_DATA_	sfr_addr.h	106;"	d
+_INTERVAL_R_DATA_	sfr_addr.h	91;"	d
+_MCSSD_ARM_BARE_METAL_	compile_flag.h	7;"	d
+_OFFSET_CACHE_ADDR_	sfr_addr.h	100;"	d
+_OFFSET_CACHE_COMPLETE_	sfr_addr.h	99;"	d
+_OFFSET_CACHE_DATA_	sfr_addr.h	104;"	d
+_OFFSET_CACHE_LEN_	sfr_addr.h	101;"	d
+_OFFSET_CACHE_OP_	sfr_addr.h	102;"	d
+_OFFSET_CACHE_QUEUE_SIZE_	sfr_addr.h	105;"	d
+_OFFSET_CACHE_SIZE_	sfr_addr.h	103;"	d
+_OFFSET_CMD_COUNT_	sfr_addr.h	26;"	d
+_OFFSET_CMD_SIZE_	sfr_addr.h	24;"	d
+_OFFSET_DEVICEIF_COMPLETE_	sfr_addr.h	80;"	d
+_OFFSET_DONE_	sfr_addr.h	27;"	d
+_OFFSET_FTL_0_COMPLETE_	sfr_addr.h	82;"	d
+_OFFSET_FTL_1_COMPLETE_	sfr_addr.h	83;"	d
+_OFFSET_FTL_2_COMPLETE_	sfr_addr.h	84;"	d
+_OFFSET_FTL_3_COMPLETE_	sfr_addr.h	85;"	d
+_OFFSET_GRANT_	sfr_addr.h	73;"	d
+_OFFSET_HOST_ADDR_	sfr_addr.h	67;"	d
+_OFFSET_HOST_ID_	sfr_addr.h	66;"	d
+_OFFSET_ILEN_ADDR_	sfr_addr.h	22;"	d
+_OFFSET_INITIAL_COMPLETE_	sfr_addr.h	86;"	d
+_OFFSET_INT_SOURCE_	sfr_addr.h	79;"	d
+_OFFSET_INT_TYPE_	sfr_addr.h	78;"	d
+_OFFSET_IRQ_ADDR_	sfr_addr.h	60;"	d
+_OFFSET_IRQ_ID_	sfr_addr.h	59;"	d
+_OFFSET_IRQ_MAX_	sfr_addr.h	61;"	d
+_OFFSET_ISTARTADDR_ADDR_	sfr_addr.h	21;"	d
+_OFFSET_LBA_ADDR_	sfr_addr.h	52;"	d
+_OFFSET_NAND_COMPLETE_	sfr_addr.h	87;"	d
+_OFFSET_NAND_COUNT_	sfr_addr.h	63;"	d
+_OFFSET_OP_ADDR_	sfr_addr.h	23;"	d
+_OFFSET_RELEASE_	sfr_addr.h	74;"	d
+_OFFSET_REQ_SOURCE_	sfr_addr.h	72;"	d
+_OFFSET_R_BUS_	sfr_addr.h	32;"	d
+_OFFSET_R_BUS_ADDR_	sfr_addr.h	35;"	d
+_OFFSET_R_BUS_DUMMY1_	sfr_addr.h	37;"	d
+_OFFSET_R_BUS_DUMMY2_	sfr_addr.h	38;"	d
+_OFFSET_R_BUS_DUMMY3_	sfr_addr.h	39;"	d
+_OFFSET_R_BUS_DUMMY4_	sfr_addr.h	40;"	d
+_OFFSET_R_BUS_ID_	sfr_addr.h	33;"	d
+_OFFSET_R_BUS_INT_	sfr_addr.h	55;"	d
+_OFFSET_R_BUS_LEN_	sfr_addr.h	36;"	d
+_OFFSET_R_BUS_NAND_ADDR1_	sfr_addr.h	43;"	d
+_OFFSET_R_BUS_NAND_ADDR2_	sfr_addr.h	44;"	d
+_OFFSET_R_BUS_NAND_ADDR3_	sfr_addr.h	45;"	d
+_OFFSET_R_BUS_NAND_ADDR4_	sfr_addr.h	46;"	d
+_OFFSET_R_BUS_NAND_CMD_	sfr_addr.h	42;"	d
+_OFFSET_R_BUS_NAND_CMD_STATUS_	sfr_addr.h	54;"	d
+_OFFSET_R_BUS_NAND_MAP_	sfr_addr.h	48;"	d
+_OFFSET_R_BUS_NAND_MAP_ADDR_	sfr_addr.h	49;"	d
+_OFFSET_R_BUS_OP_	sfr_addr.h	34;"	d
+_OFFSET_R_CMD_SIZE_	sfr_addr.h	51;"	d
+_OFFSET_R_COMPLETE_	sfr_addr.h	93;"	d
+_OFFSET_R_DATA_	sfr_addr.h	94;"	d
+_OFFSET_R_SIZE_	sfr_addr.h	92;"	d
+_OFFSET_SUB_REQ_CACHE_DATA_	sfr_addr.h	25;"	d
+_OFFSET_SUB_REQ_COMPLETE_	sfr_addr.h	20;"	d
+_OFFSET_WRITE_COUNT_	sfr_addr.h	98;"	d
+_QUEUE_H_	queue.h	2;"	d
+_REQUEST_MANAGE_H_	request_manage.h	2;"	d
+_SOFTWARE_SIM_	compile_flag.h	4;"	d
+__BAREUTILS_H__	bare_utils.h	2;"	d
+__CACHE_BUFFER_H__	cache_buffer.h	2;"	d
+__COMMON_HEADER_H__	common_header.h	2;"	d
+__COMPILE_FLAG_H__	compile_flag.h	2;"	d
+__SFR_ADDR_H__	sfr_addr.h	2;"	d
+__STRUCT_SIM_IF_H__	struct_sim_if.h	2;"	d
+__heap_extent	bare_utils.h	/^typedef struct __heap_extent$/;"	s
+__user_heap_extend	bare_utils.c	/^unsigned __user_heap_extend(int a, void **base, unsigned requested_size){$/;"	f
+__user_heap_extent	bare_utils.c	/^__value_in_regs struct __heap_extent __user_heap_extent(unsigned ignore1, unsigned ignore2){$/;"	f
+addr	cache_buffer.h	/^	uint addr;$/;"	m	struct:NODE
+addr	cache_buffer.h	/^    uint addr;$/;"	m	struct:HASH_NODE
+barePrintf	bare_utils.c	/^void barePrintf(const char* sentence, ...){$/;"	f
+base	bare_utils.h	/^	unsigned base, range;$/;"	m	struct:__heap_extent
+bitmap	cache_buffer.h	/^	uint bitmap; \/\/ sectir bit map$/;"	m	struct:NODE
+bypass_condition	cache_buffer.c	/^uint bypass_condition(){$/;"	f
+can_issue_write	request_manage.c	/^uchar can_issue_write(){$/;"	f
+cmd_count	cache_buffer.c	/^uint	cmd_count;$/;"	v
+cmd_list	cache_buffer.c	/^COMMAND cmd_list[100];$/;"	v
+dIssueTime	struct_sim_if.h	/^	double		dIssueTime;$/;"	m	struct:sReq_t
+dIssueTime	struct_sim_if.h	/^    double      dIssueTime;$/;"	m	struct:sSubReq_t
+direct_NAND_write	cache_buffer.c	/^void direct_NAND_write(uint addr, uint len, uint op){$/;"	f
+dram_bitmap	cache_buffer.h	/^	uint dram_bitmap;$/;"	m	struct:__anon4
+dram_count	cache_buffer.c	/^unsigned long long dram_count = 0;$/;"	v
+dram_id	cache_buffer.h	/^	uint dram_id;$/;"	m	struct:__anon4
+eHOST_REQ_OP	struct_sim_if.h	/^typedef enum eHOST_REQ_OP{$/;"	g
+eSoftwareRoutineId	bare_utils.h	/^typedef enum eSoftwareRoutineId{$/;"	g
+eSwRtId	bare_utils.h	/^}eSwRtId;$/;"	t	typeref:enum:eSoftwareRoutineId
+evict_count	cache_buffer.c	/^uint evict_count = 0;$/;"	v
+evict_table	cache_buffer.c	/^NODE* evict_table[EVICT_MAX];$/;"	v
+evict_table_ptr	cache_buffer.c	/^uint evict_table_ptr = 0;$/;"	v
+flush_condition	cache_buffer.c	/^uchar flush_condition(){$/;"	f
+get_host	request_manage.c	/^void get_host(HOST_REQ_OP* op, uint* iAddr, uint* iLen){$/;"	f
+hash_free_front	cache_buffer.c	/^HASH_NODE hash_free_front;$/;"	v
+hash_front	cache_buffer.c	/^HASH_NODE hash_front[HASH_MAX];$/;"	v
+hash_node	cache_buffer.c	/^HASH_NODE hash_node[ENTRY_SIZE];$/;"	v
+hostReady	request_manage.h	/^static uchar hostReady = 0;$/;"	v
+hostReq	request_manage.c	/^hostReq_t hostReq;$/;"	v
+hostReq_t	request_manage.h	/^}hostReq_t;$/;"	t	typeref:struct:sHostReq_t
+iAddr	request_manage.h	/^    uint iAddr;$/;"	m	struct:sHostReq_t
+iAddr	struct_sim_if.h	/^	uint64		iAddr;$/;"	m	struct:sReq_t
+iId	struct_sim_if.h	/^	uint		iId;$/;"	m	struct:sReq_t
+iLen	request_manage.h	/^    uint iLen;$/;"	m	struct:sHostReq_t
+iLen	struct_sim_if.h	/^	uint		iLen;$/;"	m	struct:sReq_t
+iLen	struct_sim_if.h	/^    uint        iLen;$/;"	m	struct:sSubReq_t
+iStartAddr	struct_sim_if.h	/^    uint64      iStartAddr;$/;"	m	struct:sSubReq_t
+id	cache_buffer.h	/^	uint id;$/;"	m	struct:NODE
+insert_host	request_manage.c	/^void insert_host(HOST_REQ_OP op, uint iAddr, uint iLen){$/;"	f
+irqHandler	hw_main.c	/^void irqHandler(){$/;"	f
+issue_flush	cache_buffer.c	/^uint issue_flush(){$/;"	f
+link	cache_buffer.h	/^    struct NODE* link;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::NODE
+main	hw_main.c	/^int main()$/;"	f
+nand_count	cache_buffer.c	/^unsigned long long nand_count = 0;$/;"	v
+next	cache_buffer.h	/^	struct NODE* next;$/;"	m	struct:NODE	typeref:struct:NODE::NODE
+next	cache_buffer.h	/^    struct HASH_NODE* next;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::HASH_NODE
+node	cache_buffer.c	/^NODE	node[LIST_SIZE];$/;"	v
+op	cache_buffer.h	/^	OP op;$/;"	m	struct:__anon4
+op	request_manage.h	/^    HOST_REQ_OP op; $/;"	m	struct:sHostReq_t
+oriReq	struct_sim_if.h	/^    Req_t       oriReq;$/;"	m	struct:sSubReq_t
+pop_host	request_manage.c	/^void pop_host(uint bypass){$/;"	f
+prev	cache_buffer.h	/^	struct NODE* prev;$/;"	m	struct:NODE	typeref:struct:NODE::NODE
+prev	cache_buffer.h	/^    struct HASH_NODE* prev;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::HASH_NODE
+pu	Makefile	/^	gawk -f \/opt\/synopsys\/K-2015.06-SP1\/IP\/ARM926EJS_TLM2_PSP\/Softflow\/script\/ADS_CreateSymfile.awk -v cpu="HARDWARE.i_ARM926EJS_TLM2_Model" mapfile > $(SYMFILE)$/;"	m
+range	bare_utils.h	/^	unsigned base, range;$/;"	m	struct:__heap_extent
+req_exists	request_manage.c	/^uchar req_exists(){$/;"	f
+sHeap	bare_utils.h	/^}sHeap;$/;"	t	typeref:struct:__heap_extent
+sHostReq_t	request_manage.h	/^typedef struct sHostReq_t{$/;"	s
+sReq_t	struct_sim_if.h	/^typedef struct sReq_t{$/;"	s
+sSubReq_t	struct_sim_if.h	/^typedef struct sSubReq_t{$/;"	s
+slave_addr	cache_buffer.h	/^	uint slave_addr; \/\/ sector 林家? page 林家?$/;"	m	struct:__anon4
+slave_bitmap	cache_buffer.h	/^	uint slave_bitmap;$/;"	m	struct:__anon4
+sleepcp	hw_main.c	/^void sleepcp(int nanosec){$/;"	f
+state	cache_buffer.h	/^    EVICT_STATE state; \/\/temporarilty set for testing$/;"	m	struct:NODE
+uchar	common_header.h	/^typedef unsigned char uchar;$/;"	t
+uint	common_header.h	/^typedef unsigned int uint;$/;"	t
+uint64	common_header.h	/^typedef unsigned long long int uint64;$/;"	t
+used_count	cache_buffer.c	/^uint used_count = 0;$/;"	v
+vReq	hw_main.c	/^typedef volatile Req_t vReq;$/;"	t	file:
+vdouble	common_header.h	/^typedef volatile double	vdouble;$/;"	t
+vdouble	sfr_addr.h	/^typedef volatile double	vdouble;$/;"	t
+vuchar	common_header.h	/^typedef volatile unsigned char vuchar;$/;"	t
+vuchar	sfr_addr.h	/^typedef volatile unsigned char vuchar;$/;"	t
+vuint	common_header.h	/^typedef volatile unsigned int vuint;$/;"	t
+vuint	sfr_addr.h	/^typedef volatile unsigned int vuint;$/;"	t
+vuint64	common_header.h	/^typedef volatile unsigned long long int vuint64;$/;"	t

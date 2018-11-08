@@ -1,0 +1,80 @@
+/********************************
+ *
+ * ssd_struct.h
+ * :    file defining struct / enum used
+ *      by ssd platform
+ *
+ * author           :   xoqhd1212
+ * date             :   2014/01/02
+ * last modified    :   2014/01/08
+ *
+ * ******************************/
+
+
+#ifndef _SSD_STRUCT_H_
+#define _SSD_STRUCT_H_
+
+// maximum number of sectors one request includes
+#define MAX_REQ_LEN         1024
+
+typedef unsigned int uint;
+typedef unsigned char uchar;
+
+// request: transaction given by host to SSD
+// command: sub-transaction or memory device transaction
+
+// host request opcode
+typedef enum eHOST_REQ_OP{
+    HOST_WRITE      =   0,
+    HOST_READ       =   1,
+    HOST_NOTHING    =   127
+}HOST_REQ_OP;
+
+
+//DRAM opcode
+typedef enum eDRAM_CMD{
+    DRAM_WRITE      =   0,
+    DRAM_READ,
+    DRAM_NOTHING    =   31
+}DRAM_CMD;
+
+// host request struct
+typedef struct sReq_t{
+    uint            iId;            // unique identification of one req
+    HOST_REQ_OP     Op;             // opcode
+    uint64          iAddr;          // address (unit: sector)
+    uint            iLen;           // length (sector count)
+    double          dIssueTime;     // moment when this request comes into SSD
+}Req_t;
+
+typedef struct sSubReq_t{
+    Req_t           oriReq;         // parent req
+    uint64          iStartAddr;     // start address (unit: sector)  
+    uint            iLen;           // length (sector count)
+    double          dIssueTime;     // when this sub-request issued
+}SubReq_t;
+
+typedef struct sReadSubResp_t{
+    sSubReq_t       subReq;         // sub-read requests requiring response
+    uchar*          cpData;         // data pointer, e.g. readResp.cpData = new uchar[readResp.subReq.iLen * SECTOR_SIZE_BYTE]; 
+}ReadSubResp_t;
+
+typedef struct sReadResp_t{
+    Req_t           hostReq;         // host read requests requiring response
+    uchar*          cpData;         // data pointer, e.g. readResp.cpData = new uchar[readResp.subReq.iLen * SECTOR_SIZE_BYTE]; 
+}ReadResp_t;
+
+//typedef struct{
+//    Req_t           req;            // parent req
+//    uint*           ipBitMap;       // bitmap indicating completion of sub-req
+//}CMD;
+
+typedef enum eWriteSlaveState{
+    IDLE        =       0,
+    CMD                 ,
+    NOTHING     =       63
+}eWSState;
+
+#define UNIT_OF_REQUEST 512
+
+#endif

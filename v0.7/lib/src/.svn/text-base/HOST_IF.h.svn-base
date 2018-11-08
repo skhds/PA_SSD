@@ -1,0 +1,926 @@
+//--------------------------------------------------------------                //%
+// Important:  The template for this file was generated                         //%
+//  automatically and can only be re-generated if rules                         //%
+//  are followed when editing:                                                  //%
+// 1. Do not modify any line containing //%                                     //%
+// 2. Only insert your lines of code between 2 lines                            //%
+//    containing "//% user begin" and "//% user end"                            //%
+//                                                                              //%
+// :generate:date: Tue Jan 14 2014 16:15:37                                     //%
+// :generate:version: 2010.1.0-dev                                              //%
+//--------------------------------------------------------------                //%
+                                                                                //%
+#ifndef __HOST_IF_H__                                                           //%
+#define __HOST_IF_H__                                                           //%
+                                                                                //%USERBEGIN MODEL_DEBUG_ENABLE
+#if defined(DEBUG) || defined(DBG_SCP)
+# define DBG_SCP_HOST_IF
+#endif
+
+                                                                                //%USEREND MODEL_DEBUG_ENABLE
+                                                                                //%
+#include <scml2.h>                                                              //%
+#include <systemc>                                                              //%
+#include "scmlinc/scml_command_processor.h"                                     //%
+                                                                                //%USERBEGIN HEADER_H
+// TODO: Insert your includes, declarations, etc. here.
+#include "./header/ssd_struct.h"
+#include "./header/memcpy.h"
+#include "./header/IF_Spec.h"
+
+//for data comparison
+char data_map[MEMORY_SIZE];
+char requestData[Q_SIZE][MAX_REQ_LEN*UNIT_OF_REQUEST];
+
+                                                                                //%USEREND HEADER_H
+                                                                                //%
+//------------------------                                                      //%
+// Module Interface                                                             //%
+//------------------------                                                      //%
+class HOST_IF :                                                                 //%
+	public sc_core::sc_module                                               //%
+                                                                                //%USERBEGIN INHERITANCE
+    // TODO: Specify class inheritance here. Start each line with a , character
+                                                                                //%USEREND INHERITANCE
+                                                                                //%
+{                                                                               //%
+public:                                                                         //%
+	// constructor                                                          //%
+	HOST_IF( const sc_core::sc_module_name & n ) ;                          //%
+	SC_HAS_PROCESS( HOST_IF );                                              //%
+	// destructor                                                           //%
+	virtual ~HOST_IF();                                                     //%
+private:                                                                        //%
+	// disable default and copy constructors by making them private         //%
+	HOST_IF() ;                                                             //%
+	HOST_IF( const HOST_IF& ) ;                                             //%
+	HOST_IF & operator= ( const HOST_IF& ) ;                                //%
+public:                                                                         //%
+	// method called at end of elaboration of design -- for initialization  //%
+	virtual void end_of_elaboration();                                      //%
+	// initialization methods for ports & registers                         //%
+	virtual void initPorts();                                               //%
+	virtual void initRegisters();                                           //%
+	// method to handle interactive commands -- for dynamic instrumentation //%
+	virtual std::string commandProcessor(const std::vector<std::string>& cmd);//%
+public:                                                                         //%
+	// Port declarations                                                    //%
+	scml2::initiator_socket< 32 > HOST_Master;                              //%
+	tlm::tlm_target_socket< 32 > HOST_Slave;                                //%
+	sc_core::sc_in< bool > rst_n;                                           //%
+                                                                                //%
+protected:                                                                      //%
+                                                                                //%
+	// Memory declarations                                                  //%
+	scml2::memory< unsigned int > R_HOST;                                   //%
+	  scml2::memory_alias< unsigned int > R_HOST_req;                       //%
+	  scml2::memory_alias< unsigned int > R_HOST_data;                      //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > HOST_Slave_R_HOST_adapter;          //%
+                                                                                //%
+public:                                                                         //%
+	// Process declarations                                                 //%
+	void                                                                    //%
+	rst_nHandler1();                                                        //%
+    void
+    HOST_Interface();
+    void
+    HOST_To_Device_Req_Trans();
+    void
+    HOST_To_Device_Data_Trans();
+
+protected:                                                                      //%
+	// Memory callback declarations                                         //%
+	void                                                                    //%
+	HOST_Callback(                                                          //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+
+                                                                                //%
+	// support for message logging                                          //%
+	void initMessageLogging();                                              //%
+	void REPORT_MSG(std::string sev, std::string msg);                      //%
+	void DBG_MSG(std::string msg)   { REPORT_MSG("debug",msg); }            //%
+	void WARN_MSG(std::string msg)  { REPORT_MSG("warn",msg); }             //%
+	void ERROR_MSG(std::string msg) { REPORT_MSG("error",msg); }            //%
+	void FATAL_MSG(std::string msg) { REPORT_MSG("fatal",msg); }            //%
+                                                                                //%USERBEGIN MEMBER_DECLS
+    enum DbgCategories { GENERAL = 0, PORTS, REGS } ;
+    bool dbgFlag[sizeof(DbgCategories)];
+
+    // TODO: Insert declarations of member data and functions here.
+    //Debugging Parameter
+    uint64 operationCount;
+
+    //constructor parameter
+    Req_t requestBuffer[Q_SIZE];
+    
+    uint reqBufferHead;
+    uint reqBufferTail;
+    uint reqBufferPoint;
+    uint requestId;
+   
+    //input & output file
+    FILE *traceFile;
+    FILE *readLatency;
+    FILE *writeLatency;
+   
+    Req_t recievedReq;
+    char recievedData[MAX_REQ_LEN*UNIT_OF_REQUEST];
+
+    Req_t transReq;
+    char transData[MAX_REQ_LEN*UNIT_OF_REQUEST];
+
+    //Flag
+    bool transDataFlag;
+    bool transReqFlag;
+    uint my_state;
+    uint next_state;
+    
+    bool startFlag;
+    // Event & semaphore
+    sc_core::sc_event e_TrigHost;
+    sc_core::sc_event e_DeleteReqBuffer;
+    sc_core::sc_event e_TrigReqTrans;
+    sc_core::sc_event e_TrigDataTrans;
+    sc_core::sc_semaphore sem_Trans;
+    sc_core::sc_event e_TransDataDone;
+    sc_core::sc_event e_TransReqDone;
+
+    //inline Function
+    inline uint Cal_repeatCount(uint length){
+        return ((length - 1) / MAX_REQ_LEN) + 1;
+    }
+
+    inline bool Check_Buffer_Full(){
+        if(reqBufferHead == (reqBufferTail + 1) % Q_SIZE){
+            return true;      
+        }else{
+            return false;    
+        }
+    }
+
+    inline bool Check_Buffer_Empty(){
+        if(reqBufferPoint == reqBufferTail){
+            
+            return true;    
+        }else{
+            return false;   
+        }
+    }
+
+    inline bool Check_Simulation_End(){
+        if(reqBufferHead == reqBufferTail)
+            return true;
+        else
+            return false;
+    }
+
+    void Delete_Request(uint id);
+    void Push_Request(int addr, uint len, uint op);
+    void Create_Data(uint64 len);
+    uint Find_Request(uint id);
+    void Write_Data_Map(uint addr, uint64 len);
+    void Compare_Data();
+    void HOST_To_Device_Trans(uint type);
+
+
+
+                                                                                //%USEREND MEMBER_DECLS
+};                                                                              //%
+                                                                                //%
+//------------------------                                                      //%
+// Module Implementation                                                        //%
+//------------------------                                                      //%
+                                                                                //%USERBEGIN HEADER_CPP
+// TODO: Insert your includes, declarations, etc. here.
+                                                                                //%USEREND HEADER_CPP
+                                                                                //%
+HOST_IF::HOST_IF( const sc_core::sc_module_name & n)                            //%
+		: sc_core::sc_module(n)                                         //%
+,                                                                               //%
+ HOST_Master("HOST_Master"),                                                    //%
+ HOST_Slave("HOST_Slave"),                                                      //%
+ rst_n("rst_n"),                                                                //%
+ HOST_Slave_R_HOST_adapter("HOST_Slave_R_HOST_adapter", HOST_Slave),            //%
+ R_HOST("R_HOST", 131079ULL),                                                   //%
+  R_HOST_req("R_HOST_req", R_HOST, 0LL, 7LL ),                                  //%
+  R_HOST_data("R_HOST_data", R_HOST, 7LL, 131072LL )                            //%
+                                                                                //%
+                                                                                //%USERBEGIN INITIALIZER
+    // TODO: Add your class initialization here.
+    ,sem_Trans(1)
+                                                                                //%
+{                                                                               //%
+ // declare processes and their sensitivities                                   //%
+	SC_THREAD(rst_nHandler1);                                               //%
+	 sensitive << rst_n.neg() ;                                             //%
+	 dont_initialize();                                                     //%
+
+    SC_THREAD(HOST_Interface);                                              //%
+	 sensitive << e_TrigHost;                                               //%
+	 dont_initialize();                                                     //%
+
+    SC_THREAD(HOST_To_Device_Req_Trans);                                        //%
+     sensitive << e_TrigReqTrans;                                              //%
+     dont_initialize();                                                     //%
+
+    SC_THREAD(HOST_To_Device_Data_Trans);
+     sensitive << e_TrigDataTrans;
+     dont_initialize();
+
+                                                                                //%
+	// bind target ports to memories                                        //%
+	HOST_Slave_R_HOST_adapter(R_HOST);                                      //%
+                                                                                //%
+ // setup memory callbacks                                                      //%
+	// - Memory: R_HOST                                                     //%
+   scml2::set_callback(                                                     //%
+       R_HOST,
+       SCML2_CALLBACK(HOST_Callback),
+       scml2::AUTO_SYNCING);                                                                             //%
+                                                                                //%
+#ifdef SCML_COMMAND_PROCESSOR_H                                                 //%
+	SCML_COMMAND_PROCESSOR(commandProcessor);                               //%
+	SCML_ADD_COMMAND("debug",0,6,"debug [-+][general|regs|ports|all]", "Turn on/off debug flags");//%
+#endif // SCML_COMMAND_PROCESSOR_H                                              //%
+                                                                                //%
+    initMessageLogging();                                                       //%
+                                                                                //%USERBEGIN CONSTRUCTOR
+
+    // TODO: Add constructor code here.
+    if ( dbgFlag[GENERAL] ) DBG_MSG("Created " + (std::string)this->basename());
+                                                                                //%USEREND CONSTRUCTOR
+                                                                                //%
+}                                                                               //%
+// destructor                                                                   //%
+HOST_IF::~HOST_IF()                                                             //%
+{                                                                               //%
+                                                                                //%USERBEGIN DESTRUCTOR
+
+    // TODO: Add destructor code here
+    fclose(traceFile);
+    fclose(readLatency);
+    fclose(writeLatency);
+
+
+                                                                                //%USEREND DESTRUCTOR
+}                                                                               //%
+// initialization method for ports                                              //%
+void                                                                            //%
+HOST_IF::initPorts()                                                            //%
+{                                                                               //%
+}                                                                               //%
+// initialization method for registers                                          //%
+void                                                                            //%
+HOST_IF::initRegisters()                                                        //%
+{                                                                               //%
+    R_HOST.initialize(0x0);                                                     //%
+    R_HOST_req.initialize(0x0);                                                 //%
+    R_HOST_data.initialize(0x0);                                                //%
+}                                                                               //%
+//This method is invoked after the design is fully elaborated, but              //%
+// before simulation begins.                                                    //%
+void                                                                            //%
+HOST_IF::end_of_elaboration()                                                   //%
+{                                                                               //%
+                                                                                //%USERBEGIN END_OF_ELAB
+    // TODO: Add end_of_elaboration code here.
+    this->initRegisters();
+    this->initPorts();
+
+    traceFile = fopen("trace.txt","r");
+    readLatency = fopen("readLatency.txt", "w");
+    writeLatency = fopen("writeLatency.txt", "w");
+
+
+    operationCount = 0;
+    reqBufferHead = 0;
+    reqBufferTail = 0;
+    reqBufferPoint = 0;
+    my_state = IDLE;
+    transDataFlag = false;
+    transReqFlag = false;
+    startFlag =false;
+
+                                                                                //%USEREND END_OF_ELAB
+}                                                                               //%
+// command processing method                                                    //%
+//  During simulation, this command may be called to handle                     //%
+//  interactive commands -- for dynamic instrumentation of the instance.        //%
+std::string                                                                     //%
+HOST_IF::commandProcessor(const std::vector< std::string >& cmd)                //%
+{                                                                               //%
+                                                                                //%USERBEGIN CMD_PROCESSOR
+    // TODO: Add commandProcessor code here.
+    //  The default code generated here handles toggling off/on the
+    //  default debug instrumentation flags: GENERAL, PORTS, and REGS.
+
+    std::string command = cmd[0];
+    std::ostringstream outs;
+
+    if (command == "debug") {
+        bool print_usage_flag = false;
+        std::string debug_cmd;
+
+        if ((cmd.size() == 1) || (cmd[1] == "?")) {
+            print_usage_flag = true;
+        } else {
+            int i = 1;
+            while (i < cmd.size()) {
+                bool flag = true;
+                if ((cmd[i] == "-") || (cmd[i] == "+")) {
+                    if (cmd[i] == "-") {
+                        flag = false;
+                    }
+                    i++;
+                }
+                debug_cmd = cmd[i];
+                if ((debug_cmd[0] == '+') || (debug_cmd[0] == '-')) {
+                    if (debug_cmd[0] == '-') {
+                        flag = false;
+                    }
+                    debug_cmd = debug_cmd.substr(1,debug_cmd.size()-1);
+                }
+                if (debug_cmd == "all") {
+		    for ( int jj = 0; jj<sizeof(DbgCategories); jj++ ) {
+		    	dbgFlag[jj] = flag;
+		    }
+                } else if (debug_cmd == "general") {
+                    dbgFlag[GENERAL] = flag;
+                } else if (debug_cmd == "ports" || debug_cmd == "pins") {
+                    dbgFlag[PORTS] = flag;
+                } else if (debug_cmd == "regs") {
+                    dbgFlag[REGS] = flag;
+                } else {
+		    DBG_MSG(std::string("ERROR: Unknown Option:") + debug_cmd);
+                    print_usage_flag = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        outs << "Current debug options:"
+            << (dbgFlag[GENERAL] ? " general" : "")
+            << (dbgFlag[PORTS] ? " ports" : "")
+            << (dbgFlag[REGS] ? " regs" : "")
+            << ((dbgFlag[GENERAL] || dbgFlag[PORTS] || dbgFlag[REGS] )? "" : " Off")
+            << std::endl;
+        if (print_usage_flag) {
+            outs << "Usage: debug [-+][general|ports|regs|all]" << std::endl;
+            outs << " Example1: 'debug -ports' toggles OFF the debug flag for ports." << std::endl;
+            outs << " Example2: 'debug ports regs' toggles ON the flags for ports & registers." << std::endl;
+        }
+    }
+    return outs.str();
+                                                                                //%USEREND CMD_PROCESSOR
+}                                                                               //%
+                                                                                //%
+// initialization method for logging messages                                   //%
+                                                                                //%
+void                                                                            //%
+HOST_IF::initMessageLogging()                                                   //%
+{                                                                               //%
+                                                                                //%USERBEGIN MODEL_DEBUG_INIT
+    // toggle on/off debugging flags
+    for (int i=0;i<sizeof(DbgCategories);i++) {
+#ifdef DBG_SCP_HOST_IF
+        dbgFlag[i] = true;
+#else
+        dbgFlag[i] = false;
+#endif
+    }
+                                                                                //%USEREND MODEL_DEBUG_INIT
+                                                                                //%
+}                                                                               //%
+// method for logging messages                                                  //%
+void                                              //%
+HOST_IF::REPORT_MSG(std::string sev, std::string msg)//%
+{                                                 //%
+                                                                                //%USERBEGIN REPORT_MSG
+    std::cout << sev << ": " << msg << " [" << this->basename() << "@" << sc_core::sc_time_stamp() << "]" << std::endl;
+                                                                                //%USEREND REPORT_MSG
+                                                                                //%
+}                                                                               //%
+void                                                                            //%
+HOST_IF::rst_nHandler1()                                                        //%
+                                                                                //%USERBEGIN rst_nHandler1
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "rst_nHandler1 invoked because of event on port rst_n" );
+
+	// TODO: INSERT code for the rst_nHandler1 method here.
+    while(1){
+        wait(50, SC_MS);
+        e_TrigHost.notify(); 
+        //e_TrigTrans.notify();
+        wait();
+    }
+}
+                                                                                //%USEREND rst_nHandler1
+                                                                                //
+void                                                                            //%
+HOST_IF::HOST_Callback(                                                         //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory R_HOST";             //%
+    scml2::memory< unsigned int >& m = this->R_HOST;                            //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN HOST_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the HOST_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+        Req_t tmpReq;
+        uint deletePoint;
+        switch(my_state)
+        {
+            case IDLE:
+
+                memcpy(R_HOST_req, ptr, len);
+
+                memcpy(&tmpReq, R_HOST_req, len);
+                
+                if(tmpReq.Op == HOST_READ){   
+                    memcpy(&recievedReq, R_HOST_req, len);
+                    next_state = CMD;
+                }else{
+                    memcpy(&transReq, R_HOST_req, len);
+                    next_state = IDLE;
+                    //transDataFlag = true;
+                    e_TrigDataTrans.notify();
+                }
+                break;
+
+            case CMD:
+
+                next_state = IDLE;
+                memcpy(R_HOST_data, ptr, len);
+                memcpy(&recievedData, R_HOST_data, len);
+
+                if(COMPARISON)
+                    Compare_Data();
+
+                //deletePoint = Find_Request(recievedReq.iId);
+                //Delete_Request(deletePoint);
+                Delete_Request(recievedReq.iId);
+                break;
+
+            default:
+	            if ( dbgFlag[PORTS] ) DBG_MSG( "Received request is wrong" );
+                break;
+        }
+
+        my_state = next_state;
+
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND HOST_Callback
+}                                                                               //%
+
+                                                                                //%USERBEGIN MEMBER_DEFNS
+// TODO: Insert definitions of your member functions, etc. here.
+void
+HOST_IF::HOST_Interface()
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "HOST_Interface invoked because of e_TrigHost event" );
+    
+    uint    i;
+    uint    repeatCount;
+    uint    op;
+    uint    addr;
+    uint64  len;
+    double  time;
+    double startTime = 0;
+    cout << "--------------------------------------------------------------" << endl;
+    cout << "---------------------- Simulation Start ----------------------" << endl;
+
+    while(1){
+
+        cout << "---------------------- Simulation Initialize ----------------------" << endl;
+        
+        while(!feof(traceFile)){
+            fscanf(traceFile, "%u\t%llu\t%u\t%lf\n",&addr, &len, &op, &time);
+    
+            operationCount++;
+
+            if((operationCount % 1000) == 0){
+                cout << "[" << sc_core::sc_time_stamp() << "] " << __FILE__ << ":" << __LINE__ << " " << "Operation Count =  "<< operationCount << endl;
+            }
+
+            //////align request////////////
+            ABORT(len == 0, "Request length is 0");
+            //wait(100, SC_NS);
+            if(op == HOST_READ){
+                repeatCount = Cal_repeatCount(len);
+
+                do{ 
+
+                    if(Check_Buffer_Full() == true)
+                        wait(e_DeleteReqBuffer);
+                    uint length = len > MAX_REQ_LEN ?  MAX_REQ_LEN : len;
+                    uint address = addr + length > MAX_ADDR ? (addr + length) % MAX_ADDR : addr;
+                    Push_Request(address, length, HOST_WRITE);
+
+                    e_TrigReqTrans.notify();
+
+                    addr = addr + MAX_REQ_LEN;
+                    len  = len - MAX_REQ_LEN;
+
+                    repeatCount--;
+
+                }while(repeatCount > 0);
+            }
+        }
+        fclose(traceFile);
+        traceFile = fopen("trace.txt","r");
+
+        cout << "---------------------- Simulation Initialize End ----------------------" << endl;
+        wait(10000, SC_NS);
+        startFlag = true;
+        startTime = sc_time_stamp().value()/1000.0;
+
+        while(!feof(traceFile)){
+            fscanf(traceFile, "%u\t%llu\t%u\t%lf\n",&addr, &len, &op, &time);
+        
+            operationCount++;
+
+            if((operationCount % 1000) == 0){
+                cout << "start [" << sc_core::sc_time_stamp() << "] " << __FILE__ << ":" << __LINE__ << " " << "Operation Count =  "<< operationCount << endl;
+            }
+            
+            
+            //////align request////////////
+            ABORT(len == 0, "Request length is 0");
+     
+            //second
+            time = time*1000000000.0 + startTime;
+            //us
+            //time = time/1000.0 + startTime;
+            //10^-7
+            //time = time/100.0 + startTime;
+
+            //time unit  = second
+            if((time) > ((double)sc_time_stamp().value()/1000.0)){
+                if((operationCount % 1000) == 0){
+                    cout << time << "          " << sc_time_stamp().value()/1000.0 << endl;
+                }
+                wait(time-((double)sc_time_stamp().value()/1000.0), SC_NS);
+            }
+            
+            //cout << time << "          " << sc_time_stamp().value()/1000.0 << endl;
+            //time unit  = second
+            repeatCount = Cal_repeatCount(len);
+
+            do{ 
+
+                if(Check_Buffer_Full() == true)
+                    wait(e_DeleteReqBuffer);
+
+                uint length = len > MAX_REQ_LEN ?  MAX_REQ_LEN : len;
+                uint address = addr + length > MAX_ADDR ? (addr + length) % MAX_ADDR : addr;
+                Push_Request(address, length, op);
+
+                e_TrigReqTrans.notify();
+
+                addr = addr + MAX_REQ_LEN;
+                len  = len - MAX_REQ_LEN;
+
+                repeatCount--;
+
+            }while(repeatCount > 0);
+        }
+
+        while(1){
+            if(Check_Simulation_End() == true){
+
+                cout << "--------------------------------------------------------------" << endl;
+                cout << "---------------------- Simulation End ------------------------" << endl;
+                wait(10000, SC_MS);
+                exit(1);
+            }
+            wait(10, SC_NS);
+        }
+
+        wait();
+    }
+}
+
+void
+HOST_IF::HOST_To_Device_Req_Trans()
+{
+    Req_t tmpReq;
+
+    while(1){
+                    
+        if(Check_Buffer_Empty() == false){
+
+            //ABORT(Check_Buffer_Empty() == true, "Request Queue don't should be empty");
+//            HOST_To_Device_Trans(0);
+            while(transDataFlag == true){
+                //cout << "host request trans wait"<<endl;
+                e_TransReqDone.notify();
+                wait(e_TransDataDone);
+            }
+
+            transReqFlag = true;
+            tmpReq = requestBuffer[reqBufferPoint];
+
+            wait((double)sizeof(Req_t)/ IF_BANDWIDTH * 1000, SC_NS);
+ //           cout << sc_core::sc_time_stamp()<<"   host trans request ok" <<endl;
+
+            if(!HOST_Master.write(REQUEST_ADDR, (void *)&tmpReq, sizeof(Req_t))){
+                //wait(CLOCK_PERIOD, SC_NS);
+                wait(1000, SC_NS);
+                //cout << "host trnas request fail " << endl;
+                //sc_stop();
+            }else{
+                reqBufferPoint = (reqBufferPoint + 1) % Q_SIZE;
+            }
+
+            transReqFlag = false;
+            if(transDataFlag == true)
+                e_TransReqDone.notify();
+        }
+
+        if(Check_Buffer_Empty() == true ){
+
+    //cout << "HOST IF  point = "  <<"        " <<reqBufferHead <<"  " << reqBufferTail <<"   " << reqBufferPoint <<endl; 
+            wait();
+        }
+    }
+}
+
+void
+HOST_IF::HOST_To_Device_Data_Trans()
+{
+    Req_t tmpReq;
+
+    while(1){
+        //if(transDataFlag == true){
+            if(dbgFlag[GENERAL])
+                cout << "<1> HOST to Device write ID1   "<< transReq.iId<<endl;
+
+//            HOST_To_Device_Trans(1);
+
+            transDataFlag = true;
+            while(transReqFlag == true){
+                //cout << "host data trans wait"<<endl;
+                wait(e_TransReqDone);
+            }
+
+
+            //cout <<"1      " <<sc_time_stamp() <<"      "<< transReq.iLen <<endl;
+            wait(((double)transReq.iLen * (double)UNIT_OF_REQUEST / (double)IF_BANDWIDTH) * 1000.0 , SC_NS);
+ 
+            uint transDataPoint = Find_Request(transReq.iId);
+            //wait(1000, SC_NS);
+            //cout <<"2      " <<sc_time_stamp() <<endl;
+            //wait(100,SC_NS);
+            //cout << sc_core::sc_time_stamp()<<"   host trans data ok" <<endl;
+            //getchar();
+            //cout << "host len = " << transReq.iLen << endl;
+            if(!HOST_Master.write(DATA_ADDR, (void *)requestData[transDataPoint], (unsigned int)(transReq.iLen))){
+                ABORT(1, "Data trans fail");
+            }
+            
+            //Delete_Request(transDataPoint);
+            Delete_Request(transReq.iId);
+            transDataFlag = false;
+            //if(transReqFlag == true)
+                e_TransDataDone.notify();
+            
+        //}else{
+            wait();
+        //}
+
+    }
+}
+
+void
+HOST_IF::HOST_To_Device_Trans(uint type)
+{
+
+    sem_Trans.wait();
+    if(type == 0)       //request
+    {
+        Req_t tmpReq = requestBuffer[reqBufferPoint];
+
+        //wait(sizeof(Req_t)/WIRE_WIDTH * CLOCK_PERIOD, SC_NS);
+
+        if(!HOST_Master.write(0x0, (unsigned char *)&tmpReq, sizeof(Req_t))){
+            //wait(CLOCK_PERIOD, SC_NS);
+            cout <<"ddddddddddddd" <<endl;
+        }else{
+            cout <<"1" <<endl;
+            reqBufferPoint = (reqBufferPoint + 1) % Q_SIZE;
+        }
+
+    }else               //data
+    {
+        uint transDataPoint = Find_Request(transReq.iId);
+
+        wait((double)transReq.iLen * UNIT_OF_REQUEST / IF_BANDWIDTH * 1000, SC_NS);
+
+//        if(!HOST_Master.write(DATA_ADDR, (unsigned char *)requestData[transDataPoint], (unsigned int)transReq.iLen*UNIT_OF_REQUEST)){
+//            ABORT(1, "Data trans fail");
+//        }
+
+        HOST_Master.write(0x28, (unsigned char *)requestData[transDataPoint],transReq.iLen*UNIT_OF_REQUEST);
+        wait(SC_ZERO_TIME); 
+        //cout <<"2" <<endl;
+        //Delete_Request(transDataPoint);
+        Delete_Request(transReq.iId);
+        transDataFlag = false;
+
+    }
+    sem_Trans.post();
+
+}
+
+    void
+HOST_IF::Delete_Request(uint point)
+{
+    bool findFlag = false;
+    uint deletePoint;
+
+    //deletePoint = point;
+    deletePoint = Find_Request(point);
+    if(startFlag){
+        if (requestBuffer[deletePoint].Op == HOST_WRITE) {
+            fprintf(writeLatency, "%f\t%d\n", (double)sc_time_stamp().value()/1000 - requestBuffer[deletePoint].dIssueTime, requestBuffer[deletePoint].iLen);
+        }
+        else if (requestBuffer[deletePoint].Op == HOST_READ) {
+            fprintf(readLatency, "%f\t%d\n", (double)sc_time_stamp().value()/1000 - requestBuffer[deletePoint].dIssueTime, requestBuffer[deletePoint].iLen);
+        }
+        
+    }
+
+    memset(&requestBuffer[deletePoint], 0x0, sizeof(Req_t));
+
+    memset(&requestData[deletePoint], 0x0, MAX_REQ_LEN*UNIT_OF_REQUEST);
+    
+    //move request
+    for(uint j=deletePoint; j != reqBufferHead; j = (j+Q_SIZE-1) %Q_SIZE){
+        memcpy(&requestBuffer[j], &requestBuffer[(j+Q_SIZE-1)%Q_SIZE], sizeof(Req_t));
+        memcpy(&requestData[j], &requestData[(j+Q_SIZE-1)%Q_SIZE], MAX_REQ_LEN*UNIT_OF_REQUEST);
+    }
+
+    reqBufferHead = (reqBufferHead + 1) % Q_SIZE;
+
+
+    e_DeleteReqBuffer.notify();
+    e_TrigReqTrans.notify();
+}
+
+uint
+HOST_IF::Find_Request(uint Id)
+{
+    bool findFlag = false;
+    uint findPoint;
+
+    for(uint i=reqBufferHead; i != reqBufferPoint; i = (i+1)%Q_SIZE){
+        if(requestBuffer[i].iId == Id){
+            findPoint = i;
+            findFlag = true;
+            break;
+        }
+    }
+
+    if(findFlag == false){
+        
+        ABORT(1," Don't find recieved request!!");
+    }
+
+    return findPoint;
+}
+
+
+void 
+HOST_IF::Push_Request(int addr, uint len, uint op)
+{
+    ABORT(Check_Buffer_Full() == true, "Request Queue don't should be full");
+    
+    requestBuffer[reqBufferTail].iId        = requestId++; 
+    requestBuffer[reqBufferTail].iAddr      = addr;        
+    requestBuffer[reqBufferTail].iLen       = len;        
+    requestBuffer[reqBufferTail].dIssueTime =(double)sc_time_stamp().value()/1000; //nano second
+    if(op == HOST_WRITE){
+        requestBuffer[reqBufferTail].Op = HOST_WRITE;        
+        //create data
+        Create_Data(len);
+
+        if(COMPARISON)
+            Write_Data_Map(addr, len);            
+
+    }else if(op == HOST_READ){
+        requestBuffer[reqBufferTail].Op = HOST_READ;
+        //memset
+        memset(requestData[reqBufferTail], 0x00, UNIT_OF_REQUEST*MAX_REQ_LEN);
+    }
+
+    reqBufferTail = (reqBufferTail + 1) % Q_SIZE;
+    
+}
+
+void
+HOST_IF::Create_Data(uint64 len)
+{
+    for(uint i=0; i < len*UNIT_OF_REQUEST; i++){
+        requestData[reqBufferTail][i] = 'A' + rand()%26;
+    }
+    
+
+}
+
+
+void
+HOST_IF::Compare_Data()
+{
+    uint addr = recievedReq.iAddr;
+    uint len  = recievedReq.iLen;
+    bool passFlag = false;
+    
+//    for(uint j=reqBufferHead; j != reqBufferPoint; j = (j+1) % Q_SIZE){
+//        if((requestBuffer[j].iAddr <= addr && requestBuffer[j].iAddr + requestBuffer[j].iLen >= addr)||(requestBuffer[j].iAddr <= addr+len && requestBuffer[j].iAddr + requestBuffer[j].iLen >= addr+len)){
+//            passFlag=true;
+//            break;
+//        }
+//    }
+
+    if(passFlag == true){
+        for(uint i=0;i < len*UNIT_OF_REQUEST;i++){
+
+            if(data_map[addr*512+i] != recievedData[i]){
+
+                if(dbgFlag[GENERAL]){
+                    cout << "Recieved data error!! addr  : " << addr << "  Length  :  " << len<< "  ADDR : " << addr+i/512 << endl;
+                    cout << "Original Data  : "<<data_map[addr*512+i] << "   reciedved Data  : " << recievedData[i] << endl;  
+                }
+                wait(SC_ZERO_TIME);
+                sc_stop();
+
+            }
+        }
+    }
+
+    if(dbgFlag[GENERAL]){
+        cout << "Complete Reqeust ID : " << recievedReq.iId << endl;
+    }
+}
+
+
+void
+HOST_IF::Write_Data_Map(uint addr, uint64 len)
+{
+    for(uint i=0; i < len*UNIT_OF_REQUEST;i++){
+        data_map[addr*UNIT_OF_REQUEST+i] = requestData[reqBufferTail][i];
+    }
+}
+
+
+
+
+                                                                                //%USEREND MEMBER_DEFNS
+                                                                                //%
+                                                                                //%
+//----------------------------------------------------------------------        //%
+// 'Orphaned' code section                                                      //%
+//                                                                              //%
+// This section contains code snippets saved from previous versions of          //%
+// the model because they may have been user-written and they could             //%
+// not be associated with any tagged code sections when the                     //%
+// code was re-generated.                                                       //%
+//                                                                              //%
+// The most likely reason for this is that before the code was                  //%
+// re-generated, a function name was changed. Now, the section of code          //%
+// that was associated with the old name cannot be re-associated with           //%
+// the new name.  In that case, the recommended course of actions is            //%
+// to simply copy the relevant lines out of this section back into the          //%
+// function whose name has been changed.                                        //%
+#ifdef ORPHANED_CODE                                                            //%
+                                                                                //%USERBEGIN ORPHANED_CODE
+
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+                                                                                //%USEREND ORPHANED_CODE
+#endif // ORPHANED_CODE                                                         //%
+                                                                                //%USERBEGIN FOOTER_H
+
+                                                                                //%USEREND FOOTER_H
+#endif // __HOST_IF_H__                                                         //%

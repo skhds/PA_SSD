@@ -1,0 +1,20 @@
+#ifndef __BUFFER_CTLR_H__
+#define __BUFFER_CTLR_H__
+
+
+
+#define CPU_SIDE_CALLBACK_OFFSET  0x0
+#define CACHE_DATA_REGION_OFFSET  0x4000000 //just made it large
+
+#define HOST_SIDE_CALLBACK_OFFSET 0x0
+#define NAND_SIDE_CALLBACK_OFFSET 0x4
+
+#define READ_Q_SIZE 5
+#define WRITE_Q_SIZE 5
+
+#define READ_Q_LIMIT_FACTOR 0.8
+#define WRITE_Q_LIMIT_FACTOR 0.8
+
+
+#endif 
+

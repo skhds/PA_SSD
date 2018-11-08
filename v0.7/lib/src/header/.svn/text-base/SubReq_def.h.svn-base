@@ -1,0 +1,31 @@
+#ifndef _SUBREQ_DEF_H_
+#define _SUBREQ_DEF_H_
+
+#include "ssd_struct.h"
+
+#define KILO                    1024
+#define SECTOR_SIZE_BYTE        512
+#define CLOCK_PERIOD_NS         5       // Assuming 200MHz? it should be parameterized
+
+/// Todo: find definition from other files
+#define SECTOR_PER_PAGE         8
+
+typedef struct sIntReq_t{
+    Req_t           req;                // parent req
+    uint            iNextSector;        // indicate the next sector to be handled
+    uchar*          cpBitMap;           // bitmap indicating completion of sub-req
+    uchar*          cpDataBuf;          // data buffer for each register        
+}sIntReq_t;
+
+typedef struct sSubReqWithData_t{
+    sSubReq_t *subReq;
+    uchar *cpData;
+}sSubReqWithData_t;
+
+//typedef enum eWriteSlaveState{
+//    IDLE        =       0,
+//    CMD                 ,
+//    NOTHING     =       63
+//}eWSState;
+
+#endif

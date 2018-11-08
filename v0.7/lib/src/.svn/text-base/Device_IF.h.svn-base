@@ -1,0 +1,1145 @@
+//--------------------------------------------------------------                //%
+// Important:  The template for this file was generated                         //%
+//  automatically and can only be re-generated if rules                         //%
+//  are followed when editing:                                                  //%
+// 1. Do not modify any line containing //%                                     //%
+// 2. Only insert your lines of code between 2 lines                            //%
+//    containing "//% user begin" and "//% user end"                            //%
+//                                                                              //%
+// :generate:date: Tue Jan 14 2014 17:11:59                                     //%
+// :generate:version: 2010.1.0-dev                                              //%
+//--------------------------------------------------------------                //%
+                                                                                //%
+#ifndef __DEVICE_IF_H__                                                         //%
+#define __DEVICE_IF_H__                                                         //%
+                                                                                //%USERBEGIN MODEL_DEBUG_ENABLE
+#if defined(DEBUG) || defined(DBG_SCP)
+# define DBG_SCP_DEVICE_IF
+#endif
+                                                                                //%USEREND MODEL_DEBUG_ENABLE
+                                                                                //%
+#include <scml2.h>                                                              //%
+#include <systemc>                                                              //%
+#include "scmlinc/scml_command_processor.h"                                     //%
+                                                                                //%USERBEGIN HEADER_H
+// TODO: Insert your includes, declarations, etc. here.
+#include "./header/ssd_struct.h"
+#include "./header/memcpy.h"
+#include "./header/IF_Spec.h"
+
+#define CPU_SCHEDULING
+#define R_CPU_SIZE_ADDR 0x0
+#define R_CPU_DATA_ADDR 0x4
+
+                                                                                //%USEREND HEADER_H
+                                                                                //%
+//------------------------                                                      //%
+// Module Interface                                                             //%
+//------------------------                                                      //%
+class Device_IF :                                                               //%
+	public sc_core::sc_module                                               //%
+                                                                                //%USERBEGIN INHERITANCE
+    // TODO: Specify class inheritance here. Start each line with a , character
+                                                                                //%USEREND INHERITANCE
+                                                                                //%
+{                                                                               //%
+public:                                                                         //%
+	// constructor                                                          //%
+	Device_IF( const sc_core::sc_module_name & n ) ;                        //%
+	SC_HAS_PROCESS( Device_IF );                                            //%
+	// destructor                                                           //%
+	virtual ~Device_IF();                                                   //%
+private:                                                                        //%
+	// disable default and copy constructors by making them private         //%
+	Device_IF() ;                                                           //%
+	Device_IF( const Device_IF& ) ;                                         //%
+	Device_IF & operator= ( const Device_IF& ) ;                            //%
+public:                                                                         //%
+	// method called at end of elaboration of design -- for initialization  //%
+	virtual void end_of_elaboration();                                      //%
+	// initialization methods for ports & registers                         //%
+	virtual void initPorts();                                               //%
+	virtual void initRegisters();                                           //%
+	// method to handle interactive commands -- for dynamic instrumentation //%
+	virtual std::string commandProcessor(const std::vector<std::string>& cmd);//%
+public:                                                                         //%
+	// Port declarations                                                    //%
+	scml2::initiator_socket< 32 > Device_IF_Master;                         //%
+	tlm::tlm_target_socket< 32 > Device_IF_Slave;                           //%
+	sc_core::sc_in< bool > Device_RnB_Slave;                                //%
+	sc_core::sc_out< bool > CPU_IRQ;                                        //%
+	sc_core::sc_in< bool > rst_n;                                           //%
+	tlm::tlm_target_socket< 32 > CPU_Slave;                                 //%
+	tlm::tlm_target_socket< 32 > H2D_Slave;                                 //%
+	scml2::initiator_socket< 32 > H2D_Master;                               //%
+                                                                                //%
+protected:                                                                      //%
+                                                                                //%
+	// Memory declarations                                                  //%
+	scml2::memory< unsigned int > R_Device;                                 //%
+	  scml2::memory_alias< unsigned int > R_Device_req;                     //%
+	  scml2::memory_alias< unsigned int > R_Device_data;                    //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > Device_IF_Slave_R_Device_adapter;   //%
+	scml2::memory< unsigned int > R_CPU;                                    //%
+      scml2::memory_alias< unsigned int > R_CPU_size;
+      scml2::memory_alias< unsigned int > R_CPU_data;
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > CPU_Slave_R_CPU_adapter;            //%
+	scml2::memory< unsigned int > R_H2D;                                    //%
+      scml2::memory_alias< unsigned int > R_H2D_req;                     //%
+	  scml2::memory_alias< unsigned int > R_H2D_data;                    //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > H2D_Slave_R_H2D_adapter;            //%
+                                                                                //%
+public:                                                                         //%
+	// Process declarations                                                 //%
+	void                                                                    //%
+	rst_nHandler1();                                                        //%
+    
+    void 
+    Scheduler();
+    
+    void
+    Trans_Request_Module();
+
+    //void 
+    //Trans_Request_Host();
+
+    void 
+    RnB_Handler();
+                                                                                //%
+protected:                                                                      //%
+	// Memory callback declarations                                         //%
+	void                                                                    //%
+	Device_Callback(                                                        //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	CPU_Callback(                                                           //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	H2DCallback(                                                            //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	// support for message logging                                          //%
+	void initMessageLogging();                                              //%
+	void REPORT_MSG(std::string sev, std::string msg);                      //%
+	void DBG_MSG(std::string msg)   { REPORT_MSG("debug",msg); }            //%
+	void WARN_MSG(std::string msg)  { REPORT_MSG("warn",msg); }             //%
+	void ERROR_MSG(std::string msg) { REPORT_MSG("error",msg); }            //%
+	void FATAL_MSG(std::string msg) { REPORT_MSG("fatal",msg); }            //%
+                                                                                //%USERBEGIN MEMBER_DECLS
+    enum DbgCategories { GENERAL = 0, PORTS, REGS } ;
+    bool dbgFlag[sizeof(DbgCategories)];
+
+    // TODO: Insert declarations of member data and functions here.
+    Req_t   recievedReq;
+    char    recievedData[MAX_REQ_LEN*UNIT_OF_REQUEST];
+    char    transData[MAX_REQ_LEN*UNIT_OF_REQUEST];
+    uint reqBufferHead;
+    uint reqBufferTail;
+    uint reqBufferPoint;
+    uint reqScheduleHead;
+    uint reqScheduleTail;
+    Req_t requestBuffer[Q_SIZE];
+
+    Req_t transReq;
+    uint bufferSize;
+    uint my_state;
+    uint next_state;
+    bool schedulerFlag;
+
+    
+    //Event & Semaphore
+    sc_core::sc_event e_TrigScheduler;
+    sc_core::sc_event e_TrigTransReq;
+    sc_core::sc_event e_ScheduleComplete;
+    sc_core::sc_event e_TrigTransModule;
+    sc_core::sc_event e_TrigTransHost;
+    sc_core::sc_event e_TrigRnBHandler;
+    sc_core::sc_event e_PopRequestComplete;
+    sc_core::sc_event e_TransReady;
+    sc_core::sc_semaphore sem_Trans;
+    sc_core::sc_event e_TransData;
+    //Function
+    inline bool Check_Buffer_Full(){
+        if(reqBufferHead == (reqBufferTail + 1) % Q_SIZE){
+            return true;        //full
+        }else{
+            return false;       //not full
+        }
+    }
+
+    inline bool Check_Buffer_Empty(){
+        if(reqBufferPoint == reqBufferTail){
+            return true;    //empty
+        }else{
+            return false;   //not empty
+        }
+    }
+
+    inline uint Cal_Buffer_Size(uint head, uint tail){
+        if(tail > head)
+            return tail - head;
+        else
+            return (tail + Q_SIZE  - head) % Q_SIZE;
+
+    }
+
+    inline void Scheduler_Flag_On(void){
+        schedulerFlag = true;
+
+        if(dbgFlag[GENERAL])
+            cout << "< 2 > Scheduler flag on !!" << endl;
+    }
+
+    inline void Scheduler_Flag_Off(void){
+        schedulerFlag = false;
+        if(dbgFlag[GENERAL])
+            cout <<"< 3 > Scheduler flag off!!" << endl; 
+    }
+
+    bool Push_Request(scml2::memory< unsigned int >& m, uint64 len);
+    void Copy_Buffer_To_SFR();
+    void Copy_SFR_To_Buffer();
+    bool Check_Buffer_Schduled();
+    Req_t Pop_Request();
+    void Copy_Request_Buffer();
+    void Copy_Data_Buffer();
+    //void Create_Data(uint64 len);
+    //void Write_Data_Map(uint addr, uint64 len);
+    //void Compare_Data();
+    void Delete_Request(uint id);
+    //void Trans_Request_Module();
+    bool Check_New_Request();
+    void Scheduling_Read_Priority();
+    uint Find_Request(uint id);
+
+    void Trans_Request_Host(HOST_REQ_OP op);
+
+
+                                                                                //%USEREND MEMBER_DECLS
+};                                                                              //%
+                                                                                //%
+//------------------------                                                      //%
+// Module Implementation                                                        //%
+//------------------------                                                      //%
+                                                                                //%USERBEGIN HEADER_CPP
+// TODO: Insert your includes, declarations, etc. here.
+                                                                                //%USEREND HEADER_CPP
+                                                                                //%
+Device_IF::Device_IF( const sc_core::sc_module_name & n)                        //%
+		: sc_core::sc_module(n)                                         //%
+,                                                                               //%
+ Device_IF_Master("Device_IF_Master"),                                          //%
+ Device_IF_Slave("Device_IF_Slave"),                                            //%
+ Device_RnB_Slave("Device_RnB_Slave"),                                          //%
+ CPU_IRQ("CPU_IRQ"),                                                            //%
+ rst_n("rst_n"),                                                                //%
+ CPU_Slave("CPU_Slave"),                                                        //%
+ H2D_Slave("H2D_Slave"),                                                        //%
+ H2D_Master("H2D_Master"),                                                      //%
+ Device_IF_Slave_R_Device_adapter("Device_IF_Slave_R_Device_adapter", Device_IF_Slave),//%
+ CPU_Slave_R_CPU_adapter("CPU_Slave_R_CPU_adapter", CPU_Slave),                 //%
+ H2D_Slave_R_H2D_adapter("H2D_Slave_R_H2D_adapter", H2D_Slave),                 //%
+ R_Device("R_Device", 131079ULL),                                               //%
+  R_Device_req("R_Device_req", R_Device, 0LL, 7LL ),                            //%
+  R_Device_data("R_Device_data", R_Device, 7LL, 131072LL )                      //%
+,                                                                               //%
+ R_CPU("R_CPU", 3501ULL),                                                       //%
+  R_CPU_size("R_CPU_size", R_CPU, 0LL, 1LL),
+  R_CPU_data("R_CPU_data", R_CPU, 1LL, 3500LL)
+,                                                                               //%
+ R_H2D("R_H2D", 131079ULL),                                                           //%
+  R_H2D_req("R_H2D_req", R_H2D, 0LL, 7LL),                                                                               //%
+  R_H2D_data("R_H2D_data", R_H2D, 7LL, 131072LL)                                                                              //%USERBEGIN INITIALIZER
+    // TODO: Add your class initialization here.
+    ,sem_Trans(1)
+                                                                                //%USEREND INITIALIZER
+                                                                                //%
+{                                                                               //%
+ // declare processes and their sensitivities                                   //%
+	SC_METHOD(rst_nHandler1);                                               //%
+	 sensitive << rst_n.neg() ;                                             //%
+	 dont_initialize();                                                     //%
+     
+    SC_THREAD(Scheduler);                                                   //%
+	 sensitive << e_TrigScheduler;                                          //%
+	 dont_initialize();                                                     //%
+    
+    SC_THREAD(Trans_Request_Module);                                        //%
+	 sensitive << e_TrigTransModule;                                        //%
+	 dont_initialize();                                                     //% 
+
+//    SC_THREAD(Trans_Request_Host);                                          //%
+//	 sensitive << e_TrigTransHost;                                          //%
+//	 dont_initialize();                                                     //%
+     
+    SC_THREAD(RnB_Handler);                                          //%
+	 sensitive << e_TrigRnBHandler << Device_RnB_Slave.pos();                                          //%
+	 dont_initialize();                                                     //%
+
+
+
+
+                                                                                //%
+	// bind target ports to memories                                        //%
+	Device_IF_Slave_R_Device_adapter(R_Device);                             //%
+	CPU_Slave_R_CPU_adapter(R_CPU);                                         //%
+	H2D_Slave_R_H2D_adapter(R_H2D);                                         //%
+                                                                                //%
+ // setup memory callbacks                                                      //%
+	// - Memory: R_Device                                                   //%
+	scml2::set_callback(                                                    //%
+		R_Device,                                                       //%
+		SCML2_CALLBACK(Device_Callback),                                //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: R_CPU                                                      //%
+	scml2::set_callback(                                                    //%
+		R_CPU,                                                          //%
+		SCML2_CALLBACK(CPU_Callback),                                   //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: R_H2D                                                      //%
+	scml2::set_callback(                                                    //%
+		R_H2D,                                                          //%
+		SCML2_CALLBACK(H2DCallback),                                    //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+                                                                                //%
+                                                                                //%
+#ifdef SCML_COMMAND_PROCESSOR_H                                                 //%
+	SCML_COMMAND_PROCESSOR(commandProcessor);                               //%
+	SCML_ADD_COMMAND("debug",0,6,"debug [-+][general|regs|ports|all]", "Turn on/off debug flags");//%
+#endif // SCML_COMMAND_PROCESSOR_H                                              //%
+                                                                                //%
+    initMessageLogging();                                                       //%
+                                                                                //%USERBEGIN CONSTRUCTOR
+
+    // TODO: Add constructor code here.
+    if ( dbgFlag[GENERAL] ) DBG_MSG("Created " + (std::string)this->basename());
+
+
+    
+
+
+                                                                                //%USEREND CONSTRUCTOR
+                                                                                //%
+}                                                                               //%
+// destructor                                                                   //%
+Device_IF::~Device_IF()                                                         //%
+{                                                                               //%
+                                                                                //%USERBEGIN DESTRUCTOR
+
+    // TODO: Add destructor code here.
+
+                                                                                //%USEREND DESTRUCTOR
+}                                                                               //%
+// initialization method for ports                                              //%
+void                                                                            //%
+Device_IF::initPorts()                                                          //%
+{                                                                               //%
+	CPU_IRQ.initialize(0x0);                                                //%
+}                                                                               //%
+// initialization method for registers                                          //%
+void                                                                            //%
+Device_IF::initRegisters()                                                      //%
+{                                                                               //%
+    R_Device.initialize(0x0);                                                   //%
+    R_Device_req.initialize(0x0);                                               //%
+    R_Device_data.initialize(0x0);                                              //%
+    R_CPU.initialize(0x0);                                                      //%
+    R_CPU_size.initialize(0x0);
+    R_CPU_data.initialize(0x0);
+    R_H2D.initialize(0x0);                                                      //%
+}                                                                               //%
+//This method is invoked after the design is fully elaborated, but              //%
+// before simulation begins.                                                    //%
+void                                                                            //%
+Device_IF::end_of_elaboration()                                                 //%
+{                                                                               //%
+                                                                                //%USERBEGIN END_OF_ELAB
+    // TODO: Add end_of_elaboration code here.
+    this->initRegisters();
+    this->initPorts();
+
+    reqBufferPoint  = 0;
+    reqBufferHead   = 0;
+    reqBufferTail   = 0;
+    schedulerFlag   = false;
+    my_state        = IDLE;
+    
+ 
+                                                                                //%USEREND END_OF_ELAB
+}                                                                               //%
+// command processing method                                                    //%
+//  During simulation, this command may be called to handle                     //%
+//  interactive commands -- for dynamic instrumentation of the instance.        //%
+std::string                                                                     //%
+Device_IF::commandProcessor(const std::vector< std::string >& cmd)              //%
+{                                                                               //%
+                                                                                //%USERBEGIN CMD_PROCESSOR
+    // TODO: Add commandProcessor code here.
+    //  The default code generated here handles toggling off/on the
+    //  default debug instrumentation flags: GENERAL, PORTS, and REGS.
+
+    std::string command = cmd[0];
+    std::ostringstream outs;
+
+    if (command == "debug") {
+        bool print_usage_flag = false;
+        std::string debug_cmd;
+
+        if ((cmd.size() == 1) || (cmd[1] == "?")) {
+            print_usage_flag = true;
+        } else {
+            int i = 1;
+            while (i < cmd.size()) {
+                bool flag = true;
+                if ((cmd[i] == "-") || (cmd[i] == "+")) {
+                    if (cmd[i] == "-") {
+                        flag = false;
+                    }
+                    i++;
+                }
+                debug_cmd = cmd[i];
+                if ((debug_cmd[0] == '+') || (debug_cmd[0] == '-')) {
+                    if (debug_cmd[0] == '-') {
+                        flag = false;
+                    }
+                    debug_cmd = debug_cmd.substr(1,debug_cmd.size()-1);
+                }
+                if (debug_cmd == "all") {
+		    for ( int jj = 0; jj<sizeof(DbgCategories); jj++ ) {
+		    	dbgFlag[jj] = flag;
+		    }
+                } else if (debug_cmd == "general") {
+                    dbgFlag[GENERAL] = flag;
+                } else if (debug_cmd == "ports" || debug_cmd == "pins") {
+                    dbgFlag[PORTS] = flag;
+                } else if (debug_cmd == "regs") {
+                    dbgFlag[REGS] = flag;
+                } else {
+		    DBG_MSG(std::string("ERROR: Unknown Option:") + debug_cmd);
+                    print_usage_flag = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        outs << "Current debug options:"
+            << (dbgFlag[GENERAL] ? " general" : "")
+            << (dbgFlag[PORTS] ? " ports" : "")
+            << (dbgFlag[REGS] ? " regs" : "")
+            << ((dbgFlag[GENERAL] || dbgFlag[PORTS] || dbgFlag[REGS] )? "" : " Off")
+            << std::endl;
+        if (print_usage_flag) {
+            outs << "Usage: debug [-+][general|ports|regs|all]" << std::endl;
+            outs << " Example1: 'debug -ports' toggles OFF the debug flag for ports." << std::endl;
+            outs << " Example2: 'debug ports regs' toggles ON the flags for ports & registers." << std::endl;
+        }
+    }
+    return outs.str();
+                                                                                //%USEREND CMD_PROCESSOR
+}                                                                               //%
+                                                                                //%
+// initialization method for logging messages                                   //%
+                                                                                //%
+void                                                                            //%
+Device_IF::initMessageLogging()                                                 //%
+{                                                                               //%
+                                                                                //%USERBEGIN MODEL_DEBUG_INIT
+    // toggle on/off debugging flags
+    for (int i=0;i<sizeof(DbgCategories);i++) {
+#ifdef DBG_SCP_DEVICE_IF
+        dbgFlag[i] = true;
+#else
+        dbgFlag[i] = false;
+#endif
+    }
+                                                                                //%USEREND MODEL_DEBUG_INIT
+                                                                                //%
+}                                                                               //%
+// method for logging messages                                                  //%
+void                                              //%
+Device_IF::REPORT_MSG(std::string sev, std::string msg)//%
+{                                                 //%
+                                                                                //%USERBEGIN REPORT_MSG
+    std::cout << sev << ": " << msg << " [" << this->basename() << "@" << sc_core::sc_time_stamp() << "]" << std::endl;
+                                                                                //%USEREND REPORT_MSG
+                                                                                //%
+}                                                                               //%
+void                                                                            //%
+Device_IF::rst_nHandler1()                                                      //%
+                                                                                //%USERBEGIN rst_nHandler1
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "rst_nHandler1 invoked because of event on port rst_n" );
+
+	// TODO: INSERT code for the rst_nHandler1 method here.
+    e_TrigRnBHandler.notify();
+}
+                                                                                //%USEREND rst_nHandler1
+void                                                                            //%
+Device_IF::Device_Callback(                                                     //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory R_Device";           //%
+    scml2::memory< unsigned int >& m = this->R_Device;                          //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN Device_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the Device_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+
+        ReadResp_t recievedReadReq;
+
+        memcpy(&recievedReadReq, ptr, len);
+
+        memcpy(&recievedReq, &(recievedReadReq.hostReq), sizeof(Req_t));
+
+        memcpy(recievedData, recievedReadReq.cpData, UNIT_OF_REQUEST*recievedReadReq.hostReq.iLen);
+
+        //cout<< "           read request id = " << recievedReadReq.hostReq.iId << endl;
+        Delete_Request(recievedReadReq.hostReq.iId);
+
+        Trans_Request_Host(recievedReadReq.hostReq.Op);
+        wait(SC_ZERO_TIME);
+
+        //        switch(my_state)
+        //        {
+        //            case IDLE:
+//                
+//                memcpy(R_Device_req, ptr, len);
+//                
+//                Copy_Request_Buffer();
+//
+//                if(recievedReq.Op == HOST_READ){     //ptr 수정 필요
+//                    next_state = CMD;
+//                }else{
+//                    next_state = IDLE;
+//
+//                    //Delete_Request();
+//
+//                    //H2D_Master.write(0x0, (void *)&recievedReq, sizeof(Req_t));
+//                    //e_TrigTransHost.notify();
+//                }
+//                break;
+//            case CMD:
+//
+//                if(dbgFlag[GENERAL])
+//                    cout << "<2> testmodel to deviceIF trans read data" << endl; 
+//                memcpy(R_Device_data, ptr, len);
+//
+//                Copy_Data_Buffer();
+//
+//                next_state = IDLE;
+//
+//                //Compare_Data();
+//
+//
+//                Delete_Request(recievedReq.iId);
+//                
+//                Trans_Request_Host(recievedReq.Op);
+//                wait(SC_ZERO_TIME);
+//                //H2D_Master.write(0x0, (void *)&recievedReq, sizeof(Req_t));
+//
+//                //H2D_Master.write(0x0, (void *)recievedData, recievedReq.iLen*UNIT_OF_REQUEST);
+//                //e_TrigTransHost.notify();
+//                
+//                break;
+//            default:
+//                ABORT(1, "       ");
+//                break;
+//        }
+        
+        my_state = next_state;
+
+
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+    //%USEREND Device_Callback
+}                                                                               //%
+void                                                                            //%
+Device_IF::CPU_Callback(                                                        //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory R_CPU";              //%
+    scml2::memory< unsigned int >& m = this->R_CPU;                             //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN CPU_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the CPU_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+        
+        if(adr == R_CPU_DATA_ADDR){
+
+            //bufferSize = Cal_Buffer_Size(reqScheduleHead, reqScheduleTail);
+            memcpy(R_CPU_data, ptr, len);
+
+//            for(unsigned int i=0;i <len/4;i++){
+//                cout << "cpu to device data :  "<<R_CPU_data[i] << endl;
+//            }
+
+            Copy_SFR_To_Buffer();
+
+            CPU_IRQ.write(0x0);
+            e_ScheduleComplete.notify();
+
+        }else{
+
+            if(dbgFlag[GENERAL])
+                cout << "CPU to Device error" << endl;
+            //cout << "Device IF recieve adr = "<<adr << endl;
+            sc_stop();
+
+        }
+        
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+        //cout << "CPU read address :  "<<adr << endl;
+
+        if(adr == R_CPU_SIZE_ADDR){
+            
+            memcpy(ptr, R_CPU_size, len);
+
+        }else if(adr == R_CPU_DATA_ADDR){ 
+
+            //bufferSize = Cal_Buffer_Size(reqScheduleHead, reqScheduleTail);
+            memcpy(ptr, R_CPU_data, len);
+
+        }else{
+            if(dbgFlag[GENERAL])
+                cout << "Device to CPU error" << endl;  //ABORT 함수로 바꾸기
+            
+            cout << "Device IF recieve adr = "<<adr << endl;
+            cout << "Device IF" << endl;
+            sc_stop();
+        }
+
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND CPU_Callback
+}                                                                               //%
+void                                                                            //%
+Device_IF::H2DCallback(                                                         //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory R_H2D";              //%
+    scml2::memory< unsigned int >& m = this->R_H2D;                             //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN H2DCallback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the H2DCallback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+        
+        if(adr == 0x0){
+            memcpy(m, ptr, len);
+                //cout << sc_core::sc_time_stamp()<< "    Recieved request HOST to device IF " << endl; 
+            //cout << "device IF buffer head = " << reqBufferHead << "    " << reqBufferTail << "    "  <<reqBufferPoint << endl;
+            if(Push_Request(m, len) == false){
+                trans.set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
+                return;
+            }
+
+            if(dbgFlag[GENERAL])
+                cout << "Recieved request HOST to device IF " << endl; 
+
+            e_TrigScheduler.notify();
+        }else if(adr == 0x28){
+            if(dbgFlag[GENERAL])
+                cout << "Recieved Data HOST to device IF" << endl;
+
+                //cout << sc_core::sc_time_stamp()<< "    Recieved Data HOST to device IF" << endl;
+            
+            memcpy(transData, ptr, len*512);
+            e_TransData.notify();
+            
+        }else{
+            cout << adr <<"       "<<len << "      " <<endl;
+            ABORT(1, "  ???????????????????????????? ");
+        }
+
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //USEREND H2DCallback
+}                                                                               //%
+                                                                                //%
+                                                                                //%USERBEGIN MEMBER_DEFNS
+// TODO: Insert definitions of your member functions, etc. here.
+void
+Device_IF::Scheduler()
+{
+    while(1){
+        if(dbgFlag[GENERAL])
+            cout << "<2> Scheduler involked " <<endl; 
+
+        if(Cal_Buffer_Size(reqBufferPoint, reqBufferTail) != 1 && Check_New_Request() == true){
+            Scheduler_Flag_On();
+
+            //Copy_Buffer_To_SFR();
+
+            //CPU_IRQ.write(0x1);
+
+            //wait(e_ScheduleComplete);
+            
+            wait(10,SC_NS);
+
+            Scheduler_Flag_Off();
+
+            wait(SC_ZERO_TIME);
+        }
+
+        e_TrigTransModule.notify();
+
+        wait(e_PopRequestComplete);
+        
+        if(Check_Buffer_Empty() == true){
+            wait();
+        }else{
+            wait(5,SC_NS);
+        }
+
+    }
+}
+
+void
+Device_IF::Trans_Request_Module()
+{
+
+    while(1){
+        //cout << "<2> Trans Request DeviceIF to Module " << endl;
+        while(schedulerFlag == true || Check_Buffer_Empty() == true)
+            wait();
+
+        if(Check_Buffer_Empty() == false && schedulerFlag == false){
+
+            transReq = Pop_Request();
+
+            e_PopRequestComplete.notify();
+
+            while(Device_RnB_Slave.read() == 0x0){
+                wait(Device_RnB_Slave.posedge_event());
+            }
+
+            if(dbgFlag[GENERAL]){
+                cout << "< 2 > Device to Module trans :  ";
+                cout << "ID :  "<<transReq.iId << "  OP :  "  << transReq.Op << " Addr :   "  << transReq.iAddr << "  Length  :   "  << transReq.iLen << endl;
+            }
+
+            //Request trans
+            //Device_IF_Master.write(0, (void *)&transReq, sizeof(Req_t));
+
+            if(transReq.Op == HOST_WRITE){
+                Trans_Request_Host(transReq.Op);
+                wait(SC_ZERO_TIME);
+                
+                //H2D_Master.write(0x0, (void *)&transReq, sizeof(Req_t));
+                if(dbgFlag[GENERAL]){
+                    cout << "wait!!!!!!!!!!!!!!!!!!" << endl;
+                }
+
+                wait(e_TransData);
+
+                if(dbgFlag[GENERAL]){
+                    cout << "waitendend!!!!!!!!!!!!!! " << endl;
+                }
+
+//                while(!Device_IF_Master.write(0, (unsigned char *)(&transReq), sizeof(Req_t))){
+//                    wait(10,SC_NS);
+//                }
+
+                Device_IF_Master.write(0, (unsigned char *)(&transReq), sizeof(Req_t));
+                Device_IF_Master.write(0, (unsigned char *)transData, transReq.iLen*UNIT_OF_REQUEST);
+                Delete_Request(transReq.iId);
+
+            }else{
+                Device_IF_Master.write(0, (unsigned char *)(&transReq), sizeof(Req_t));
+                
+            }
+        }
+        wait(10,SC_NS);
+    }
+}
+
+void
+Device_IF::RnB_Handler()
+{
+    while(1){
+        wait();
+        e_TransReady.notify();
+    }
+}
+
+bool
+Device_IF::Check_New_Request()
+{
+    if(reqScheduleTail != reqBufferTail)
+        return true;
+    else
+        return false;
+
+}
+
+void
+Device_IF::Trans_Request_Host(HOST_REQ_OP op)
+{
+//    uint len = sizeof(Req_t)>>2;
+//
+//    while(1){
+//        //test를 위한 함수
+//        //Compare_Data();
+//
+//        //Delete_Request();
+//
+//        H2D_Master.write(0x0, (void *)&recievedReq, len);
+//
+//        wait();
+//    }
+    sem_Trans.wait();
+    if(op == HOST_WRITE){
+
+        wait(10, SC_NS);
+        H2D_Master.write(0x0, (unsigned char *)&transReq, sizeof(Req_t));
+    }else if(op == HOST_READ){
+        wait(10, SC_NS);
+        H2D_Master.write(0x0, (unsigned char *)&recievedReq, sizeof(Req_t));
+        wait(100, SC_NS);
+        H2D_Master.write(0x0, (unsigned char *)recievedData, recievedReq.iLen*UNIT_OF_REQUEST);
+        
+    }else{
+        cout << "errrrrrrrrr" << endl;
+        sc_stop();
+    }
+    sem_Trans.post();
+
+}
+
+void
+Device_IF::Copy_Buffer_To_SFR()
+{
+
+    scml2::memory_alias< unsigned int >& m = this->R_CPU_data;                       //%
+    //sem_Schedule.wait();
+    //reqScheduleHead = (reqBufferPoint + 1) % Q_SIZE;
+  //  reqScheduleTail = reqBufferTail;
+    //sem_Schedule.post();
+    uint k=0;
+
+    bufferSize = Cal_Buffer_Size(reqBufferPoint, reqBufferTail);
+    //cout << "SIZE  :  "  << reqScheduleHead << "  "  << reqScheduleTail << endl;
+    //cout << "Device interface to CPU : Data size =  " << bufferSize << endl;
+
+    memcpy(R_CPU_size, &bufferSize, sizeof(unsigned int));
+
+    //cout << "Register SIZE data :  " << (unsigned int)R_CPU_size[0] << endl;
+
+    for(uint i=reqBufferPoint; i != reqBufferTail; i = (i + 1)%Q_SIZE)
+    {
+        for(uint j=0; j<7; j++)
+        {
+            m[k*7+j] = ((unsigned int*)&requestBuffer[i])[j];
+        }
+        k++;
+        //memcpy(&m[i], &requestBuffer[i], sizeof(Req_t));
+    }
+
+    //for(unsigned int i=0;i<bufferSize*sizeof(Req_t)/4;i++)
+    //    cout << "Register DATA  :  " << R_CPU_data[i] << endl;
+
+}
+ 
+void
+Device_IF::Copy_SFR_To_Buffer()
+{
+
+    scml2::memory_alias< unsigned int >& m = this->R_CPU_data;                       //%
+    uint k=0;
+    uint tempPoint = reqBufferPoint;
+
+    for(uint i=0; i<bufferSize; i++){
+        for(uint j=0;j<7;j++){
+            ((unsigned int*)&requestBuffer[tempPoint])[j] = m[k*7+j];
+        }
+        k++;
+        //cout << "SFR to Buffer ID :  " << requestBuffer[tempPoint].iId << "  OP :  "  << requestBuffer[tempPoint].Op << "  Addr :  "<< requestBuffer[tempPoint].iAddr << "  Length :  " << requestBuffer[tempPoint].iLen << endl;
+
+        tempPoint = (tempPoint+1)%Q_SIZE;
+
+    }
+    //memcpy(&requestBuffer[reqBufferPoint], R_CPU_data, sizeof(Req_t)*bufferSize);
+
+    //for(uint i=0; i < bufferSize; i=(i+1)%Q_SIZE){
+    //        }
+
+}
+   
+bool
+Device_IF::Push_Request(scml2::memory< unsigned int >& m, uint64 len) 
+{
+    uint    addr;
+    HOST_REQ_OP op;
+    
+    //ABORT(Check_Buffer_Full() == true, "Request Queue don't should be full");
+    if(Check_Buffer_Full() == true){
+        return false;
+    }
+    memcpy(&requestBuffer[reqBufferTail], m, len);
+    
+//    if(requestBuffer[reqBufferTail].Op == HOST_WRITE){
+//        //HOST에서 data를 받을 경우 주석처리해야 함
+//        //Create_Data(requestBuffer[reqBufferTail].iLen);
+//
+//        //test를 위해 data map에 data write
+//        //Write_Data_Map(requestBuffer[reqBufferTail].iAddr, requestBuffer[reqBufferTail].iLen);
+//
+//    }else{
+//
+//        //memset(requestData[reqBufferTail], NULL, MAX_REQ_LEN * UNIT_OF_REQUEST);
+//    }
+//
+//    //requestBuffer[reqBufferTail].dIssueTime = (uint64)((double)sc_time_stamp().value()/1000.0);
+
+    reqBufferTail = (reqBufferTail + 1) % Q_SIZE;
+    return true;
+}
+
+Req_t
+Device_IF::Pop_Request()
+{
+    Req_t tmpReq;
+    //uint popReqPoint;
+
+    tmpReq = requestBuffer[reqBufferPoint];
+    //popReqPoint = reqBufferPoint;
+
+    reqBufferPoint = (reqBufferPoint + 1) % Q_SIZE;
+    
+    //return popReqPoint;
+    return tmpReq;
+
+}
+
+bool 
+Device_IF::Check_Buffer_Schduled()
+{
+    if(reqBufferPoint == reqScheduleHead && CPU_IRQ.read() == 0x01)
+        return false;
+    else
+        return true;
+}
+
+//void
+//Device_IF::Create_Data(uint64 len)
+//{
+//    for(uint i=0; i < len*UNIT_OF_REQUEST; i++){
+//        requestData[reqBufferTail][i] = 'A' + rand()%26;
+//    }
+//    
+//
+//}
+
+//void
+//Device_IF::Write_Data_Map(uint addr, uint64 len)
+//{
+//    for(uint i=0; i < len*UNIT_OF_REQUEST;i++){
+//        data_map[addr*512+i] = requestData[reqBufferTail][i];
+//    }
+//}
+
+void
+Device_IF::Copy_Request_Buffer()
+{
+    memcpy(&recievedReq, R_Device_req, sizeof(Req_t));
+
+}
+
+void
+Device_IF::Copy_Data_Buffer()
+{
+    memcpy(recievedData, R_Device_data, UNIT_OF_REQUEST*recievedReq.iLen);
+
+}
+
+//void
+//Device_IF::Compare_Data()
+//{
+//    uint addr = recievedReq.iAddr;
+//    uint len  = recievedReq.iLen;
+//    bool passFlag = false;
+//    
+//    for(uint j=reqBufferHead; j != reqBufferPoint; j = (j+1) % Q_SIZE){
+//        if((requestBuffer[j].iAddr <= addr && requestBuffer[j].iAddr + requestBuffer[j].iLen >= addr)||(requestBuffer[j].iAddr <= addr+len && requestBuffer[j].iAddr + requestBuffer[j].iLen >= addr+len)){
+//            passFlag=true;
+//            break;
+//        }
+//    }
+//
+//    if(passFlag == false){
+//        for(uint i=0;i < len*UNIT_OF_REQUEST;i++){
+//
+//            if(data_map[addr*512+i] != recievedData[i]){
+//                cout << "Recieved data error!! addr  : " << addr << "  Length  :  " << len<< "  ADDR : " << addr+i/512 << endl;
+//                cout << "Original Data  : "<<data_map[addr*512+i] << "   reciedved Data  : " << recievedData[i] << endl;  
+//                wait(SC_ZERO_TIME);
+//                sc_stop();
+//
+//            }
+//        }
+//    }
+//
+//    cout << "Complete Reqeust ID : " << recievedReq.iId << endl;
+//}
+
+void
+Device_IF::Delete_Request(uint id)
+{
+    bool findFlag = false;
+    uint deletePoint;
+
+    deletePoint = Find_Request(id);
+    
+    if(dbgFlag[GENERAL])
+        cout << "< 2 > Delete request !!   " << id <<endl;
+
+    memset(&requestBuffer[deletePoint], 0x0, sizeof(Req_t));
+    
+    //move request
+    for(uint j=deletePoint; j != reqBufferHead; j = (j+Q_SIZE-1) % Q_SIZE){
+        memcpy(&requestBuffer[j], &requestBuffer[(j+Q_SIZE-1) % Q_SIZE], sizeof(Req_t));
+    }
+
+    //cout << "Device IF delete point = " << id <<"        " <<reqBufferHead <<"  " << reqBufferTail <<"   " << reqBufferPoint <<endl; 
+    reqBufferHead = (reqBufferHead + 1) % Q_SIZE;
+
+//
+//    for(uint i=reqBufferHead; i != reqBufferPoint; i = (i+1)%Q_SIZE){
+//        if(requestBuffer[i].iId == recievedReq.iId){
+//            
+//            //reset buffer
+//            memset(&requestBuffer[i], 0x0, sizeof(Req_t));
+//            
+//            //move request
+//            for(uint j=i; j != reqBufferHead; j--){
+//                memcpy(&requestBuffer[j], &requestBuffer[j-1], sizeof(Req_t));
+//            }
+//
+//            reqBufferHead = (reqBufferHead + 1) % Q_SIZE;
+//            
+//            findFlag = true;
+//        }
+//    }
+//
+//    if(findFlag == false){
+//        cout << "DEVICE INTERFACE - Don't find recieved request!!" << endl;
+//        sc_stop();
+//    }
+
+
+}
+
+uint
+Device_IF::Find_Request(uint Id)
+{
+    bool findFlag = false;
+    uint findPoint;
+
+    for(uint i=reqBufferHead; i != reqBufferPoint; i = (i+1)%Q_SIZE){
+        if(requestBuffer[i].iId == Id){
+            findPoint = i;
+            findFlag = true;
+            break;
+        }
+    }
+
+    if(findFlag == false){
+        if(dbgFlag[GENERAL])
+            cout << "<2>Don't find recieved request!!" << endl;
+        
+            cout << "<2>Don't find recieved request!!" << endl;
+            cout << "Device IF" << endl;
+        sc_stop();
+    }
+
+    return findPoint;
+}
+                                                                                //%USEREND MEMBER_DEFNS
+                                                                                //%
+                                                                                //%
+//----------------------------------------------------------------------        //%
+// 'Orphaned' code section                                                      //%
+//                                                                              //%
+// This section contains code snippets saved from previous versions of          //%
+// the model because they may have been user-written and they could             //%
+// not be associated with any tagged code sections when the                     //%
+// code was re-generated.                                                       //%
+//                                                                              //%
+// The most likely reason for this is that before the code was                  //%
+// re-generated, a function name was changed. Now, the section of code          //%
+// that was associated with the old name cannot be re-associated with           //%
+// the new name.  In that case, the recommended course of actions is            //%
+// to simply copy the relevant lines out of this section back into the          //%
+// function whose name has been changed.                                        //%
+#ifdef ORPHANED_CODE                                                            //%
+                                                                                //%USERBEGIN ORPHANED_CODE
+
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+                                                                                //%USEREND ORPHANED_CODE
+#endif // ORPHANED_CODE                                                         //%
+                                                                                //%USERBEGIN FOOTER_H
+
+                                                                                //%USEREND FOOTER_H
+#endif // __DEVICE_IF_H__                                                       //%

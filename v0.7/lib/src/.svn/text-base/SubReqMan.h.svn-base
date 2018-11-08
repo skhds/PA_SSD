@@ -1,0 +1,999 @@
+//--------------------------------------------------------------                //%
+// Important:  The template for this file was generated                         //%
+//  automatically and can only be re-generated if rules                         //%
+//  are followed when editing:                                                  //%
+// 1. Do not modify any line containing //%                                     //%
+// 2. Only insert your lines of code between 2 lines                            //%
+//    containing "//% user begin" and "//% user end"                            //%
+//                                                                              //%
+// :generate:date: Thu Jan 09 2014 18:03:58                                     //%
+// :generate:version: 2010.1.0-dev                                              //%
+//--------------------------------------------------------------                //%
+                                                                                //%
+#ifndef __SUBREQMAN_H__                                                         //%
+#define __SUBREQMAN_H__                                                         //%
+                                                                                //%USERBEGIN MODEL_DEBUG_ENABLE
+#if defined(DEBUG) || defined(DBG_SCP)
+# define DBG_SCP_SUBREQMAN
+#endif
+                                                                                //%USEREND MODEL_DEBUG_ENABLE
+//#define SC_INCLUDE_DYNAMIC_PROCESSES                                            //%
+                                                                                //%
+#include <scml2.h>                                                              //%
+#include <systemc>                                                              //%
+#include "scmlinc/scml_property.h"                                              //%
+#include "scmlinc/scml_command_processor.h"                                     //%
+#include "tlm_utils/simple_target_socket.h"                                     //%
+#include "tlm.h"                                                                //%
+                                                                                //%USERBEGIN HEADER_H
+// TODO: Insert your includes, declarations, etc. here.
+#include "./header/SubReq_def.h"
+#include <list>
+#include <cmath>
+                                                                                //%USEREND HEADER_H
+                                                                                //%
+//------------------------                                                      //%
+// Module Interface                                                             //%
+//------------------------                                                      //%
+class SubReqMan :                                                               //%
+	public sc_core::sc_module                                               //%
+                                                                                //%USERBEGIN INHERITANCE
+    // TODO: Specify class inheritance here. Start each line with a , character
+                                                                                //%USEREND INHERITANCE
+                                                                                //%
+{                                                                               //%
+public:                                                                         //%
+	// constructor                                                          //%
+	SubReqMan( const sc_core::sc_module_name & n ,                          //%
+		unsigned int MAX_OUTSTANDING_REQ = 32,                          //%
+		unsigned int MAX_DATA_BUF_KB = 1024) ;                           //%
+	SC_HAS_PROCESS( SubReqMan );                                            //%
+	// destructor                                                           //%
+	virtual ~SubReqMan();                                                   //%
+private:                                                                        //%
+	// disable default and copy constructors by making them private         //%
+	SubReqMan() ;                                                           //%
+	SubReqMan( const SubReqMan& ) ;                                         //%
+	SubReqMan & operator= ( const SubReqMan& ) ;                            //%
+public:                                                                         //%
+	// method called at end of elaboration of design -- for initialization  //%
+	virtual void end_of_elaboration();                                      //%
+	// initialization methods for ports & registers                         //%
+	virtual void initPorts();                                               //%
+	virtual void initRegisters();                                           //%
+	// method to handle interactive commands -- for dynamic instrumentation //%
+	virtual std::string commandProcessor(const std::vector<std::string>& cmd);//%
+public:                                                                         //%
+	// Port declarations                                                    //%
+	tlm::tlm_target_socket< 32 > WriteSlave;                                //%
+	tlm::tlm_target_socket< 32 > ReadSlave;                                 //%
+	scml2::initiator_socket< 32 > ReadMaster;                               //%
+    scml2::initiator_socket< 32 > WriteMaster;                             //%
+	tlm::tlm_target_socket< 32 > SoftCtrl;                                  //%
+	sc_core::sc_out< bool > SoftIrq;                                        //%
+	sc_core::sc_out< bool > RnBMaster;                                      //%
+	sc_core::sc_in< bool > RnBSlave;                                        //%
+	sc_core::sc_in< bool > rst_n;                                           //%
+protected:                                                                      //%
+                                                                                //%
+	// Parameter/Property declarations                                      //%
+	scml_property< unsigned int > MAX_OUTSTANDING_REQ_;                     //%
+	scml_property< unsigned int > MAX_DATA_BUF_KB_;                         //%
+                                                                                //%
+protected:                                                                      //%
+                                                                                //%
+	// Memory declarations                                                  //%
+	scml2::memory< unsigned char > WriteSlaveBuf;                           //%
+	  scml2::memory_alias< unsigned char > WriteSlaveBuf_writeBuf;//%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > WriteSlave_WriteSlaveBuf_adapter;   //%
+	scml2::memory< unsigned char > ReadSlaveBuf;                            //%
+	  scml2::memory_alias< unsigned char > ReadSlaveBuf_readBuf;//%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > ReadSlave_ReadSlaveBuf_adapter;     //%
+	scml2::memory< unsigned int > SoftCtrlSFR;                              //%
+	  scml2::memory_alias< unsigned int > SoftCtrlSFR_softSFR;              //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > SoftCtrl_SoftCtrlSFR_adapter;       //%
+                                                                                //%
+public:                                                                         //%
+	// Process declarations                                                 //%
+	void                                                                    //%
+	rst_nHandler();                                                         //%
+	void                                                                    //%
+	WriteManager();                                                         //%
+	void                                                                    //%
+	ReadManager();                                                          //%
+                                                                                //%
+protected:                                                                      //%
+	// Memory callback declarations                                         //%
+	void                                                                    //%
+	WriteSlaveCB(                                                           //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	ReadSlaveCB(                                                            //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	SoftwareCB(                                                             //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	// support for message logging                                          //%
+	void initMessageLogging();                                              //%
+	void REPORT_MSG(std::string sev, std::string msg);                      //%
+	void DBG_MSG(std::string msg)   { REPORT_MSG("debug",msg); }            //%
+	void WARN_MSG(std::string msg)  { REPORT_MSG("warn",msg); }             //%
+	void ERROR_MSG(std::string msg) { REPORT_MSG("error",msg); }            //%
+	void FATAL_MSG(std::string msg) { REPORT_MSG("fatal",msg); }            //%
+                                                                                //%USERBEGIN MEMBER_DECLS
+    enum DbgCategories { GENERAL = 0, PORTS, REGS } ;
+    bool dbgFlag[sizeof(DbgCategories)];
+
+    // TODO: Insert declarations of member data and functions here.
+
+protected:
+    
+
+    // member methods
+    //
+    //
+
+        // debug methods
+
+    inline void PrintBitMap(uint id, std::string msg, uchar* bitmap, uint len)
+    {/*{{{*/
+//        cout << id << ":" << msg << ":bitmap[";
+//        for(int i=0; i < len ; i++)
+//        {
+//            cout << (uint)((bitmap[i/8] >> (7-(i%8)) & 0x1));
+//        }
+//        cout << "]" << endl;
+    }/*}}}*/
+    inline void PrintBufStatus(std::string msg)
+    {/*{{{*/
+//        cout << msg << ":bufStat" << ": " << this->m_iUsedDataBuf << "B " << " [" << this->basename() << "@" << sc_core::sc_time_stamp() << "]" << std::endl;
+    }/*}}}*/
+
+    inline bool IsAllRead(sIntReq_t *intReq)
+    {/*{{{*/
+
+        PrintBitMap(intReq->req.iId, "", intReq->cpBitMap, intReq->req.iLen);
+
+        for(int i=0; i < intReq->req.iLen ; i++)
+        {
+            if(!((intReq->cpBitMap[i/8] >> (7-(i%8))) & (0x1)))
+                return false;
+        }
+
+        return true;
+    }/*}}}*/
+
+
+    inline bool IsReqBufEmpty()
+    {/*{{{*/
+        return (m_IntReqList.size() <= 0);
+    }/*}}}*/
+
+    inline bool IsReqBufFull()
+    {/*{{{*/
+        if(m_IntReqList.size() >= MAX_OUTSTANDING_REQ_)
+        {
+            if(dbgFlag[GENERAL])
+                cout << "Request Buffer Full" << endl;
+        }
+        return (m_IntReqList.size() >= MAX_OUTSTANDING_REQ_);
+    }/*}}}*/
+
+    inline bool IsDataBufFull(unsigned int iLen)
+    {/*{{{*/
+        if(((m_iUsedDataBuf) + (iLen * SECTOR_SIZE_BYTE))
+                > MAX_DATA_BUF_KB_ * KILO)
+        {
+            if(dbgFlag[GENERAL])
+                cout << "Data Buffer Full" << endl;
+        }
+        return (((m_iUsedDataBuf) + (iLen * SECTOR_SIZE_BYTE))
+                > MAX_DATA_BUF_KB_ * KILO);
+
+
+
+    }/*}}}*/
+
+    inline void InsertBuf(sIntReq_t* newIntReq)
+    {/*{{{*/
+        m_IntReqList.push_back(newIntReq);
+        m_iUsedDataBuf += (newIntReq->req.iLen * SECTOR_SIZE_BYTE); 
+
+        m_iaNumLiveOps[newIntReq->req.Op]++;
+
+        PrintBufStatus("inserted");
+
+    }/*}}}*/
+
+    inline sIntReq_t* ComposeIntReq(Req_t newReq)
+    {/*{{{*/
+        sIntReq_t* newIntReq = new sIntReq_t;
+        unsigned int iBitMapSize = ceil((float)newReq.iLen / 8);
+        
+        newIntReq->req = newReq;
+        newIntReq->cpBitMap = new uchar[iBitMapSize];
+        memset(newIntReq->cpBitMap, 0x00, iBitMapSize);
+
+        PrintBitMap(newReq.iId, "initial", newIntReq->cpBitMap, newReq.iLen);
+
+        newIntReq->cpDataBuf = new uchar[newReq.iLen * SECTOR_SIZE_BYTE];
+        memset(newIntReq->cpDataBuf, 0x00, newReq.iLen * SECTOR_SIZE_BYTE); 
+        newIntReq->iNextSector = 0;
+
+        return newIntReq;        
+    }/*}}}*/
+
+    std::list<sIntReq_t *>::iterator FindIntReqById(unsigned int iId)
+    {/*{{{*/
+        std::list<sIntReq_t *>::iterator iter;
+        for(iter = m_IntReqList.begin() ; iter != m_IntReqList.end() ; iter++)
+        {
+            if((((sIntReq_t *)(*iter))->req.iId) == iId)
+            {
+                return iter;
+            }
+        }
+
+        ERROR_MSG("No proper request has been found\n");
+        sc_stop();
+    }/*}}}*/
+
+
+    inline void DeleteBuf(std::list<sIntReq_t *>::iterator iter)
+    {/*{{{*/
+        sIntReq_t* curIntReq = (sIntReq_t *)(*iter);
+        m_iUsedDataBuf -= ((sIntReq_t *)(*iter))->req.iLen * SECTOR_SIZE_BYTE;
+        m_iaNumLiveOps[((sIntReq_t *)(*iter))->req.Op]--;
+
+        delete[] curIntReq->cpBitMap;
+        delete[] curIntReq->cpDataBuf;
+        delete (curIntReq);
+
+        m_IntReqList.erase(iter);
+
+        PrintBufStatus("deleted");
+        RnBMaster.write(1);
+
+    }/*}}}*/
+
+    inline unsigned int GetStartSectorAddr(sIntReq_t *intReq)
+    {/*{{{*/
+
+        unsigned int iNextAlignedSector = (((intReq->req.iAddr + intReq->iNextSector) / SECTOR_PER_PAGE) * SECTOR_PER_PAGE);
+        unsigned int iReqFirstSector = intReq->req.iAddr;
+        return iNextAlignedSector >= iReqFirstSector ? iNextAlignedSector : iReqFirstSector;
+    }/*}}}*/
+
+    inline unsigned int GetLastSectorAddr(sIntReq_t *intReq)
+    {/*{{{*/
+        unsigned int iNextAlignedSector = (((intReq->req.iAddr + intReq->iNextSector) / SECTOR_PER_PAGE) * SECTOR_PER_PAGE) + SECTOR_PER_PAGE - 1;
+        unsigned int iReqLastSector = intReq->req.iAddr + intReq->req.iLen - 1;
+        return iNextAlignedSector <= iReqLastSector ? iNextAlignedSector : iReqLastSector;
+    }/*}}}*/
+
+    inline void SetNextSector(sIntReq_t *intReq, uint iStartAddr, uint iLen)
+    {/*{{{*/
+        intReq->iNextSector += iLen;
+    }/*}}}*/
+
+    inline bool IsAllWritten(sSubReqWithData_t *subReq)
+    {/*{{{*/
+        return ((subReq->subReq->iStartAddr + subReq->subReq->iLen - 1) >=
+            (subReq->subReq->oriReq.iAddr + subReq->subReq->oriReq.iLen - 1));
+    }/*}}}*/
+
+    sSubReqWithData_t* GetNextSubReq()
+    {/*{{{*/
+        std::list<sIntReq_t *>::iterator iter;
+        sIntReq_t *curIntReq;
+        sSubReq_t *newSubReq;
+        sSubReqWithData_t *subReqAndData;
+
+        // get sub requests in FIFO fashion
+        // since we assume I/F scheduling
+
+        if(m_IntReqList.size() == 0)
+            return NULL;
+        
+        // get first live request
+        // we need to find live requests
+        // example of dead request: read request whose all sub-requests are issued, so waits for them.
+
+        iter = (m_IntReqList.begin());
+        curIntReq = (sIntReq_t *)(*(iter));
+
+        while((curIntReq->req.Op == HOST_READ &&
+                curIntReq->iNextSector == (curIntReq->req.iLen)))
+        {
+            // current iterator points dead requests
+            std::advance(iter, 1);  
+            if(iter == m_IntReqList.end())
+                return NULL;
+
+            curIntReq = (sIntReq_t *)(*(iter));
+        }
+
+
+        newSubReq = new sSubReq_t;
+        newSubReq->oriReq = curIntReq->req;
+        newSubReq->iStartAddr = GetStartSectorAddr(curIntReq);
+        newSubReq->iLen = GetLastSectorAddr(curIntReq) - newSubReq->iStartAddr + 1;
+        newSubReq->dIssueTime = sc_time_stamp().to_double();
+        SetNextSector(curIntReq, newSubReq->iStartAddr, newSubReq->iLen);
+
+        // compose req + data
+        subReqAndData = new sSubReqWithData_t;
+        subReqAndData->subReq = newSubReq;
+        subReqAndData->cpData = curIntReq->cpDataBuf + ((newSubReq->iStartAddr - curIntReq->req.iAddr) * SECTOR_SIZE_BYTE);
+
+        return subReqAndData;
+    }/*}}}*/
+
+    // member variable
+    //
+
+    eWSState m_WSState;
+    std::list<sIntReq_t *> m_IntReqList;
+
+    std::list<sIntReq_t *>::iterator m_CompleteReaddIter;
+
+    sc_core::sc_event m_eNewHostReq;
+    sc_core::sc_event m_eNewReadResp;
+    sc_core::sc_semaphore m_seReadPath;
+
+    unsigned int m_iUsedDataBuf;
+    unsigned int m_iaNumLiveOps[128];
+ 
+ public:
+    // member methods
+    //
+    
+
+                                                                                //%USEREND MEMBER_DECLS
+};                                                                              //%
+                                                                                //%
+//------------------------                                                      //%
+// Module Implementation                                                        //%
+//------------------------                                                      //%
+                                                                                //%USERBEGIN HEADER_CPP
+// TODO: Insert your includes, declarations, etc. here.
+                                                                                //%USEREND HEADER_CPP
+                                                                                //%
+SubReqMan::SubReqMan( const sc_core::sc_module_name & n,                        //%
+		unsigned int MAX_OUTSTANDING_REQ,                               //%
+		unsigned int MAX_DATA_BUF_KB)                                   //%
+		: sc_core::sc_module(n)                                         //%
+,                                                                               //%
+ WriteSlave("WriteSlave"),                                                      //%
+ ReadSlave("ReadSlave"),                                                        //%
+ ReadMaster("ReadMaster"),                                                      //%
+ WriteMaster("WriteMaster"),                                                    //%
+ SoftCtrl("SoftCtrl"),                                                          //%
+ SoftIrq("SoftIrq"),                                                            //%
+ RnBMaster("RnBMaster"),                                                        //%
+ RnBSlave("RnBSlave"),                                                          //%
+ rst_n("rst_n"),                                                                //%
+ WriteSlave_WriteSlaveBuf_adapter("WriteSlave_WriteSlaveBuf_adapter", WriteSlave),//%
+ ReadSlave_ReadSlaveBuf_adapter("ReadSlave_ReadSlaveBuf_adapter", ReadSlave),   //%
+ SoftCtrl_SoftCtrlSFR_adapter("SoftCtrl_SoftCtrlSFR_adapter", SoftCtrl),        //%
+ MAX_OUTSTANDING_REQ_("MAX_OUTSTANDING_REQ", MAX_OUTSTANDING_REQ),              //%
+ MAX_DATA_BUF_KB_("MAX_DATA_BUF_KB", MAX_DATA_BUF_KB),                          //%
+ WriteSlaveBuf("WriteSlaveBuf", 524288ULL),                                          //%
+  WriteSlaveBuf_writeBuf("WriteSlaveBuf_writeBuf", WriteSlaveBuf, 0LL, 524288LL )//%
+,                                                                               //%
+ ReadSlaveBuf("ReadSlaveBuf", 524288ULL),                                            //%
+  ReadSlaveBuf_readBuf("ReadSlaveBuf_readBuf", ReadSlaveBuf, 0LL, 524288LL )//%
+,                                                                               //%
+ SoftCtrlSFR("SoftCtrlSFR", 256ULL),                                            //%
+  SoftCtrlSFR_softSFR("SoftCtrlSFR_softSFR", SoftCtrlSFR, 0LL, 256LL )          //%
+                                                                                //%
+                                                                                //%USERBEGIN INITIALIZER
+    // TODO: Add your class initialization here.
+ ,m_seReadPath(1)
+                                                                                //%USEREND INITIALIZER
+                                                                                //%
+{                                                                               //%
+ // declare processes and their sensitivities                                   //%
+	SC_METHOD(rst_nHandler);                                                //%
+	 sensitive << rst_n.neg() ;                                             //%
+	 dont_initialize();                                                     //%
+	SC_THREAD(WriteManager);                                                //%
+     sensitive << m_eNewHostReq;    
+	SC_THREAD(ReadManager);                                                 //%
+     sensitive << m_eNewReadResp;
+	 dont_initialize();                                                     //%
+                                                                                //%
+	// bind target ports to memories                                        //%
+	WriteSlave_WriteSlaveBuf_adapter(WriteSlaveBuf);                        //%
+	ReadSlave_ReadSlaveBuf_adapter(ReadSlaveBuf);                           //%
+	SoftCtrl_SoftCtrlSFR_adapter(SoftCtrlSFR);                              //%
+                                                                                //%
+ // setup memory callbacks                                                      //%
+	// - Memory: WriteSlaveBuf                                              //%
+	scml2::set_callback(                                                    //%
+		WriteSlaveBuf_writeBuf,                           //%
+		SCML2_CALLBACK(WriteSlaveCB),                                   //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: ReadSlaveBuf                                               //%
+	scml2::set_callback(                                                    //%
+		ReadSlaveBuf_readBuf,                             //%
+		SCML2_CALLBACK(ReadSlaveCB),                                    //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: SoftCtrlSFR                                                //%
+	scml2::set_callback(                                                    //%
+		SoftCtrlSFR_softSFR,                                            //%
+		SCML2_CALLBACK(SoftwareCB),                                     //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+                                                                                //%
+                                                                                //%
+#ifdef SCML_COMMAND_PROCESSOR_H                                                 //%
+	SCML_COMMAND_PROCESSOR(commandProcessor);                               //%
+	SCML_ADD_COMMAND("debug",0,6,"debug [-+][general|regs|ports|all]", "Turn on/off debug flags");//%
+#endif // SCML_COMMAND_PROCESSOR_H                                              //%
+                                                                                //%
+    initMessageLogging();                                                       //%
+                                                                                //%USERBEGIN CONSTRUCTOR
+
+    // TODO: Add constructor code here.
+    if ( dbgFlag[GENERAL] ) DBG_MSG("Created " + (std::string)this->basename());
+    
+    cout << "subreqman constructor" << endl;
+
+                                                                                //%USEREND CONSTRUCTOR
+                                                                                //%
+}                                                                               //%
+// destructor                                                                   //%
+SubReqMan::~SubReqMan()                                                         //%
+{                                                                               //%
+                                                                                //%USERBEGIN DESTRUCTOR
+
+    // TODO: Add destructor code here.
+
+                                                                                //%USEREND DESTRUCTOR
+}                                                                               //%
+// initialization method for ports                                              //%
+void                                                                            //%
+SubReqMan::initPorts()                                                          //%
+{                                                                               //%
+	SoftIrq.initialize(0x0);                                                //%
+	RnBMaster.initialize(0x1);                                              //%
+}                                                                               //%
+// initialization method for registers                                          //%
+void                                                                            //%
+SubReqMan::initRegisters()                                                      //%
+{                                                                               //%
+    WriteSlaveBuf.initialize(0x0);                                              //%
+    WriteSlaveBuf_writeBuf.initialize(0x0);                       //%
+    ReadSlaveBuf.initialize(0x0);                                               //%
+    ReadSlaveBuf_readBuf.initialize(0x0);                         //%
+    SoftCtrlSFR.initialize(0x0);                                                //%
+    SoftCtrlSFR_softSFR.initialize(0x0);                                        //%
+}                                                                               //%
+//This method is invoked after the design is fully elaborated, but              //%
+// before simulation begins.                                                    //%
+void                                                                            //%
+SubReqMan::end_of_elaboration()                                                 //%
+{                                                                               //%
+                                                                                //%USERBEGIN END_OF_ELAB
+    // TODO: Add end_of_elaboration code here.
+    this->initRegisters();
+    this->initPorts();
+                                                                                //%USEREND END_OF_ELAB
+}                                                                               //%
+// command processing method                                                    //%
+//  During simulation, this command may be called to handle                     //%
+//  interactive commands -- for dynamic instrumentation of the instance.        //%
+std::string                                                                     //%
+SubReqMan::commandProcessor(const std::vector< std::string >& cmd)              //%
+{                                                                               //%
+                                                                                //%USERBEGIN CMD_PROCESSOR
+    // TODO: Add commandProcessor code here.
+    //  The default code generated here handles toggling off/on the
+    //  default debug instrumentation flags: GENERAL, PORTS, and REGS.
+
+    std::string command = cmd[0];
+    std::ostringstream outs;
+
+    if (command == "debug") {
+        bool print_usage_flag = false;
+        std::string debug_cmd;
+
+        if ((cmd.size() == 1) || (cmd[1] == "?")) {
+            print_usage_flag = true;
+        } else {
+            int i = 1;
+            while (i < cmd.size()) {
+                bool flag = true;
+                if ((cmd[i] == "-") || (cmd[i] == "+")) {
+                    if (cmd[i] == "-") {
+                        flag = false;
+                    }
+                    i++;
+                }
+                debug_cmd = cmd[i];
+                if ((debug_cmd[0] == '+') || (debug_cmd[0] == '-')) {
+                    if (debug_cmd[0] == '-') {
+                        flag = false;
+                    }
+                    debug_cmd = debug_cmd.substr(1,debug_cmd.size()-1);
+                }
+                if (debug_cmd == "all") {
+		    for ( int jj = 0; jj<sizeof(DbgCategories); jj++ ) {
+		    	dbgFlag[jj] = flag;
+		    }
+                } else if (debug_cmd == "general") {
+                    dbgFlag[GENERAL] = flag;
+                } else if (debug_cmd == "ports" || debug_cmd == "pins") {
+                    dbgFlag[PORTS] = flag;
+                } else if (debug_cmd == "regs") {
+                    dbgFlag[REGS] = flag;
+                } else {
+		    DBG_MSG(std::string("ERROR: Unknown Option:") + debug_cmd);
+                    print_usage_flag = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        outs << "Current debug options:"
+            << (dbgFlag[GENERAL] ? " general" : "")
+            << (dbgFlag[PORTS] ? " ports" : "")
+            << (dbgFlag[REGS] ? " regs" : "")
+            << ((dbgFlag[GENERAL] || dbgFlag[PORTS] || dbgFlag[REGS] )? "" : " Off")
+            << std::endl;
+        if (print_usage_flag) {
+            outs << "Usage: debug [-+][general|ports|regs|all]" << std::endl;
+            outs << " Example1: 'debug -ports' toggles OFF the debug flag for ports." << std::endl;
+            outs << " Example2: 'debug ports regs' toggles ON the flags for ports & registers." << std::endl;
+        }
+    }
+    return outs.str();
+                                                                                //%USEREND CMD_PROCESSOR
+}                                                                               //%
+                                                                                //%
+// initialization method for logging messages                                   //%
+                                                                                //%
+void                                                                            //%
+SubReqMan::initMessageLogging()                                                 //%
+{                                                                               //%
+                                                                                //%USERBEGIN MODEL_DEBUG_INIT
+    // toggle on/off debugging flags
+    for (int i=0;i<sizeof(DbgCategories);i++) {
+//#ifdef DBG_SCP_SUBREQMAN
+//        dbgFlag[i] = true;
+//#else
+//        dbgFlag[i] = false;
+//#endif
+    }
+                                                                                //%USEREND MODEL_DEBUG_INIT
+                                                                                //%
+}                                                                               //%
+// method for logging messages                                                  //%
+void                                              //%
+SubReqMan::REPORT_MSG(std::string sev, std::string msg)//%
+{                                                 //%
+                                                                                //%USERBEGIN REPORT_MSG
+    std::cout << sev << ": " << msg << " [" << this->basename() << "@" << sc_core::sc_time_stamp() << "]" << std::endl;
+                                                                                //%USEREND REPORT_MSG
+                                                                                //%
+}                                                                               //%
+void                                                                            //%
+SubReqMan::rst_nHandler()                                                       //%
+                                                                                //%USERBEGIN rst_nHandler
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "rst_nHandler invoked because of event on port rst_n" );
+
+	// TODO: INSERT code for the rst_nHandler method here.
+
+    // make RnB to high for the first request
+    m_WSState = IDLE;
+
+    m_iUsedDataBuf = 0;
+    for(unsigned int i=0; i<128; i++)
+    {
+        m_iaNumLiveOps[i] = 0;
+    }
+ 
+    RnBMaster.write(1);
+
+} 
+                                                                                //%USEREND rst_nHandler
+void                                                                            //%
+SubReqMan::WriteManager()                                                       //%
+                                                                                //%USERBEGIN WriteManager
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "WriteManager invoked because of event on port " );
+
+	// TODO: INSERT code for the WriteManager method here.
+
+    // this thread write sub request + data to its slave continuously.
+
+    sSubReqWithData_t *subRqAndData = NULL;
+    uchar *cpDataBuf = NULL;
+    uchar *cpBitMap = NULL;
+
+    while(1)
+    {
+        //cout << "Write Manager is Invoked" << endl;
+        if((subRqAndData = GetNextSubReq()) != NULL)
+        {   // if there is any live requests
+
+            do
+            {
+                // wait until slave's RnB is high
+                if(RnBSlave.read() == false)
+                {
+                    //cout << "RnBSlave is false" << endl;
+                    //cout << RnBSlave.read() << endl;
+                    wait(RnBSlave.posedge_event());
+                    //cout << "RnBSlave is true" << endl;
+                    wait(SC_ZERO_TIME);
+                }
+                
+                // temporarily 1000ns is issusing period
+                // Todo: make it realistic                
+                wait(1000, SC_NS);
+            }while(!WriteMaster.write(0x0, (unsigned char *)(subRqAndData->subReq), sizeof(sSubReq_t)));
+            
+            if(subRqAndData->subReq->oriReq.Op == HOST_WRITE)
+            {       // if HOST_WRITE, data should be written
+               if(!WriteMaster.write(0x0, (uchar *)(subRqAndData->cpData), subRqAndData->subReq->iLen * SECTOR_SIZE_BYTE))
+               {    // data cannot be denied according to our protocol
+                   ERROR_MSG("Data should be accepted\n");
+                   sc_stop();
+               }
+
+               if(IsAllWritten(subRqAndData))
+               {        // if all data of HOST_WRITE is written, delete it from buffer.
+                   DeleteBuf(FindIntReqById(subRqAndData->subReq->oriReq.iId));
+               }
+            }else if(subRqAndData->subReq->oriReq.Op == HOST_READ)
+            {           // Todo: add special actions for another request types
+            }else
+            {
+            }
+
+            // these pointers are allocated by GetNextSubReq()
+            // so delete them after sending.
+            delete subRqAndData->subReq;
+            delete subRqAndData;
+        }
+
+        if(!IsReqBufEmpty())                // if request buffer is not empty, stay alive. 
+            wait(CLOCK_PERIOD_NS, SC_NS);
+        else                                // or wait next request
+            wait();
+    }
+
+}
+                                                                                //%USEREND WriteManager
+void                                                                            //%
+SubReqMan::ReadManager()                                                        //%
+                                                                                //%USERBEGIN ReadManager
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "ReadManager invoked because of event on port " );
+
+	// TODO: INSERT code for the ReadManager method here.
+
+    sReadResp_t readResp;
+    readResp.cpData = new uchar[MAX_REQ_LEN * 512];
+
+    while(1)
+    {       // when a host read request is completely read, transfer it to the host
+
+        // compose response with data (sReadResp_t)
+        readResp.hostReq = ((sIntReq_t *)(*m_CompleteReaddIter))->req;
+        memcpy(readResp.cpData, ((sIntReq_t*)(*m_CompleteReaddIter))->cpDataBuf,
+        ((sIntReq_t*)(*m_CompleteReaddIter))->req.iLen * 512);        
+
+        // transfer it to the host
+        if(!ReadMaster.write(0x0, (unsigned char *)(&readResp), sizeof(sReadResp_t)))
+        {
+            ERROR_MSG("Read response should be accepted\n");
+            sc_stop();
+        }
+        
+        // it is handled, so delete it from the buffer        
+        DeleteBuf(FindIntReqById(readResp.hostReq.iId));
+
+        // read port semaphore post for another read completion
+        m_seReadPath.post();
+
+        wait();
+
+    }
+}
+                                                                                //%USEREND ReadManager
+void                                                                            //%
+SubReqMan::WriteSlaveCB(                                                        //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory WriteSlaveBuf_writeBuf";//%
+    scml2::memory_alias< unsigned char >& m = this->WriteSlaveBuf_writeBuf;//%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN WriteSlaveCB
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the WriteSlaveCB method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+
+    if(cmd == tlm::TLM_READ_COMMAND)
+    {
+        ERROR_MSG("Read to this port is prohibited\n");
+        sc_stop();
+    }
+
+    // local variables
+    eWSState nextState;
+    Req_t newReq;
+    uchar *cpDest;
+    int iLen; 
+    std::list<sIntReq_t *>::iterator iterEnd;
+    double dBusDelay;
+
+    switch(m_WSState)
+    {
+        case IDLE:
+
+            // Todo: confirm this data is "request"
+            //
+            
+            memcpy(&newReq, ptr, sizeof(Req_t));
+            
+//            if(IsReqBufFull() || IsDataBufFull(newReq.iLen)){
+//                // request or data buffer is full 
+//                trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+//                RnBMaster.write(0);
+//                sc_stop();
+//                return;
+//            }
+
+            // insert incoming request to req buf
+            InsertBuf(ComposeIntReq(newReq));
+
+            
+
+            if(newReq.Op == HOST_WRITE){    
+                // write request waits for data
+                nextState = CMD;                
+            }
+            else if(newReq.Op == HOST_READ){
+                // reqd request goes to idle for next request
+                nextState = IDLE;
+                
+                if(IsReqBufFull() || IsDataBufFull(newReq.iLen)){
+                    // request or data buffer is full 
+                    //trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+                    RnBMaster.write(0);
+                    //sc_stop();
+                    //return;
+                }
+            }
+
+            // Todo: make this parameterized
+            // currently, 200MHz and 32bit buswidth
+            dBusDelay = ceil((float)sizeof(Req_t) / 4) * 5;
+
+            break;
+        case CMD:
+
+            // Todo: confirm this data is "data"
+            //
+
+            // last req buf is the destination of incoming data
+            // is there any way to point the last element easier? plz let me know!
+            iterEnd = m_IntReqList.begin();
+            std::advance(iterEnd, m_IntReqList.size()-1);
+
+            cpDest = ((sIntReq_t*)(*iterEnd))->cpDataBuf;  // data buffer address
+            iLen = ((sIntReq_t*)(*iterEnd))->req.iLen * SECTOR_SIZE_BYTE;    // length (byte)
+            memcpy(cpDest, ptr, iLen);      // copy the data
+            nextState = IDLE;               // next state is idle for next request
+
+            // Todo: make this parameterized
+            // currently, 200MHz and 256-bit buswidth
+            dBusDelay = ceil((float)(iLen) / 32) * 5;
+            
+            if(IsReqBufFull() || IsDataBufFull(newReq.iLen)){
+                // request or data buffer is full 
+                //trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+                RnBMaster.write(0);
+                //sc_stop();
+                //return;
+            }
+
+            break;
+        default:
+            ERROR_MSG("I cannot be in this state\n");
+            sc_stop();
+            break;
+    }
+
+    m_WSState = nextState;  // set my next state
+
+    if(nextState == IDLE)
+        m_eNewHostReq.notify();
+
+    // Todo: wait or give time to "t"? make decision plz
+    //
+
+    sc_core::sc_time busDelay((uint)dBusDelay, SC_NS);
+    t = busDelay;
+
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND WriteSlaveCB
+}                                                                               //%
+void                                                                            //%
+SubReqMan::ReadSlaveCB(                                                         //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory ReadSlaveBuf_readBuf";//%
+    scml2::memory_alias< unsigned char >& m = this->ReadSlaveBuf_readBuf;//%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN ReadSlaveCB
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the ReadSlaveCB method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+
+    if( cmd == tlm::TLM_READ_COMMAND )
+    {
+        ERROR_MSG("This port cannot be read\n");
+        sc_stop();
+    }
+
+    //copy requests and data
+    sSubReq_t curSubReq;
+    memcpy(&curSubReq, ptr, sizeof(sSubReq_t));
+
+    uchar *data = ((sReadSubResp_t *)ptr)->cpData;
+
+    /*cout << "< SubReq Module >" << endl;
+    cout << "ID : " << curSubReq.oriReq.iId << endl;
+    cout << "OP : " << curSubReq.oriReq.Op << endl;
+    cout << "ADDR : " << curSubReq.iStartAddr << endl;
+    cout << "LEN : " << curSubReq.iLen << endl;
+    cout << "DATA : ";
+    for (uint i=0; i<curSubReq.iLen*SECTOR_SIZE_BYTE; i++) {
+        cout << data[i];
+    }
+    cout << endl;*/
+
+    // find corresponding internal request
+    std::list<sIntReq_t *>::iterator curIter = FindIntReqById(curSubReq.oriReq.iId); 
+    sIntReq_t* curIntReq = (sIntReq_t *)(*curIter);
+
+    // for debug: to print read bitmap
+    PrintBitMap(curIntReq->req.iId, "prev", curIntReq->cpBitMap, curIntReq->req.iLen);
+
+    // set the bitmap for current data
+    uint iOffset = curSubReq.iStartAddr - curSubReq.oriReq.iAddr;
+    for(int i=0; i < curSubReq.iLen ; i++)
+    {
+        curIntReq->cpBitMap[(iOffset+i) / 8] += (0x1 << (7-((iOffset+i) % 8)));
+    }
+
+    // copy data actually
+    memcpy(&(curIntReq->cpDataBuf[iOffset * 512]), data, curSubReq.iLen * 512);
+
+    if(IsAllRead(curIntReq))
+    {   // if all the data is read, transfer it to my host
+        m_seReadPath.wait();    // read path semaphore
+        wait(SC_ZERO_TIME);     // wait zero time to avoid deadlock
+        m_CompleteReaddIter = curIter;  // completed internal request
+        m_eNewReadResp.notify();        // activate the thread
+    }
+
+    // Todo: make it parameterized
+    // currently 200MHz, 32bit buswidth
+    // and wait or give to "t"?
+    uint iTotalByte = sizeof(sSubReq_t) + curSubReq.iLen * 512;
+    sc_core::sc_time busDelay(ceil((float)iTotalByte/4) * 5, SC_NS); 
+    //t = busDelay;
+
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND ReadSlaveCB
+}                                                                               //%
+void                                                                            //%
+SubReqMan::SoftwareCB(                                                          //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory SoftCtrlSFR_softSFR";//%
+    scml2::memory_alias< unsigned int >& m = this->SoftCtrlSFR_softSFR;         //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN SoftwareCB
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the SoftwareCB method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+
+    uint *ipPtr = (unsigned int *)ptr;
+    uint iLen = ceil((float)len/4);
+
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+        for(int i=0; i < iLen ; i++)
+        {
+            m[i] = ipPtr[i];
+        }
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+        for(int i=0; i < iLen ; i++)
+        {
+            ipPtr[i] = m[i];
+        }
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+                                                                                //%USEREND SoftwareCB
+}                                                                               //%
+                                                                                //%
+                                                                                //%USERBEGIN MEMBER_DEFNS
+// TODO: Insert definitions of your member functions, etc. here.
+                                                                                //%USEREND MEMBER_DEFNS
+                                                                                //%
+                                                                                //%
+//----------------------------------------------------------------------        //%
+// 'Orphaned' code section                                                      //%
+//                                                                              //%
+// This section contains code snippets saved from previous versions of          //%
+// the model because they may have been user-written and they could             //%
+// not be associated with any tagged code sections when the                     //%
+// code was re-generated.                                                       //%
+//                                                                              //%
+// The most likely reason for this is that before the code was                  //%
+// re-generated, a function name was changed. Now, the section of code          //%
+// that was associated with the old name cannot be re-associated with           //%
+// the new name.  In that case, the recommended course of actions is            //%
+// to simply copy the relevant lines out of this section back into the          //%
+// function whose name has been changed.                                        //%
+#ifdef ORPHANED_CODE                                                            //%
+                                                                                //%USERBEGIN ORPHANED_CODE
+
+                                                                                //%USEREND ORPHANED_CODE
+#endif // ORPHANED_CODE                                                         //%
+                                                                                //%USERBEGIN FOOTER_H
+
+                                                                                //%USEREND FOOTER_H
+#endif // __SUBREQMAN_H__                                                       //%

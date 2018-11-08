@@ -1,0 +1,9 @@
+-include logicalnames.inc
+
+CPPFILES =  
+
+INCLUDEPATHS = 
+
+LIBRARIES = 
+
+DEFINES = 

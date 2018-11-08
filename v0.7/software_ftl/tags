@@ -1,0 +1,974 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ACQUIRE_LOCK	ftl_utils.c	/^void ACQUIRE_LOCK(uint x){$/;"	f
+ADDR_BIT_PARTITION	ftl_spec.h	83;"	d
+ADDR_NAND_MAN_BASE	ftl_global_var.c	/^uint ADDR_NAND_MAN_BASE[NAND_ARRAY_CHANNEL];$/;"	v
+ADDR_TYPE_CNT	addr_trans.h	/^	ADDR_TYPE_CNT$/;"	e	enum:eAddrType
+ASM	Makefile	/^ASM = armasm$/;"	m
+ASMFLAGS	Makefile	/^ASMFLAGS = $/;"	m
+AVAIL_BLK_CNT	ftl_spec.h	66;"	d
+AVAIL_BLK_CNT	ftl_spec.h	69;"	d
+AVAIL_BLK_CNT	ftl_spec.h	72;"	d
+AVAIL_BLK_CNT	ftl_spec.h	75;"	d
+AVAIL_PG_CNT	ftl_spec.h	80;"	d
+BGC_BLK_CNT_THRESHOLD	background_gc.h	8;"	d
+BGC_CNT_THRESHOLD	background_gc.h	10;"	d
+BGC_TO_THRESHOLD_MS	background_gc.h	9;"	d
+BITWIDTH_NAND_CTRL	low_level_nand_spec.h	4;"	d
+BLOCK	nand_timing.h	/^	unsigned int BLOCK;$/;"	m	class:COpAnalyzer
+BLOCK_ADDR	addr_trans.h	/^	BLOCK_ADDR,$/;"	e	enum:eAddrType
+BOOT_DIR	Makefile	/^BOOT_DIR = .$/;"	m
+CACHE_LRU_POLICY	cache_buffer.h	7;"	d
+CHANNEL	nand_timing.h	/^	unsigned int CHANNEL;$/;"	m	class:COpAnalyzer
+CHANNEL_ADDR	addr_trans.h	/^	CHANNEL_ADDR,$/;"	e	enum:eAddrType
+CMTDirtiness	struct_dftl.h	/^typedef enum CMTDirtiness{$/;"	g
+CMT_CLEAN	struct_dftl.h	/^	CMT_CLEAN,$/;"	e	enum:CMTDirtiness
+CMT_DIRTY	struct_dftl.h	/^	CMT_DIRTY$/;"	e	enum:CMTDirtiness
+CODEBASE	Makefile	/^CODEBASE = 0x0$/;"	m
+COMMAND	cache_buffer.h	/^}COMMAND;$/;"	t	typeref:struct:__anon3
+CORE_DEFINES	Makefile	/^CORE_DEFINES = $/;"	m
+CORE_INCLUDES	Makefile	/^CORE_INCLUDES = $/;"	m
+CORE_LIBRARIES	Makefile	/^CORE_LIBRARIES = boot.o --ro-base ${CODEBASE} --rw-base ${DATABASE} --first 'boot.o(_CWR_BOOT_CODE)' $/;"	m
+COpAnalyzer	nand_timing.cpp	/^COpAnalyzer::COpAnalyzer(){$/;"	f	class:COpAnalyzer
+COpAnalyzer	nand_timing.cpp	/^COpAnalyzer::COpAnalyzer(sNandSpec spec_)$/;"	f	class:COpAnalyzer
+COpAnalyzer	nand_timing.h	/^class COpAnalyzer$/;"	c
+COpQ	struct_nand_timing.h	/^typedef std::queue<SSmallOp, deque<SSmallOp> > COpQ;$/;"	t
+CQueueInt	struct_nand_timing.h	/^typedef std::queue<int, deque<int> > CQueueInt;$/;"	t
+CXX	Makefile	/^CXX = armcc$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS = -g -O2$/;"	m
+CacheSchedOffset	ftl_global_var.c	/^uint CacheSchedOffset;$/;"	v
+Cache_Buffer	cache_buffer.c	/^void Cache_Buffer(uint addr, uint len, uint op)$/;"	f
+CheckOverlap	device_if.c	/^int CheckOverlap(uint buffersize, Req_t* temp, int offset){ \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ Left\/R = 1, Left\/W = 2, Right\/R = 3, Right\/W = 4$/;"	f
+CmtElement	struct_dftl.h	/^typedef struct CmtElement{$/;"	s
+Create_Command	cache_buffer.c	/^void Create_Command(OP op, uint slave_addr, uint slave_bitmap, uint dram_id, uint dram_bitmap)$/;"	f
+DATABASE	Makefile	/^DATABASE = 0x080000$/;"	m
+DATA_BLK_CNT	ftl_spec.h	67;"	d
+DATA_BLK_CNT	ftl_spec.h	70;"	d
+DATA_BLK_CNT	ftl_spec.h	73;"	d
+DATA_BLK_CNT	ftl_spec.h	76;"	d
+DISASSEMBLY_FILE	Makefile	/^DISASSEMBLY_FILE = sim.dis$/;"	m
+DISK_CMD_BGC	struct_sim_if.h	/^	DISK_CMD_BGC,$/;"	e	enum:sDiskCmd
+DISK_CMD_NOTHING	struct_sim_if.h	/^	DISK_CMD_NOTHING = 127                   \/\/ for extension$/;"	e	enum:sDiskCmd
+DISK_CMD_READ	struct_sim_if.h	/^	DISK_CMD_READ,$/;"	e	enum:sDiskCmd
+DISK_CMD_WRITE	struct_sim_if.h	/^	DISK_CMD_WRITE = 0,$/;"	e	enum:sDiskCmd
+DOUBLE	bare_utils.h	35;"	d
+DOUBLE_	bare_utils.c	/^unsigned int DOUBLE_(double d, unsigned int b){$/;"	f
+DeviceSchedOffset	ftl_global_var.c	/^uint DeviceSchedOffset;$/;"	v
+Dftl	struct_dftl.h	/^typedef struct Dftl{$/;"	s
+DftlAderess	dftl_trans.h	/^typedef struct DftlAderess{$/;"	s
+DiskCmd	struct_sim_if.h	/^}DiskCmd;$/;"	t	typeref:enum:sDiskCmd
+DiskReq	struct_sim_if.h	/^}DiskReq;$/;"	t	typeref:struct:sDiskRequest
+DramInfo	ftl_global_var.c	/^sDramInfo   DramInfo[100];$/;"	v
+ENTRY_SIZE	cache_buffer.h	13;"	d
+FLOAT	bare_utils.c	/^unsigned int FLOAT(float f){$/;"	f
+FOREGROUND_GC_THRESHOLD	foreground_gc.h	10;"	d
+FREE_BACK_NODE	cache_buffer.h	18;"	d
+FREE_FRONT_NODE	cache_buffer.h	17;"	d
+FTLOffset	ftl_global_var.c	/^uint FTLOffset;$/;"	v
+FTL_NOTHING	ftl.h	/^	FTL_NOTHING$/;"	e	enum:eFtlInternalCommand
+FTL_READ	ftl.h	/^	FTL_READ,$/;"	e	enum:eFtlInternalCommand
+FTL_WRITE	ftl.h	/^	FTL_WRITE = 0,$/;"	e	enum:eFtlInternalCommand
+GTD_ELEMENT_CACHED	struct_dftl.h	/^	GTD_ELEMENT_CACHED,$/;"	e	enum:GtdElementStatus
+GTD_ELEMENT_INVALID	struct_dftl.h	/^	GTD_ELEMENT_INVALID,$/;"	e	enum:GtdElementStatus
+GTD_ELEMENT_NAND	struct_dftl.h	/^	GTD_ELEMENT_NAND,$/;"	e	enum:GtdElementStatus
+GTD_ELEMENT_STAT_CNT	struct_dftl.h	/^	GTD_ELEMENT_STAT_CNT$/;"	e	enum:GtdElementStatus
+GTD_SIZE	ftl_spec.h	41;"	d
+GetResult	nand_timing.h	/^	inline SResult		GetResult()	const { return Result; } \/\/ by Gun$/;"	f	class:COpAnalyzer
+GtdElement	struct_dftl.h	/^typedef struct GtdElement{$/;"	s
+GtdElementStatus	struct_dftl.h	/^typedef enum GtdElementStatus{$/;"	g
+HASH_MAX	cache_buffer.h	14;"	d
+HASH_NODE	cache_buffer.h	/^typedef struct HASH_NODE{$/;"	s
+HASH_NODE	cache_buffer.h	/^}HASH_NODE;$/;"	t	typeref:struct:HASH_NODE
+HIGHER_BOUND	ftl_utils.h	10;"	d
+HOST_NOTHING	struct_sim_if.h	/^	HOST_NOTHING = 127$/;"	e	enum:eHOST_REQ_OP
+HOST_READ	struct_sim_if.h	/^	HOST_READ = 1,$/;"	e	enum:eHOST_REQ_OP
+HOST_REQ_OP	struct_sim_if.h	/^}HOST_REQ_OP;$/;"	t	typeref:enum:eHOST_REQ_OP
+HOST_WRITE	struct_sim_if.h	/^	HOST_WRITE = 0,$/;"	e	enum:eHOST_REQ_OP
+Hash_Delete_Node	cache_buffer.c	/^HASH_NODE* Hash_Delete_Node(HASH_NODE* node)$/;"	f
+Hash_Find_And_Delete_Node	cache_buffer.c	/^HASH_NODE* Hash_Find_And_Delete_Node(HASH_NODE* front, uint addr)$/;"	f
+Hash_Find_Node	cache_buffer.c	/^HASH_NODE* Hash_Find_Node(HASH_NODE* front, uint addr)$/;"	f
+Hash_Pop_Front	cache_buffer.c	/^HASH_NODE* Hash_Pop_Front(HASH_NODE* front) $/;"	f
+Hash_Push_Front	cache_buffer.c	/^void Hash_Push_Front(HASH_NODE* front, HASH_NODE* node)$/;"	f
+INVALID_IDX	generic_list.h	28;"	d
+INVALID_VALUE	typedefs.h	10;"	d
+INV_RSVED_BLK_RATIO	ftl_spec.h	61;"	d
+IRQ_CACHE_BUFFER_CONTROLLER	nand_cmd_layer.c	/^    IRQ_CACHE_BUFFER_CONTROLLER = 4,$/;"	e	enum:irqFunctionType	file:
+IRQ_DEVICE_INTERFACE	nand_cmd_layer.c	/^    IRQ_DEVICE_INTERFACE = 1,$/;"	e	enum:irqFunctionType	file:
+IRQ_FTL	nand_cmd_layer.c	/^    IRQ_FTL = 3,$/;"	e	enum:irqFunctionType	file:
+IRQ_INITIALIZATION	nand_cmd_layer.c	/^    IRQ_INITIALIZATION = 5$/;"	e	enum:irqFunctionType	file:
+IRQ_SUB_REQUEST_MANAGER	nand_cmd_layer.c	/^    IRQ_SUB_REQUEST_MANAGER = 2,$/;"	e	enum:irqFunctionType	file:
+IRQ_UNKNOWN	nand_cmd_layer.c	/^    IRQ_UNKNOWN = 0,$/;"	e	enum:irqFunctionType	file:
+LD	Makefile	/^LD = armlink$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS = --map --first=boot.o\\(_CWR_BOOT_CODE\\)$/;"	m
+LEtoBE	dist_ftl_utils.c	10;"	d	file:
+LINKER_OPTIONS	Makefile	/^LINKER_OPTIONS = $/;"	m
+LIST_SIZE	cache_buffer.h	16;"	d
+LLN_CHIP_SEL	nand_cmd_layer.h	/^	LLN_CHIP_SEL = 99,$/;"	e	enum:lowLevelNandOpCode
+LLN_COPYBACK	nand_cmd_layer.h	/^	LLN_COPYBACK = 4,$/;"	e	enum:lowLevelNandOpCode
+LLN_COPYBACK_PGM	nand_cmd_layer.h	/^	LLN_COPYBACK_PGM = 5,$/;"	e	enum:lowLevelNandOpCode
+LLN_COPYBACK_RD	nand_cmd_layer.h	/^	LLN_COPYBACK_RD = 6,$/;"	e	enum:lowLevelNandOpCode
+LLN_ERASE	nand_cmd_layer.h	/^	LLN_ERASE = 3,$/;"	e	enum:lowLevelNandOpCode
+LLN_MAP_COPYBACK	nand_cmd_layer.h	/^    LLN_MAP_COPYBACK = 9,$/;"	e	enum:lowLevelNandOpCode
+LLN_MAP_COPYBACK_PGM	nand_cmd_layer.h	/^    LLN_MAP_COPYBACK_PGM = 10,$/;"	e	enum:lowLevelNandOpCode
+LLN_MAP_COPYBACK_RD	nand_cmd_layer.h	/^    LLN_MAP_COPYBACK_RD = 11,$/;"	e	enum:lowLevelNandOpCode
+LLN_MAP_ERASE	nand_cmd_layer.h	/^    LLN_MAP_ERASE = 12,$/;"	e	enum:lowLevelNandOpCode
+LLN_MAP_PROGRAM	nand_cmd_layer.h	/^    LLN_MAP_PROGRAM = 8,$/;"	e	enum:lowLevelNandOpCode
+LLN_MAP_READ	nand_cmd_layer.h	/^    LLN_MAP_READ = 7,$/;"	e	enum:lowLevelNandOpCode
+LLN_NOTHING	nand_cmd_layer.h	/^	LLN_NOTHING = 0,$/;"	e	enum:lowLevelNandOpCode
+LLN_PROGRAM	nand_cmd_layer.h	/^	LLN_PROGRAM = 1,$/;"	e	enum:lowLevelNandOpCode
+LLN_READ	nand_cmd_layer.h	/^	LLN_READ = 2,$/;"	e	enum:lowLevelNandOpCode
+LLN_WAITING	nand_cmd_layer.h	/^	LLN_WAITING = 100$/;"	e	enum:lowLevelNandOpCode
+LONG_INVALID_VALUE	typedefs.h	9;"	d
+LOWER_BOUND	ftl_utils.h	9;"	d
+List_Find_Node	cache_buffer.c	/^NODE* List_Find_Node(NODE* front, uint addr)$/;"	f
+List_Init	cache_buffer.c	/^void List_Init()$/;"	f
+List_Is_Empty	cache_buffer.c	/^uint List_Is_Empty(NODE* front)$/;"	f
+List_Pop_Back	cache_buffer.c	/^NODE* List_Pop_Back(NODE* back)$/;"	f
+List_Pop_Front	cache_buffer.c	/^NODE* List_Pop_Front(NODE* front)$/;"	f
+List_Pop_Middle	cache_buffer.c	/^NODE* List_Pop_Middle(NODE* evict_node)$/;"	f
+List_Push_Back	cache_buffer.c	/^void List_Push_Back(NODE* back, NODE* n)$/;"	f
+List_Push_Front	cache_buffer.c	/^void List_Push_Front(NODE* front, NODE* n)$/;"	f
+MapPage	struct_dftl.h	/^typedef struct MapPage{	$/;"	s
+NAND_ARRAY_CHANNEL	nand_spec.h	5;"	d
+NAND_ARRAY_TOTAL_CAP	nand_spec.h	21;"	d
+NAND_ARRAY_WAY	nand_spec.h	6;"	d
+NAND_BLOCK_DEAD	struct_meta.h	/^	NAND_BLOCK_DEAD = 2,$/;"	e	enum:eBlockStatus
+NAND_BLOCK_FREE	struct_meta.h	/^	NAND_BLOCK_FREE = 1,$/;"	e	enum:eBlockStatus
+NAND_BLOCK_MAP_USED	struct_meta.h	/^	NAND_BLOCK_MAP_USED$/;"	e	enum:eBlockStatus
+NAND_BLOCK_NOTHING	struct_meta.h	/^	NAND_BLOCK_NOTHING = 3,$/;"	e	enum:eBlockStatus
+NAND_BLOCK_PER_PLANE	nand_spec.h	9;"	d
+NAND_BLOCK_USED	struct_meta.h	/^	NAND_BLOCK_USED = 0,$/;"	e	enum:eBlockStatus
+NAND_CBR_PAGE	struct_nand_timing.h	/^	NAND_CBR_PAGE,$/;"	e	enum:eNandCommand
+NAND_CBW_PAGE	struct_nand_timing.h	/^	NAND_CBW_PAGE,$/;"	e	enum:eNandCommand
+NAND_CLK_PERIOD	low_level_nand_spec.h	6;"	d
+NAND_CMD_BUF_BUSY	nand_cmd_layer.h	/^	NAND_CMD_BUF_BUSY = 0,$/;"	e	enum:nandCmdBufferStatus
+NAND_CMD_BUF_MAP_BUSY	nand_cmd_layer.h	/^	NAND_CMD_BUF_MAP_BUSY = 2,$/;"	e	enum:nandCmdBufferStatus
+NAND_CMD_BUF_MAP_READY	nand_cmd_layer.h	/^	NAND_CMD_BUF_MAP_READY = 3$/;"	e	enum:nandCmdBufferStatus
+NAND_CMD_BUF_READY	nand_cmd_layer.h	/^	NAND_CMD_BUF_READY = 1,$/;"	e	enum:nandCmdBufferStatus
+NAND_CMD_COPYBACK	struct_sim_if.h	/^	NAND_CMD_COPYBACK,$/;"	e	enum:__anon1
+NAND_CMD_COPYBACK_R	struct_sim_if.h	/^	NAND_CMD_COPYBACK_R,$/;"	e	enum:__anon1
+NAND_CMD_COPYBACK_W	struct_sim_if.h	/^	NAND_CMD_COPYBACK_W,$/;"	e	enum:__anon1
+NAND_CMD_ERASE	struct_sim_if.h	/^	NAND_CMD_ERASE,$/;"	e	enum:__anon1
+NAND_CMD_MAP_COPYBACK	struct_sim_if.h	/^	NAND_CMD_MAP_COPYBACK,$/;"	e	enum:__anon1
+NAND_CMD_MAP_COPYBACK_R	struct_sim_if.h	/^	NAND_CMD_MAP_COPYBACK_R,$/;"	e	enum:__anon1
+NAND_CMD_MAP_COPYBACK_W	struct_sim_if.h	/^	NAND_CMD_MAP_COPYBACK_W,$/;"	e	enum:__anon1
+NAND_CMD_MAP_ERASE	struct_sim_if.h	/^	NAND_CMD_MAP_ERASE,$/;"	e	enum:__anon1
+NAND_CMD_MAP_PROGRAM	struct_sim_if.h	/^	NAND_CMD_MAP_PROGRAM,$/;"	e	enum:__anon1
+NAND_CMD_MAP_READ	struct_sim_if.h	/^	NAND_CMD_MAP_READ,$/;"	e	enum:__anon1
+NAND_CMD_NOTHING	struct_nand_timing.h	/^	NAND_CMD_NOTHING = 32$/;"	e	enum:eNandCommand
+NAND_CMD_PROGRAM	struct_sim_if.h	/^    NAND_CMD_PROGRAM,$/;"	e	enum:__anon1
+NAND_CMD_READ	struct_sim_if.h	/^	NAND_CMD_READ,$/;"	e	enum:__anon1
+NAND_CMD_RNM_READ	struct_sim_if.h	/^	NAND_CMD_RNM_READ,$/;"	e	enum:__anon1
+NAND_CMD_TYPE_CNT	struct_sim_if.h	/^	NAND_CMD_TYPE_CNT,$/;"	e	enum:__anon1
+NAND_CMD_TYPE_DUMMY	struct_sim_if.h	/^    NAND_CMD_TYPE_DUMMY = 4294967295$/;"	e	enum:__anon1
+NAND_CTRL_CLK_PERIOD	low_level_nand_spec.h	5;"	d
+NAND_ERASE	struct_nand_timing.h	/^	NAND_ERASE = 0,$/;"	e	enum:eNandCommand
+NAND_PAGE_BYTE	nand_spec.h	7;"	d
+NAND_PAGE_FREE	struct_meta.h	/^	NAND_PAGE_FREE			=	1,$/;"	e	enum:ePageStatus
+NAND_PAGE_INVALID	struct_meta.h	/^	NAND_PAGE_INVALID		= 0,$/;"	e	enum:ePageStatus
+NAND_PAGE_NOTHING	struct_meta.h	/^	NAND_PAGE_NOTHING		= 3$/;"	e	enum:ePageStatus
+NAND_PAGE_PER_BLOCK	nand_spec.h	8;"	d
+NAND_PAGE_VALID	struct_meta.h	/^	NAND_PAGE_VALID			= 2,$/;"	e	enum:ePageStatus
+NAND_PGM_PAGE	struct_nand_timing.h	/^	NAND_PGM_PAGE,$/;"	e	enum:eNandCommand
+NAND_PLANE_PER_WAY	nand_spec.h	10;"	d
+NAND_READ_PAGE	struct_nand_timing.h	/^	NAND_READ_PAGE,$/;"	e	enum:eNandCommand
+NAND_TIMING_TBER	nand_spec.h	27;"	d
+NAND_TIMING_TPROG	nand_spec.h	23;"	d
+NAND_TIMING_TR	nand_spec.h	24;"	d
+NAND_TIMING_TRC	nand_spec.h	26;"	d
+NAND_TIMING_TWC	nand_spec.h	25;"	d
+NANDs	nand_timing.h	/^	SNANDchannel	*NANDs;$/;"	m	class:COpAnalyzer
+NODE	cache_buffer.h	/^typedef struct NODE{$/;"	s
+NODE	cache_buffer.h	/^}NODE;$/;"	t	typeref:struct:NODE
+NOTHING	cache_buffer.h	10;"	d
+OFFSET_FTL_COMPLETE	ftl_global_var.c	/^uint OFFSET_FTL_COMPLETE[NAND_ARRAY_CHANNEL];$/;"	v
+OP	cache_buffer.h	/^}OP;$/;"	t	typeref:enum:__anon2
+Op	struct_sim_if.h	/^	HOST_REQ_OP Op;$/;"	m	struct:sReq_t
+OpAllWayEmpty	nand_timing.cpp	/^OpAllWayEmpty(SNANDchannel Ch)			\/\/ return true if all Op queues of a channel are empty.$/;"	f	class:COpAnalyzer
+OpCOpQPush	nand_timing.cpp	/^OpCOpQPush(COpQ *smallQ, double time, SmallOpType type)		\/\/ push values to queue$/;"	f	class:COpAnalyzer
+OpComputeCHTime	nand_timing.cpp	/^OpComputeCHTime(int iCh)$/;"	f	class:COpAnalyzer
+OpGetSmallOpNPop	nand_timing.cpp	/^OpGetSmallOpNPop(COpQ *wayOp)			\/\/ just get and pop$/;"	f	class:COpAnalyzer
+OpSeparate	nand_timing.cpp	/^OpSeparate(SLargeOp op)$/;"	f	class:COpAnalyzer
+PAGE_ADDR	addr_trans.h	/^	PAGE_ADDR,$/;"	e	enum:eAddrType
+PAGE_SIZE	cache_buffer.h	27;"	d
+PLANE_ADDR	addr_trans.h	/^	PLANE_ADDR,$/;"	e	enum:eAddrType
+READ_BOTH	cache_buffer.h	/^	READ_BOTH = 4,$/;"	e	enum:__anon2
+READ_DRAM	cache_buffer.h	/^	READ_DRAM = 0,$/;"	e	enum:__anon2
+READ_SLAVE	cache_buffer.h	/^	READ_SLAVE = 2,$/;"	e	enum:__anon2
+RELEASE_LOCK	ftl_utils.c	/^void RELEASE_LOCK(uint x){$/;"	f
+RSVED_BLK_CNT	ftl_spec.h	63;"	d
+RSVED_BLK_RATIO	ftl_spec.h	60;"	d
+Read_Page	cache_buffer.c	/^void Read_Page(uint addr, uint offset, uint size)$/;"	f
+Req_t	struct_sim_if.h	/^}Req_t;$/;"	t	typeref:struct:sReq_t
+Result	nand_timing.h	/^	SResult			Result;	$/;"	m	class:COpAnalyzer
+SECTOR	nand_timing.h	/^	unsigned int SECTOR;$/;"	m	class:COpAnalyzer
+SECTOR_ADDR	addr_trans.h	/^	SECTOR_ADDR,$/;"	e	enum:eAddrType
+SECTOR_INVALID	struct_meta.h	/^	SECTOR_INVALID = 0,$/;"	e	enum:eSectorState
+SECTOR_PER_LINE	cache_buffer.h	25;"	d
+SECTOR_PER_PAGE	ftl_spec.h	57;"	d
+SECTOR_SIZE	cache_buffer.h	24;"	d
+SECTOR_SIZE_BYTE	ftl_spec.h	56;"	d
+SECTOR_VALID	struct_meta.h	/^	SECTOR_VALID = 1$/;"	e	enum:eSectorState
+SLargeOp	struct_nand_timing.h	/^typedef struct SLargeOp$/;"	s
+SLargeOp	struct_nand_timing.h	/^}SLargeOp;$/;"	t	typeref:struct:SLargeOp
+SNANDchannel	struct_nand_timing.h	/^typedef struct SNANDchannel$/;"	s
+SNANDchannel	struct_nand_timing.h	/^}SNANDchannel;$/;"	t	typeref:struct:SNANDchannel
+SNANDwaay	struct_nand_timing.h	/^}SNANDwaay;$/;"	t	typeref:struct:SNANDway
+SNANDway	struct_nand_timing.h	/^typedef struct SNANDway$/;"	s
+SReq	struct_nand_timing.h	/^typedef struct SReq \/\/ Req info$/;"	s
+SReq	struct_nand_timing.h	/^}SReq;$/;"	t	typeref:struct:SReq
+SResult	struct_nand_timing.h	/^typedef struct SResult$/;"	s
+SResult	struct_nand_timing.h	/^}SResult;$/;"	t	typeref:struct:SResult
+SSmallOp	struct_nand_timing.h	/^typedef struct SSmallOp$/;"	s
+SSmallOp	struct_nand_timing.h	/^}SSmallOp;$/;"	t	typeref:struct:SSmallOp
+SWFlag	ftl_global_var.c	/^uint SWFlag;$/;"	v
+SWPointer	ftl_global_var.c	/^uint SWPointer;$/;"	v
+SW_RT_ADDR_TRANS	bare_utils.h	/^	SW_RT_ADDR_TRANS,$/;"	e	enum:eSoftwareRoutineId
+SW_RT_DYN_WL	bare_utils.h	/^	SW_RT_DYN_WL$/;"	e	enum:eSoftwareRoutineId
+SW_RT_FORE_GC	bare_utils.h	/^	SW_RT_FORE_GC,$/;"	e	enum:eSoftwareRoutineId
+SW_RT_FTL	bare_utils.h	/^	SW_RT_FTL = 0,$/;"	e	enum:eSoftwareRoutineId
+SYMFILE	Makefile	/^SYMFILE = .\/symfile$/;"	m
+SetZeroTime	nand_timing.cpp	/^SetZeroTime()$/;"	f	class:COpAnalyzer
+SmallOpType	struct_nand_timing.h	/^typedef enum SmallOpType$/;"	g
+SmallOpType	struct_nand_timing.h	/^}SmallOpType;$/;"	t	typeref:enum:SmallOpType
+UCHAR_FALSE	typedefs.h	12;"	d
+UCHAR_TRUE	typedefs.h	13;"	d
+UINT64	bare_utils.h	34;"	d
+UINT64_	bare_utils.c	/^unsigned int UINT64_(unsigned long long int uint64, unsigned int b){$/;"	f
+UPDATE_SLAVE	cache_buffer.h	/^	UPDATE_SLAVE = 5 \/\/ read slave and modify with dram contents and re-write nand$/;"	e	enum:__anon2
+USED_BACK_NODE	cache_buffer.h	21;"	d
+USED_FRONT_NODE	cache_buffer.h	20;"	d
+VALID_BITMAP_SIZE	ftl_spec.h	58;"	d
+WAY	nand_timing.h	/^	unsigned int WAY;$/;"	m	class:COpAnalyzer
+WAY_ADDR	addr_trans.h	/^	WAY_ADDR,$/;"	e	enum:eAddrType
+WRITE_DRAM	cache_buffer.h	/^	WRITE_DRAM = 1,$/;"	e	enum:__anon2
+WRITE_SLAVE	cache_buffer.h	/^	WRITE_SLAVE = 3,$/;"	e	enum:__anon2
+Write_Page	cache_buffer.c	/^void Write_Page(uint addr, uint offset, uint size)$/;"	f
+_ADDR_CACHE_BUFFER_BASE_	sfr_addr.h	95;"	d
+_ADDR_CPU2_BASE_	sfr_addr.h	36;"	d
+_ADDR_DEV_IF_BASE_	sfr_addr.h	88;"	d
+_ADDR_HEAP_BASE_	bare_utils.h	28;"	d
+_ADDR_HEAP_LIMIT_	bare_utils.h	29;"	d
+_ADDR_HEAP_SIZE_	bare_utils.h	30;"	d
+_ADDR_INTCTRL_BASE_	sfr_addr.h	76;"	d
+_ADDR_MEMCTRL_BASE_	sfr_addr.h	70;"	d
+_ADDR_NAND_MAN_BASE_	sfr_addr.h	35;"	d
+_ADDR_PRINT_CHAR_	bare_utils.h	8;"	d
+_ADDR_PRINT_DOUBLE_LSB_	bare_utils.h	16;"	d
+_ADDR_PRINT_DOUBLE_MSB_	bare_utils.h	15;"	d
+_ADDR_PRINT_FLOAT_	bare_utils.h	10;"	d
+_ADDR_PRINT_HEX_	bare_utils.h	12;"	d
+_ADDR_PRINT_INT64HEX_LSB_	bare_utils.h	18;"	d
+_ADDR_PRINT_INT64HEX_MSB_	bare_utils.h	17;"	d
+_ADDR_PRINT_INT64_LSB_	bare_utils.h	14;"	d
+_ADDR_PRINT_INT64_MSB_	bare_utils.h	13;"	d
+_ADDR_PRINT_INT_	bare_utils.h	9;"	d
+_ADDR_RAM_BASE_	sfr_addr.h	17;"	d
+_ADDR_ROM_BASE_	sfr_addr.h	14;"	d
+_ADDR_SUB_REQ_BASE_	sfr_addr.h	19;"	d
+_BASELINE_PAGE_MAPPING_	ftl_type.h	5;"	d
+_CMT_LINE_SIZE_	ftl_spec.h	30;"	d
+_CMT_SIZE_	ftl_spec.h	31;"	d
+_CRTDBG_MAP_ALLOC	common_header.h	4;"	d
+_DEBUG_PRINT_LV_	compile_flag.h	12;"	d
+_DEBUG_PRINT_LV_	compile_flag.h	8;"	d
+_DFTL_	ftl_type.h	6;"	d
+_DIST_FTL_	ftl_type.h	7;"	d
+_FTLMETA_SIZE_	ftl.c	4;"	d	file:
+_INTERVAL_CACHE_DATA_	sfr_addr.h	103;"	d
+_INTERVAL_R_DATA_	sfr_addr.h	89;"	d
+_LLN_BIT_FOR_BLOCK_	low_level_nand_spec.h	47;"	d
+_LLN_BIT_FOR_CHANNEL_	low_level_nand_spec.h	44;"	d
+_LLN_BIT_FOR_PAGE_	low_level_nand_spec.h	46;"	d
+_LLN_BIT_FOR_WAY_	low_level_nand_spec.h	45;"	d
+_LLN_BLOCK_PER_WAY_	low_level_nand_spec.h	13;"	d
+_LLN_BLOCK_PER_WAY_BIT_	low_level_nand_spec.h	39;"	d
+_LLN_BLOCK_SIZE_	low_level_nand_spec.h	19;"	d
+_LLN_BYTE_PER_SECTOR_BIT_	low_level_nand_spec.h	36;"	d
+_LLN_CHANNEL_PER_SSD_BIT_	low_level_nand_spec.h	41;"	d
+_LLN_MASK_BLOCK_	low_level_nand_spec.h	51;"	d
+_LLN_MASK_CHANNEL_	low_level_nand_spec.h	49;"	d
+_LLN_MASK_PAGE_	low_level_nand_spec.h	52;"	d
+_LLN_MASK_WAY_	low_level_nand_spec.h	50;"	d
+_LLN_NAND_BITWIDTH_	low_level_nand_spec.h	12;"	d
+_LLN_NUM_CHANNEL_	low_level_nand_spec.h	10;"	d
+_LLN_NUM_WAY_	low_level_nand_spec.h	9;"	d
+_LLN_PAGE_DATE_SIZE_	low_level_nand_spec.h	15;"	d
+_LLN_PAGE_PER_BLOCK_	low_level_nand_spec.h	14;"	d
+_LLN_PAGE_PER_BLOCK_BIT_	low_level_nand_spec.h	38;"	d
+_LLN_PAGE_SIZE_	low_level_nand_spec.h	17;"	d
+_LLN_PAGE_SPARE_SIZE_	low_level_nand_spec.h	16;"	d
+_LLN_SECTOR_PER_PAGE_BIT_	low_level_nand_spec.h	37;"	d
+_LLN_TOTAL_WAY_SIZE_	low_level_nand_spec.h	18;"	d
+_LLN_WAY_PER_CHANNEL_BIT_	low_level_nand_spec.h	40;"	d
+_MAP_BLOCK_OV_PROV_	ftl_spec.h	48;"	d
+_MAP_BLOCK_PER_PL_	ftl_spec.h	50;"	d
+_MAP_NAND_PAGE_SIZE_	ftl_spec.h	37;"	d
+_MAX_MAP_BLOCK_	ftl_spec.h	49;"	d
+_MCSSD_ARM_BARE_METAL_	compile_flag.h	7;"	d
+_MILISEC_	host_machine.cpp	8;"	d	file:
+_MIN_MAP_BLOCK_	ftl_spec.h	47;"	d
+_NAND_PAGE_CNT_	ftl_spec.h	39;"	d
+_NUM_CMT_IN_CACHE_	ftl_spec.h	19;"	d
+_NUM_CMT_IN_CACHE_	ftl_spec.h	22;"	d
+_NUM_CMT_IN_CACHE_	ftl_spec.h	25;"	d
+_NUM_CMT_IN_CACHE_	ftl_spec.h	28;"	d
+_NUM_CMT_IN_PAGE_	dftl_trans.h	7;"	d
+_NUM_ELE_IN_LINE_	ftl_spec.h	18;"	d
+_NUM_ELE_IN_LINE_	ftl_spec.h	21;"	d
+_NUM_ELE_IN_LINE_	ftl_spec.h	24;"	d
+_NUM_ELE_IN_LINE_	ftl_spec.h	27;"	d
+_NUM_ELE_IN_PAGE_	ftl_spec.h	38;"	d
+_NUM_GTD_ELEMENT_	ftl_spec.h	40;"	d
+_OFFSET_CACHE_ADDR_	sfr_addr.h	97;"	d
+_OFFSET_CACHE_BUFFER_COMPLETE_	sfr_addr.h	80;"	d
+_OFFSET_CACHE_COMPLETE_	sfr_addr.h	96;"	d
+_OFFSET_CACHE_DATA_	sfr_addr.h	101;"	d
+_OFFSET_CACHE_LEN_	sfr_addr.h	98;"	d
+_OFFSET_CACHE_OP_	sfr_addr.h	99;"	d
+_OFFSET_CACHE_QUEUE_SIZE_	sfr_addr.h	102;"	d
+_OFFSET_CACHE_SIZE_	sfr_addr.h	100;"	d
+_OFFSET_CMD_SIZE_	sfr_addr.h	24;"	d
+_OFFSET_CPU2_	sfr_addr.h	27;"	d
+_OFFSET_CPU2_ADDR_	sfr_addr.h	29;"	d
+_OFFSET_CPU2_DRAM_ADDR_	sfr_addr.h	31;"	d
+_OFFSET_CPU2_DRAM_LENGTH_	sfr_addr.h	32;"	d
+_OFFSET_CPU2_ID_	sfr_addr.h	33;"	d
+_OFFSET_CPU2_LENGTH_	sfr_addr.h	30;"	d
+_OFFSET_CPU2_OP_	sfr_addr.h	28;"	d
+_OFFSET_DEVICEIF_COMPLETE_	sfr_addr.h	79;"	d
+_OFFSET_FTL_0_COMPLETE_	sfr_addr.h	81;"	d
+_OFFSET_FTL_1_COMPLETE_	sfr_addr.h	82;"	d
+_OFFSET_FTL_2_COMPLETE_	sfr_addr.h	83;"	d
+_OFFSET_FTL_3_COMPLETE_	sfr_addr.h	84;"	d
+_OFFSET_FTL_COMPLETE_	sfr_addr.h	63;"	d
+_OFFSET_GRANT_	sfr_addr.h	72;"	d
+_OFFSET_ILEN_ADDR_	sfr_addr.h	22;"	d
+_OFFSET_INITIAL_COMPLETE_	sfr_addr.h	85;"	d
+_OFFSET_INT_SOURCE_	sfr_addr.h	78;"	d
+_OFFSET_INT_TYPE_	sfr_addr.h	77;"	d
+_OFFSET_IRQ_ADDR_	sfr_addr.h	39;"	d
+_OFFSET_IRQ_BASE_	sfr_addr.h	37;"	d
+_OFFSET_IRQ_ID_	sfr_addr.h	38;"	d
+_OFFSET_ISTARTADDR_ADDR_	sfr_addr.h	21;"	d
+_OFFSET_OP_ADDR_	sfr_addr.h	23;"	d
+_OFFSET_RELEASE_	sfr_addr.h	73;"	d
+_OFFSET_REQ_SOURCE_	sfr_addr.h	71;"	d
+_OFFSET_R_BUS_	sfr_addr.h	41;"	d
+_OFFSET_R_BUS_ADDR_	sfr_addr.h	44;"	d
+_OFFSET_R_BUS_DRAM_ADDR_	sfr_addr.h	60;"	d
+_OFFSET_R_BUS_DRAM_LENGTH_	sfr_addr.h	61;"	d
+_OFFSET_R_BUS_DUMMY1_	sfr_addr.h	46;"	d
+_OFFSET_R_BUS_DUMMY2_	sfr_addr.h	47;"	d
+_OFFSET_R_BUS_DUMMY3_	sfr_addr.h	48;"	d
+_OFFSET_R_BUS_DUMMY4_	sfr_addr.h	49;"	d
+_OFFSET_R_BUS_ID_	sfr_addr.h	42;"	d
+_OFFSET_R_BUS_LEN_	sfr_addr.h	45;"	d
+_OFFSET_R_BUS_NAND_ADDR1_	sfr_addr.h	52;"	d
+_OFFSET_R_BUS_NAND_ADDR2_	sfr_addr.h	53;"	d
+_OFFSET_R_BUS_NAND_ADDR3_	sfr_addr.h	54;"	d
+_OFFSET_R_BUS_NAND_ADDR4_	sfr_addr.h	55;"	d
+_OFFSET_R_BUS_NAND_CMD_	sfr_addr.h	51;"	d
+_OFFSET_R_BUS_NAND_CMD_STATUS_	sfr_addr.h	64;"	d
+_OFFSET_R_BUS_NAND_FULL	sfr_addr.h	67;"	d
+_OFFSET_R_BUS_NAND_MAP_	sfr_addr.h	57;"	d
+_OFFSET_R_BUS_NAND_MAP_ADDR_	sfr_addr.h	58;"	d
+_OFFSET_R_BUS_OP_	sfr_addr.h	43;"	d
+_OFFSET_R_BUS_REQ_ID_	sfr_addr.h	62;"	d
+_OFFSET_R_COMPLETE_	sfr_addr.h	91;"	d
+_OFFSET_R_DATA_	sfr_addr.h	92;"	d
+_OFFSET_R_SIZE_	sfr_addr.h	90;"	d
+_OFFSET_SUB_REQ_CACHE_DATA_	sfr_addr.h	25;"	d
+_OFFSET_SUB_REQ_COMPLETE_	sfr_addr.h	20;"	d
+_OFFSEt_R_BUS_INT_	sfr_addr.h	65;"	d
+_RD_WR_PTR_CNT_	dist_ftl_spec.h	16;"	d
+_SEP_SEQ_BLK_	dist_ftl_spec.h	17;"	d
+_SEQ_TH_	dist_ftl_spec.h	20;"	d
+_SEQ_TH_	dist_ftl_spec.h	22;"	d
+_SINGLE_ELE_BYTE_	ftl_spec.h	16;"	d
+_SOFTWARE_SIM_	compile_flag.h	4;"	d
+_SORTING_GC_	dist_ftl_spec.h	25;"	d
+_TRANS_CACHE_SIZE_	dist_ftl_spec.h	11;"	d
+_TRANS_CACHE_SIZE_	dist_ftl_spec.h	7;"	d
+_TRANS_CACHE_SIZE_	dist_ftl_spec.h	9;"	d
+_TRC_SIZE_	dist_ftl_spec.h	14;"	d
+_TWO_LEVEL_	ftl_type.h	8;"	d
+__ADDR_TRANS_H__	addr_trans.h	2;"	d
+__ADR_TRANS_SCHEME__	ftl_type.h	10;"	d
+__BACKGROUND_GC_H__	background_gc.h	2;"	d
+__BAREUTILS_H__	bare_utils.h	2;"	d
+__BG_GC_DIST_FTL_H__	bg_gc_dist_ftl.h	2;"	d
+__CACHE_BUFFER_H__	cache_buffer.h	2;"	d
+__COMMON_HEADER_H__	common_header.h	2;"	d
+__COMPILE_FLAG_H__	compile_flag.h	2;"	d
+__DEIVCE_IF_H__	device_if.h	2;"	d
+__DFTL_META_H__	dftl_meta.h	2;"	d
+__DFTL_TRANS_H__	dftl_trans.h	2;"	d
+__DIST_FTL_META_H__	dist_ftl_meta.h	2;"	d
+__DIST_FTL_SPEC_H__	dist_ftl_spec.h	2;"	d
+__DIST_FTL_TRANS_H__	dist_ftl_trans.h	2;"	d
+__DIST_FTL_UTILS_H__	dist_ftl_utils.h	2;"	d
+__DYNAMIC_WL_DFTL_H__	dynamic_wl_dftl.h	2;"	d
+__DYNAMIC_WL_H__	dynamic_wl.h	2;"	d
+__DY_WL_DIST_FTL_H__	dy_wl_dist_ftl.h	2;"	d
+__EXTERN_FTL_GLOBAL_VAR_H__	extern_ftl_global_var.h	2;"	d
+__FG_GC_DIST_FTL_H__	fg_gc_dist_ftl.h	2;"	d
+__FOREGROUND_GC_DFTL_H__	foreground_gc_dftl.h	2;"	d
+__FOREGROUND_GC_H__	foreground_gc.h	2;"	d
+__FTL_H__	ftl.h	2;"	d
+__FTL_META_H__	ftl_meta.h	2;"	d
+__FTL_SPEC_H__	ftl_spec.h	2;"	d
+__FTL_STAT_H__	ftl_stat.h	2;"	d
+__FTL_TYPE_H__	ftl_type.h	3;"	d
+__FTL_UTILS_H__	ftl_utils.h	2;"	d
+__GENERIC_LIST_H__	generic_list.h	2;"	d
+__HOST_MACHINE_H__	host_machine.h	2;"	d
+__HW_IF_H__	hw_if.h	2;"	d
+__LOW_LEVEL_NAND_SPEC_H__	low_level_nand_spec.h	2;"	d
+__NAND_CMD_LAYER_H__	nand_cmd_layer.h	2;"	d
+__NAND_SPEC_H__	nand_spec.h	2;"	d
+__NAND_TIMING_H__	nand_timing.h	27;"	d
+__SFR_ADDR_H__	sfr_addr.h	2;"	d
+__SIM_IF_H__	sim_if.h	12;"	d
+__STRUCT_DFTL_H__	struct_dftl.h	2;"	d
+__STRUCT_DIST_FTL_H__	struct_dist_ftl.h	2;"	d
+__STRUCT_META_H__	struct_meta.h	2;"	d
+__STRUCT_NAND_SPEC_H__	struct_nand_spec.h	2;"	d
+__STRUCT_NAND_TIMING_H__	struct_nand_timing.h	17;"	d
+__STRUCT_REQ_H__	struct_req.h	2;"	d
+__STRUCT_SIM_IF_H__	struct_sim_if.h	2;"	d
+__TYPEDEFS_H__	typedefs.h	2;"	d
+__heap_extent	bare_utils.h	/^typedef struct __heap_extent$/;"	s
+__user_heap_extend	bare_utils.c	/^unsigned __user_heap_extend(int a, void **base, unsigned requested_size){$/;"	f
+__user_heap_extent	bare_utils.c	/^__value_in_regs struct __heap_extent __user_heap_extent(unsigned ignore1, unsigned ignore2){$/;"	f
+a	ftl_global_var.c	/^int *a;$/;"	v
+activateNand	nand_cmd_layer.c	/^void activateNand(uchar cIsLast, uint logicalAddr){$/;"	f
+addr	cache_buffer.h	/^	uint addr;$/;"	m	struct:NODE
+addr	cache_buffer.h	/^    uint addr;$/;"	m	struct:HASH_NODE
+addr	struct_dftl.h	/^	uint addr[_NUM_ELE_IN_PAGE_];$/;"	m	struct:MapPage
+addrDecode	nand_timing.cpp	/^COpAnalyzer::addrDecode(SLargeOp &largeOp, sNandCmd cmd)$/;"	f	class:COpAnalyzer
+addrScheme	addr_trans.c	/^const eAddrType		addrScheme[ADDR_TYPE_CNT] = ADDR_BIT_PARTITION;$/;"	v
+addrTrans	ftl_global_var.c	/^sNandAddr (*addrTrans)(uint);$/;"	v
+bRnw	struct_nand_timing.h	/^	bool bRnw;$/;"	m	struct:SReq
+barePrintf	bare_utils.c	/^void barePrintf(const char* sentence, ...){$/;"	f
+base	bare_utils.h	/^	unsigned base, range;$/;"	m	struct:__heap_extent
+bitmap	cache_buffer.h	/^	uint bitmap; \/\/ sectir bit map$/;"	m	struct:NODE
+blkReclaim	ftl_global_var.c	/^void	(*blkReclaim)(uint iCh, uint iWy, uint iPl);$/;"	v
+blkReclaimBg	ftl_global_var.c	/^void	(*blkReclaimBg)(uint iCh, uint iWy, uint iPl);$/;"	v
+blockCluster	dy_wl_dist_ftl.h	/^typedef struct blockCluster{$/;"	s
+blocks	struct_meta.h	/^    sBlockMeta		blocks[NAND_BLOCK_PER_PLANE];$/;"	m	struct:sFtlMetaData
+buf	struct_sim_if.h	/^	uchar buf[NAND_PAGE_BYTE];$/;"	m	struct:sPageDataBuffer
+cSsdHostMachine	host_machine.cpp	/^cSsdHostMachine::cSsdHostMachine(const char* workloadName)$/;"	f	class:cSsdHostMachine
+cSsdHostMachine	host_machine.h	/^class cSsdHostMachine\/\/ : public cSimModuleBase$/;"	c
+callDeviceIFSched	device_if.c	/^void callDeviceIFSched(uint bufferSize)$/;"	f
+callFtl	ftl.c	/^void callFtl(DiskReq req)$/;"	f
+clearNandCmds	main.cpp	/^void clearNandCmds()$/;"	f
+cmd	ftl.h	/^	eFtlCmd cmd;$/;"	m	struct:sPageRequest
+cmd	nand_cmd_layer.h	/^	sLowNandCmd			cmd;$/;"	m	struct:nandCmdBuffer
+cmd	struct_sim_if.h	/^	DiskCmd cmd;                    \/\/ command$/;"	m	struct:sDiskRequest
+cmdDecode	nand_timing.cpp	/^COpAnalyzer::cmdDecode(eNandOp op)$/;"	f	class:COpAnalyzer
+cmd_count	cache_buffer.c	/^uint	cmd_count;$/;"	v
+cmd_list	cache_buffer.c	/^COMMAND cmd_list[100];$/;"	v
+cmt	struct_dftl.h	/^	sListPtr		cmt;$/;"	m	struct:Dftl
+cmt	struct_dist_ftl.h	/^	sListPtr		cmt;$/;"	m	struct:distFtl
+composeNandAddr	ftl_utils.c	/^sNandAddr composeNandAddr(uint iCh, uint iWy, uint iPl, uint iBk, uint iPg, uint iSe){$/;"	f
+composeNandCmd	ftl_utils.c	/^sNandCmd composeNandCmd(eNandOp op, sNandAddr des, sNandAddr src, uint iLogicalAdr, uchar* validMap){$/;"	f
+computeSpecBitWidth	ftl_utils.c	/^void computeSpecBitWidth(sNandSpec *spec)$/;"	f
+computeTime	nand_timing.cpp	/^COpAnalyzer::computeTime(std::list<sNandCmd> ftlCmd)$/;"	f	class:COpAnalyzer
+content	generic_list.h	/^	void *content;$/;"	m	struct:genericListElement
+convertAddr	nand_cmd_layer.c	/^uint convertAddr(sNandAddr addr){$/;"	f
+convertOp	nand_cmd_layer.c	/^eLowNandOp convertOp(eNandOp op){$/;"	f
+convertToPlain	dist_ftl_utils.c	/^void convertToPlain(sDistGtd gtd, sTransGp *tg, sCmtLine *line){$/;"	f
+convertToTg	dist_ftl_utils.c	/^sDistGtd convertToTg(sCmtLine *line, sTransGp *tg, uint ch){$/;"	f
+count_entry	cache_buffer.c	/^uint	count_entry;$/;"	v
+cpAdrList	struct_dist_ftl.h	/^	char *cpAdrList;$/;"	m	struct:translationGroup
+cpCbm	struct_dist_ftl.h	/^	char *cpCbm;$/;"	m	struct:translationGroup
+cpValidMap	struct_meta.h	/^	uchar			    cpValidMap[VALID_BITMAP_SIZE];	$/;"	m	struct:sPageMeta
+cpValidMap	struct_sim_if.h	/^	uchar				*cpValidMap;$/;"	m	struct:sNandCommand
+curTotalTgCnt	dist_ftl_utils.c	/^uint curTotalTgCnt(){$/;"	f
+dCachedTgCnt	host_machine.h	/^		double dCachedTgCnt;	$/;"	m	struct:cSsdHostMachine::sSimStat
+dIssueTime	struct_sim_if.h	/^	double		dIssueTime;$/;"	m	struct:sReq_t
+dIssueTime	struct_sim_if.h	/^	double dIssueTime;$/;"	m	struct:sDiskRequest
+dQueueTime	struct_nand_timing.h	/^	double dQueueTime;$/;"	m	struct:SReq
+dRdRespTime	host_machine.h	/^		double dRdRespTime;$/;"	m	struct:cSsdHostMachine::sSimStat
+dRdSecLat	host_machine.h	/^		double dRdSecLat;$/;"	m	struct:cSsdHostMachine::sSimStat
+dTime	struct_nand_timing.h	/^	double dTime;$/;"	m	struct:SReq
+dTotalTime	struct_nand_timing.h	/^	double dTotalTime;$/;"	m	struct:SResult
+dWrRespTime	host_machine.h	/^		double dWrRespTime;$/;"	m	struct:cSsdHostMachine::sSimStat
+dWrSecLat	host_machine.h	/^		double dWrSecLat;$/;"	m	struct:cSsdHostMachine::sSimStat
+dataBuffer	struct_sim_if.h	/^	sPgBuf			*dataBuffer;	$/;"	m	struct:sNandCommand
+debugFlag	ftl_global_var.c	/^uchar debugFlag = UCHAR_FALSE;$/;"	v
+decValidPage	struct_meta.c	/^void decValidPage(sBlockMeta *blk){$/;"	f
+dest	struct_sim_if.h	/^	sNandAddr		dest;		\/\/ address for opcode, typically using this address only$/;"	m	struct:sNandCommand
+deviceIFDATA	device_if.c	/^Req_t deviceIFDATA[32];$/;"	v
+dirty	struct_dftl.h	/^	eCmtDirty dirty;$/;"	m	struct:CmtElement
+dirty	struct_dist_ftl.h	/^	eCmtDirty dirty;$/;"	m	struct:translationGroup
+distFtl	struct_dist_ftl.h	/^typedef struct distFtl{$/;"	s
+distFtlMeta	dist_ftl_trans.c	/^sDistFtl distFtlMeta[NAND_ARRAY_CHANNEL][NAND_ARRAY_WAY][NAND_PLANE_PER_WAY];$/;"	v
+distGtdElement	struct_dist_ftl.h	/^typedef struct distGtdElement{$/;"	s
+doBgc	background_gc.c	/^void doBgc(){$/;"	f
+dram_addr	struct_meta.h	/^    uint    dram_addr;$/;"	m	struct:sDramInfo
+dram_bitmap	cache_buffer.h	/^	uint dram_bitmap;$/;"	m	struct:__anon3
+dram_count	ftl_global_var.c	/^uint dram_count;$/;"	v
+dram_id	cache_buffer.h	/^	uint dram_id;$/;"	m	struct:__anon3
+dram_length	struct_meta.h	/^    uint    dram_length;$/;"	m	struct:sDramInfo
+dummayCmtCnt	addr_trans.c	/^uint dummayCmtCnt(){$/;"	f
+dummyMapCacheFlush	addr_trans.c	/^void dummyMapCacheFlush(){$/;"	f
+dummyNandAdr	ftl_global_var.c	/^sNandAddr	dummyNandAdr;$/;"	v
+eAddrType	addr_trans.h	/^typedef enum eAddrType$/;"	g
+eAddrType	addr_trans.h	/^}eAddrType;$/;"	t	typeref:enum:eAddrType
+eBlockStat	struct_meta.h	/^}eBlockStat;$/;"	t	typeref:enum:eBlockStatus
+eBlockStatus	struct_meta.h	/^typedef enum eBlockStatus$/;"	g
+eCmtDirty	struct_dftl.h	/^}eCmtDirty;$/;"	t	typeref:enum:CMTDirtiness
+eFtlCmd	ftl.h	/^}eFtlCmd;$/;"	t	typeref:enum:eFtlInternalCommand
+eFtlInternalCommand	ftl.h	/^typedef enum eFtlInternalCommand$/;"	g
+eGtdStat	struct_dftl.h	/^}eGtdStat;$/;"	t	typeref:enum:GtdElementStatus
+eHOST_REQ_OP	struct_sim_if.h	/^typedef enum eHOST_REQ_OP{$/;"	g
+eLowNandOp	nand_cmd_layer.h	/^}eLowNandOp;$/;"	t	typeref:enum:lowLevelNandOpCode
+eNandCmd	struct_nand_timing.h	/^}eNandCmd;$/;"	t	typeref:enum:eNandCommand
+eNandCmdBufStat	nand_cmd_layer.h	/^}eNandCmdBufStat;$/;"	t	typeref:enum:nandCmdBufferStatus
+eNandCommand	struct_nand_timing.h	/^typedef enum eNandCommand{$/;"	g
+eNandOp	struct_sim_if.h	/^}eNandOp;$/;"	t	typeref:enum:__anon1
+ePageStat	struct_meta.h	/^}ePageStat;$/;"	t	typeref:enum:ePageStatus
+ePageStatus	struct_meta.h	/^typedef enum ePageStatus$/;"	g
+eSectorStat	struct_meta.h	/^}eSectorStat;$/;"	t	typeref:enum:eSectorState
+eSectorState	struct_meta.h	/^typedef enum eSectorState$/;"	g
+eSoftwareRoutineId	bare_utils.h	/^typedef enum eSoftwareRoutineId{$/;"	g
+eSwRtId	bare_utils.h	/^}eSwRtId;$/;"	t	typeref:enum:eSoftwareRoutineId
+elementConstruct	generic_list.c	/^sListElement *elementConstruct(unsigned long long int iKey, void* content){$/;"	f
+elementDelete	generic_list.c	/^void elementDelete(sListElement *ele){$/;"	f
+eraseBlock	struct_meta.c	/^void eraseBlock(sBlockMeta *blk){$/;"	f
+fileCmdCnt	nand_timing.h	/^	inline void fileCmdCnt(std::ofstream &fp){$/;"	f	class:COpAnalyzer
+flag	device_if.c	/^uint flag[32];$/;"	v
+flushMapCache	ftl_global_var.c	/^void	(*flushMapCache)(void);$/;"	v
+freeBlkPool	struct_dist_ftl.h	/^	sListPtr		freeBlkPool;$/;"	m	struct:distFtl
+freePageMapData	dftl_meta.c	/^void freePageMapData(sPageMeta *page){$/;"	f
+ftlAssert	ftl_utils.c	/^void ftlAssert(uchar condition, const char *msg){$/;"	f
+ftlComplete	sim_if.c	/^void ftlComplete(){$/;"	f
+ftlMeta	ftl_global_var.c	/^sFtlMeta *ftlMeta[NAND_ARRAY_CHANNEL][NAND_ARRAY_WAY][NAND_PLANE_PER_WAY];$/;"	v
+ftlRead	ftl.c	/^void ftlRead(sPageReq pageReq){$/;"	f
+ftlWrite	ftl.c	/^void ftlWrite(sPageReq pageReq){$/;"	f
+gNumOnes	dist_ftl_utils.c	/^unsigned char gNumOnes[16]={$/;"	v
+g_curReq	sim_if.c	/^DiskReq g_curReq;$/;"	v
+g_dClstSize	ftl_global_var.c	/^double g_dClstSize;$/;"	v
+g_dCurLat	main.cpp	/^double g_dCurLat;$/;"	v
+g_ftlCmd	main.cpp	/^list<sNandCmd> g_ftlCmd;$/;"	v
+g_iClstCnt	ftl_global_var.c	/^int g_iClstCnt;$/;"	v
+g_iMapAccCnt	ftl_stat.c	/^unsigned long long int g_iMapAccCnt = 0;$/;"	v
+g_iMapFetchCnt	ftl_stat.c	/^unsigned long long int g_iMapFetchCnt = 0;$/;"	v
+g_isSequential	ftl_global_var.c	/^uchar	g_isSequential;$/;"	v
+g_nandTiming	main.cpp	/^COpAnalyzer *g_nandTiming;$/;"	v
+gcMapBlk	struct_dist_ftl.h	/^	void			(*gcMapBlk)(uint iCh, uint iWy, uint iPl);$/;"	m	struct:distFtl
+genericList	generic_list.h	/^typedef struct genericList{$/;"	s
+genericListElement	generic_list.h	/^typedef struct genericListElement{$/;"	s
+genericListHash	generic_list.h	/^typedef struct genericListHash{$/;"	s
+getAddressableByte	ftl.c	/^uint64 getAddressableByte(){$/;"	f
+getAdrIdx	dist_ftl_utils.c	/^uint getAdrIdx(sTransGp *tg, uint oriIdx){$/;"	f
+getAvgEraseCnt	ftl_stat.c	/^double getAvgEraseCnt(){$/;"	f
+getBitWidth	ftl_utils.c	/^uint getBitWidth(uint num)$/;"	f
+getBk	addr_trans.c	/^uint getBk(uint adr) { return (uint)((adr >> iAddrShift[BLOCK_ADDR]) & iAddrMask[BLOCK_ADDR]); }$/;"	f
+getBkPtr	ftl_meta.c	/^sBlockMeta *getBkPtr(uint ch, uint wy, uint pl, uint bk){$/;"	f
+getCh	addr_trans.c	/^uint getCh(uint adr) { return (uint)((adr >> iAddrShift[CHANNEL_ADDR]) & iAddrMask[CHANNEL_ADDR]); }$/;"	f
+getCmtKey	dftl_trans.h	10;"	d
+getContdLen	dist_ftl_utils.c	/^uint getContdLen(uint iStartIdx, sTransGp *tg){$/;"	f
+getCurBlk	dynamic_wl.c	/^uint getCurBlk(uint iCh, uint iWy, uint iPl, uint adr){$/;"	f
+getCurCmtCnt	ftl_stat.c	/^uint (*getCurCmtCnt)(void);$/;"	v
+getCurPg	dynamic_wl.c	/^uint getCurPg(uint iCh, uint iWy, uint iPl, uint iBlkAdr, uint adr){$/;"	f
+getCurReq	host_machine.h	/^	inline DiskReq getCurReq() { return  m_curReq; }$/;"	f	class:cSsdHostMachine
+getCurReq	sim_if.c	/^DiskReq getCurReq(){$/;"	f
+getEleBitwidth	dist_ftl_utils.c	/^uint getEleBitwidth(uint iLow, uint iHigh){$/;"	f
+getEraseCnt	struct_meta.c	/^uint getEraseCnt(sBlockMeta *blk){$/;"	f
+getFetchedReqCnt	host_machine.h	/^	inline uint64 getFetchedReqCnt() {return m_stat.iTotReqCnt;}$/;"	f	class:cSsdHostMachine
+getFreeBlk	ftl_global_var.c	/^uint    (*getFreeBlk)(uint iCh, uint iWy, uint iPl);$/;"	v
+getFreeBlock	dynamic_wl.c	/^uint getFreeBlock(uint iCh, uint iWy, uint iPl){$/;"	f
+getFtlPtr	ftl_meta.c	/^sFtlMeta *getFtlPtr(uint ch, uint wy, uint pl){$/;"	f
+getGcVictim	dynamic_wl.c	/^uint getGcVictim(uint iCh, uint iWy, uint iPl)$/;"	f
+getGcVictimBlk	ftl_global_var.c	/^uint	(*getGcVictimBlk)(uint iCh, uint iWy, uint iPl);$/;"	v
+getGtdIndex	dftl_trans.h	9;"	d
+getLastReqHandle	host_machine.h	/^	inline double getLastReqHandle() {return m_dLastReqHandle;}$/;"	f	class:cSsdHostMachine
+getLastReqIssue	host_machine.h	/^	inline double getLastReqIssue() {return m_dLastReqIssue;}$/;"	f	class:cSsdHostMachine
+getLastStart	dist_ftl_utils.c	/^uint getLastStart(sTransGp *tg, uint idx){$/;"	f
+getLineOffsetInPage	dftl_trans.h	12;"	d
+getMapBlk	struct_dist_ftl.h	/^	uint			(*getMapBlk)(uint iCh, uint iWy, uint iPl);$/;"	m	struct:distFtl
+getMapBlkVictim	struct_dist_ftl.h	/^	uint			(*getMapBlkVictim)(uint iCh, uint iWy, uint iP);$/;"	m	struct:distFtl
+getNandSpec	nand_timing.h	/^	inline sNandSpec getNandSpec(){ return spec; }$/;"	f	class:COpAnalyzer
+getNandSpec	sim_if.c	/^sNandSpec getNandSpec(){$/;"	f
+getNextReq	host_machine.cpp	/^cSsdHostMachine::getNextReq(){$/;"	f	class:cSsdHostMachine
+getNumOnes	dist_ftl_utils.c	/^uint getNumOnes(uchar num){$/;"	f
+getOffsetInLine	dftl_trans.h	11;"	d
+getOffsetInPage	dftl_trans.h	13;"	d
+getPageLogicalAdr	struct_meta.c	/^uint getPageLogicalAdr(sPageMeta *page){$/;"	f
+getPageMapData	dftl_meta.c	/^sMapPage *getPageMapData(sPageMeta *page){$/;"	f
+getPg	addr_trans.c	/^uint getPg(uint adr) { return (uint)((adr >> iAddrShift[PAGE_ADDR]) & iAddrMask[PAGE_ADDR]); }$/;"	f
+getPgPtr	ftl_meta.c	/^sPageMeta *getPgPtr(uint ch, uint wy, uint pl, uint bk, uint pg){$/;"	f
+getPl	addr_trans.c	/^uint getPl(uint adr) { return (uint)((adr >> iAddrShift[PLANE_ADDR]) & iAddrMask[PLANE_ADDR]); }$/;"	f
+getReqCnt	sim_if.c	/^unsigned long long int getReqCnt(){$/;"	f
+getSe	addr_trans.c	/^uint getSe(uint adr) { return (uint)((adr >> iAddrShift[SECTOR_ADDR]) & iAddrMask[SECTOR_ADDR]); }$/;"	f
+getStdDevEraseCnt	ftl_stat.c	/^double getStdDevEraseCnt(double avg){$/;"	f
+getTableIdx	addr_trans.c	/^uint getTableIdx(uint adr){$/;"	f
+getTarBlk	ftl_global_var.c	/^uint	(*getTarBlk)(uint iCh, uint iWy, uint iPl, uint adr);$/;"	v
+getTarPg	ftl_global_var.c	/^uint	(*getTarPg)(uint iCh, uint iWy, uint iPl, uint iBlkAdr, uint adr);$/;"	v
+getValidMap	struct_meta.c	/^void getValidMap(sPageMeta *page, uchar *validMap){$/;"	f
+getValidMapPtr	struct_meta.c	/^uchar *getValidMapPtr(sPageMeta *page){$/;"	f
+getValidPageCnt	struct_meta.c	/^uint getValidPageCnt(sBlockMeta *blk){$/;"	f
+getWrType	dist_ftl_meta.c	/^uint getWrType(sBlockMeta *blk){$/;"	f
+getWritablePage	struct_meta.c	/^uint getWritablePage(sBlockMeta *blk){$/;"	f
+getWy	addr_trans.c	/^uint getWy(uint adr) { return (uint)((adr >> iAddrShift[WAY_ADDR]) & iAddrMask[WAY_ADDR]); }$/;"	f
+gtd	struct_dftl.h	/^	sGtdElemnt		gtd[GTD_SIZE];$/;"	m	struct:Dftl
+gtd	struct_dist_ftl.h	/^	sDistGtd		gtd[GTD_SIZE];$/;"	m	struct:distFtl
+gtd	struct_dist_ftl.h	/^	sGtdElemnt		gtd;$/;"	m	struct:distGtdElement
+hashTable	generic_list.h	/^	sGenericListIdx *hashTable;$/;"	m	struct:genericList
+hash_free_front	cache_buffer.c	/^HASH_NODE hash_free_front;$/;"	v
+hash_front	cache_buffer.c	/^HASH_NODE hash_front[HASH_MAX];$/;"	v
+hash_node	cache_buffer.c	/^HASH_NODE hash_node[ENTRY_SIZE];$/;"	v
+head	generic_list.h	/^	sListElement *head;$/;"	m	struct:genericList
+iAddr	struct_dftl.h	/^	uint		iAddr;$/;"	m	struct:GtdElement
+iAddr	struct_sim_if.h	/^	uint		iAddr;$/;"	m	struct:sReq_t
+iAddr1	nand_cmd_layer.h	/^	uint				iAddr1;$/;"	m	struct:lowLevelNandCmd
+iAddr2	nand_cmd_layer.h	/^	uint				iAddr2;$/;"	m	struct:lowLevelNandCmd
+iAddr3	nand_cmd_layer.h	/^	uint				iAddr3;$/;"	m	struct:lowLevelNandCmd
+iAddr4	nand_cmd_layer.h	/^	uint				iAddr4;$/;"	m	struct:lowLevelNandCmd
+iAddrMask	addr_trans.c	/^uint						iAddrMask[ADDR_TYPE_CNT];$/;"	v
+iAddrShift	addr_trans.c	/^uint							iAddrShift[ADDR_TYPE_CNT];$/;"	v
+iAddrs	struct_dftl.h	/^	uint iAddrs[_NUM_ELE_IN_LINE_];$/;"	m	struct:CmtElement
+iBk	struct_nand_timing.h	/^	int iOp, iCh, iWy, iBk, iPg, iReseverd;$/;"	m	struct:SLargeOp
+iBlk	struct_sim_if.h	/^	uint iBlk;$/;"	m	struct:sNandAddress
+iBlockPerPlane	struct_nand_spec.h	/^	uint iBlockPerPlane;$/;"	m	struct:sNandSpec
+iBlockPerPlane_Bitwidth	struct_nand_spec.h	/^	uint iBlockPerPlane_Bitwidth;$/;"	m	struct:sNandSpec
+iCh	struct_nand_timing.h	/^	int iOp, iCh, iWy, iBk, iPg, iReseverd;$/;"	m	struct:SLargeOp
+iChannel	struct_sim_if.h	/^	uint iChannel;$/;"	m	struct:sNandAddress
+iChannelCount	struct_nand_spec.h	/^	uint iChannelCount;$/;"	m	struct:sNandSpec
+iChannel_Bitwidth	struct_nand_spec.h	/^	uint iChannel_Bitwidth;$/;"	m	struct:sNandSpec
+iCmtKey	dftl_trans.h	/^	uint		iCmtKey;							\/\/ cmt key value, cmt idx$/;"	m	struct:DftlAderess
+iCount	ftl_global_var.c	/^uint iCount;$/;"	v
+iCurBlk	struct_meta.h	/^	uint			iCurBlk;$/;"	m	struct:sFtlMetaData
+iCurCmtSize	struct_dist_ftl.h	/^	uint			iCurCmtSize;$/;"	m	struct:distFtl
+iCurMapBlock	struct_dftl.h	/^	uint			iCurMapBlock;$/;"	m	struct:Dftl
+iCurMapBlock	struct_dist_ftl.h	/^	uint			iCurMapBlock;$/;"	m	struct:distFtl
+iCurPg	struct_meta.h	/^	uint			iCurPg;$/;"	m	struct:sFtlMetaData
+iCurSize	generic_list.h	/^	unsigned int iCurSize;	$/;"	m	struct:genericList
+iErCnt	nand_timing.h	/^	uint ***iErCnt;$/;"	m	class:COpAnalyzer
+iEraseCnt	struct_meta.h	/^	uint					iEraseCnt;$/;"	m	struct:sBlockMeta
+iGtdIdx	dftl_trans.h	/^	uint		iGtdIdx;							\/\/ gtd index$/;"	m	struct:DftlAderess
+iHashSize	generic_list.h	/^	unsigned int iHashSize;$/;"	m	struct:genericList
+iHeadAddr	struct_dftl.h	/^	uint iHeadAddr;$/;"	m	struct:CmtElement
+iHeadAddr	struct_dist_ftl.h	/^	uint iHeadAddr;$/;"	m	struct:translationGroup
+iHighPpa	struct_dist_ftl.h	/^	uint			iHighPpa;$/;"	m	struct:distGtdElement
+iId	struct_sim_if.h	/^	uint		iId;$/;"	m	struct:sReq_t
+iIsMapTable	nand_cmd_layer.h	/^	uint						iIsMapTable;$/;"	m	struct:nandCmdBuffer
+iKey	generic_list.h	/^	unsigned long long int iKey;$/;"	m	struct:genericListElement
+iLen	ftl.h	/^	uint	iLen;$/;"	m	struct:sPageRequest
+iLen	struct_sim_if.h	/^	uint		iLen;$/;"	m	struct:sReq_t
+iLength	struct_nand_timing.h	/^	int iLsa, iLength;$/;"	m	struct:SReq
+iLineOffsetInPage	dftl_trans.h	/^	uint			iLineOffsetInPage;		\/\/ line offset in page$/;"	m	struct:DftlAderess
+iLogicalAdr	struct_sim_if.h	/^	uint			iLogicalAdr;$/;"	m	struct:sNandCommand
+iLogicalPgAddr	struct_meta.h	/^	uint				iLogicalPgAddr;$/;"	m	struct:sPageMeta
+iLowPpa	struct_dist_ftl.h	/^	uint			iLowPpa;$/;"	m	struct:distGtdElement
+iLpa	struct_dist_ftl.h	/^	uint			iLpa;$/;"	m	struct:translationCache
+iLsa	struct_nand_timing.h	/^	int iLsa, iLength;$/;"	m	struct:SReq
+iMapAccCnt	host_machine.h	/^		uint64 iMapAccCnt;$/;"	m	struct:cSsdHostMachine::sSimStat
+iMapAddr	nand_cmd_layer.h	/^	uint						iMapAddr;$/;"	m	struct:nandCmdBuffer
+iMapConvCnt	host_machine.h	/^		uint64 iMapConvCnt;$/;"	m	struct:cSsdHostMachine::sSimStat
+iMapFetchCnt	host_machine.h	/^		uint64 iMapFetchCnt;$/;"	m	struct:cSsdHostMachine::sSimStat
+iMeasureStartCnt	host_machine.h	/^	unsigned int iMeasureStartCnt;$/;"	m	class:cSsdHostMachine
+iNumCmdCnt	nand_timing.h	/^	unsigned int iNumCmdCnt[NAND_CMD_TYPE_CNT];$/;"	m	class:COpAnalyzer
+iNumMapBlock	struct_dftl.h	/^	uint			iNumMapBlock;$/;"	m	struct:Dftl
+iNumMapBlock	struct_dist_ftl.h	/^	uint			iNumMapBlock;$/;"	m	struct:distFtl
+iNumUsedBlk	struct_meta.h	/^	uint			iNumUsedBlk;$/;"	m	struct:sFtlMetaData
+iNumUsedUserBlk	struct_meta.h	/^	uint			iNumUsedUserBlk;$/;"	m	struct:sFtlMetaData
+iOffsetInLine	dftl_trans.h	/^	uint			iOffsetInLine;				\/\/ offset in line$/;"	m	struct:DftlAderess
+iOffsetInPage	dftl_trans.h	/^	uint			iOffsetInPage;				\/\/ offset in page$/;"	m	struct:DftlAderess
+iOp	struct_nand_timing.h	/^	int iOp, iCh, iWy, iBk, iPg, iReseverd;$/;"	m	struct:SLargeOp
+iPage	struct_sim_if.h	/^	uint iPage;$/;"	m	struct:sNandAddress
+iPagePerBlock	struct_nand_spec.h	/^	uint iPagePerBlock;$/;"	m	struct:sNandSpec
+iPagePerBlock_Bitwidth	struct_nand_spec.h	/^	uint iPagePerBlock_Bitwidth;$/;"	m	struct:sNandSpec
+iPageSize	struct_nand_spec.h	/^	uint iPageSize;$/;"	m	struct:sNandSpec
+iPageSize_Bitwidth	struct_nand_spec.h	/^	uint iPageSize_Bitwidth;$/;"	m	struct:sNandSpec
+iPg	struct_nand_timing.h	/^	int iOp, iCh, iWy, iBk, iPg, iReseverd;$/;"	m	struct:SLargeOp
+iPlane	struct_sim_if.h	/^	uint iPlane;$/;"	m	struct:sNandAddress
+iPlanePerDev	struct_nand_spec.h	/^	uint iPlanePerDev;$/;"	m	struct:sNandSpec
+iPlanePerDev_Bitwidth	struct_nand_spec.h	/^	uint iPlanePerDev_Bitwidth;$/;"	m	struct:sNandSpec
+iPpa	struct_dist_ftl.h	/^	uint			iPpa;$/;"	m	struct:translationCache
+iRdWrBlk	struct_dist_ftl.h	/^	uint			iRdWrBlk[_RD_WR_PTR_CNT_];$/;"	m	struct:distFtl
+iReseverd	struct_nand_timing.h	/^	int iOp, iCh, iWy, iBk, iPg, iReseverd;$/;"	m	struct:SLargeOp
+iSector	struct_sim_if.h	/^	uint iSector;$/;"	m	struct:sNandAddress
+iSize	dy_wl_dist_ftl.h	/^	uint iSize;$/;"	m	struct:blockCluster
+iSize	struct_dist_ftl.h	/^	uint			iSize;			\/\/ tg size in byte;$/;"	m	struct:distGtdElement
+iSize	struct_dist_ftl.h	/^	uint iSize;$/;"	m	struct:translationGroup
+iSqWrBlk	struct_dist_ftl.h	/^	uint			iSqWrBlk[_RD_WR_PTR_CNT_];$/;"	m	struct:distFtl
+iStartAddr	dy_wl_dist_ftl.h	/^	uint iStartAddr;$/;"	m	struct:blockCluster
+iTopWritablePage	struct_meta.h	/^	uint					iTopWritablePage;$/;"	m	struct:sBlockMeta
+iTotRdCnt	host_machine.h	/^		uint64 iTotRdCnt;			\/\/$/;"	m	struct:cSsdHostMachine::sSimStat
+iTotRdSec	host_machine.h	/^		uint64 iTotRdSec;			\/\/$/;"	m	struct:cSsdHostMachine::sSimStat
+iTotReqCnt	host_machine.h	/^		uint64 iTotReqCnt;		\/\/$/;"	m	struct:cSsdHostMachine::sSimStat
+iTotWrCnt	host_machine.h	/^		uint64 iTotWrCnt;			\/\/$/;"	m	struct:cSsdHostMachine::sSimStat
+iTotWrSec	host_machine.h	/^		uint64 iTotWrSec;			\/\/$/;"	m	struct:cSsdHostMachine::sSimStat
+iTotalByte	struct_nand_spec.h	/^    uint64  iTotalByte;$/;"	m	struct:sNandSpec
+iTransAddr	struct_meta.h	/^	uint				iTransAddr;$/;"	m	struct:sMapTable
+iValidPageCnt	struct_meta.h	/^	uint					iValidPageCnt;$/;"	m	struct:sBlockMeta
+iWay	struct_sim_if.h	/^	uint iWay;$/;"	m	struct:sNandAddress
+iWayCount	struct_nand_spec.h	/^	uint iWayCount;$/;"	m	struct:sNandSpec
+iWay_Bitwidth	struct_nand_spec.h	/^	uint iWay_Bitwidth;$/;"	m	struct:sNandSpec
+iWy	struct_nand_timing.h	/^	int iOp, iCh, iWy, iBk, iPg, iReseverd;$/;"	m	struct:SLargeOp
+id	cache_buffer.h	/^	uint id;$/;"	m	struct:NODE
+id	struct_meta.h	/^    uint    id;$/;"	m	struct:sDramInfo
+incEraseCnt	struct_meta.c	/^void incEraseCnt(sBlockMeta *blk){$/;"	f
+incMapAccCnt	ftl_stat.c	/^void incMapAccCnt(){$/;"	f
+incMapFetchCnt	ftl_stat.c	/^void incMapFetchCnt(){$/;"	f
+incValidPage	struct_meta.c	/^void incValidPage(sBlockMeta *blk){$/;"	f
+increaseErCnt	nand_timing.cpp	/^increaseErCnt(int iCh, int iWy, int iBk)		\/\/ increase the erase count.$/;"	f	class:COpAnalyzer
+initAddrTrans	addr_trans.c	/^void initAddrTrans(){$/;"	f
+initBgc	background_gc.c	/^void initBgc(){$/;"	f
+initDeviceIF	device_if.c	/^void initDeviceIF()$/;"	f
+initDynamicWl	dynamic_wl.c	/^void initDynamicWl()$/;"	f
+initFtl	ftl.c	/^void initFtl()$/;"	f
+initGc	foreground_gc.c	/^void initGc()$/;"	f
+initStat	host_machine.cpp	/^cSsdHostMachine::initStat(){$/;"	f	class:cSsdHostMachine
+initTimings	nand_timing.cpp	/^void COpAnalyzer::initTimings(){$/;"	f	class:COpAnalyzer
+intToNandAddr	addr_trans.c	/^sNandAddr intToNandAddr(uint adr)$/;"	f
+irqFunction	nand_cmd_layer.c	/^int irqFunction[20] = {$/;"	v
+irqFunctionType	nand_cmd_layer.c	/^enum irqFunctionType$/;"	g	file:
+irqHandler	hw_main.c	/^void irqHandler(){$/;"	f
+isBgcReq	background_gc.c	/^uchar isBgcReq(){$/;"	f
+isBlockDead	struct_meta.c	/^uchar isBlockDead(sBlockMeta *blk){$/;"	f
+isBlockFree	struct_meta.c	/^uchar isBlockFree(sBlockMeta *blk){$/;"	f
+isBlockFull	struct_meta.c	/^uchar isBlockFull(sBlockMeta *blk){$/;"	f
+isContd	dist_ftl_utils.c	/^uchar isContd(uint idx, sTransGp *tg){$/;"	f
+isContdPg	dist_ftl_utils.c	/^uchar isContdPg(uint prev, uint next){$/;"	f
+isDevBgcReq	background_gc.c	/^uchar isDevBgcReq(uint iCh, uint iWy, uint iPl){$/;"	f
+isDifferentValidMap	ftl_utils.c	/^uchar isDifferentValidMap(uchar *a, uchar *b, uint size){$/;"	f
+isEmpty	generic_list.c	/^char isEmpty(sListPtr li){$/;"	f
+isEnoughFreeBlk	foreground_gc.c	/^uchar isEnoughFreeBlk(uint iCh, uint iWy, uint iPl){$/;"	f
+isMapBlock	dftl_meta.c	/^uchar isMapBlock(sBlockMeta *blk){$/;"	f
+isMapGcReq	struct_dist_ftl.h	/^	uchar			(*isMapGcReq)(uint iCh, uint iWy, uint iPl);$/;"	m	struct:distFtl
+isPageFree	struct_meta.c	/^uchar isPageFree(sPageMeta *page){$/;"	f
+isPageValid	struct_meta.c	/^uchar isPageValid(sPageMeta *page){$/;"	f
+isRnMRequired	addr_trans.c	/^uchar isRnMRequired(sNandAddr ori, uchar *income){$/;"	f
+isSectorValid	struct_meta.c	/^uchar isSectorValid(sPageMeta *page, uint iOffset){$/;"	f
+isSmaller	dist_ftl_utils.c	/^uchar isSmaller(sCmtLine *line){$/;"	f
+isTg	struct_dist_ftl.h	/^	uchar			isTg;$/;"	m	struct:distGtdElement
+isTgGtd	dist_ftl_utils.c	/^uchar isTgGtd(sDistGtd *gtd){$/;"	f
+isValid	struct_sim_if.h	/^	uchar isValid;$/;"	m	struct:sNandAddress
+l2pTable	struct_meta.h	/^	sMapTable		l2pTable[AVAIL_PG_CNT];$/;"	m	struct:sFtlMetaData
+l2pTranslate	addr_trans.c	/^sNandAddr l2pTranslate(uint adr)$/;"	f
+li_issuedTick	struct_sim_if.h	/^	uint li_issuedTick;           \/\/ 64-bit int for gem5 tick, do not need to use$/;"	m	struct:sDiskRequest
+link	cache_buffer.h	/^    struct NODE* link;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::NODE
+listConstruct	generic_list.c	/^sGenericList *listConstruct(unsigned int iHashSize){$/;"	f
+listDelete	generic_list.c	/^void listDelete(sGenericList *li){$/;"	f
+listDeleteEle	generic_list.c	/^void listDeleteEle(sListPtr li, sElePtr target){$/;"	f
+listDeleteHead	generic_list.c	/^void listDeleteHead(sListPtr li){$/;"	f
+listDeleteTail	generic_list.c	/^void listDeleteTail(sListPtr li){$/;"	f
+listEntireQuickSort	generic_list.c	/^void listEntireQuickSort(sListPtr li){$/;"	f
+listFindKey	generic_list.c	/^sElePtr listFindKey(sListPtr li, unsigned int iKey){$/;"	f
+listGetHead	generic_list.c	/^sElePtr listGetHead(sListPtr li){$/;"	f
+listGetIndex	generic_list.c	/^unsigned int listGetIndex(sListPtr li, unsigned long long int iKey){$/;"	f
+listGetNthContent	generic_list.c	/^void* listGetNthContent(sListPtr li, unsigned int n){$/;"	f
+listGetNthEle	generic_list.c	/^sElePtr listGetNthEle(sListPtr li, unsigned int n){$/;"	f
+listGetNthKey	generic_list.c	/^unsigned long long int listGetNthKey(sListPtr li, unsigned int n){$/;"	f
+listGetTail	generic_list.c	/^sElePtr listGetTail(sListPtr li){$/;"	f
+listInsertElement	generic_list.c	/^void listInsertElement(sListPtr li, sElePtr newEle, sElePtr pos){$/;"	f
+listInsertList	generic_list.c	/^void listInsertList(sListPtr li, sListPtr newList, sElePtr pos){$/;"	f
+listMoveToHead	generic_list.c	/^void listMoveToHead(sListPtr li, sElePtr ele){$/;"	f
+listMoveToNthPos	generic_list.c	/^void listMoveToNthPos(sListPtr li, sElePtr ele, unsigned int n){$/;"	f
+listMoveToTail	generic_list.c	/^void listMoveToTail(sListPtr li, sElePtr ele){$/;"	f
+listPushHead	generic_list.c	/^void listPushHead(sListPtr li, unsigned int iKey, void* content){$/;"	f
+listPushTail	generic_list.c	/^void listPushTail(sListPtr li, unsigned int iKey, void* content, unsigned int ch){$/;"	f
+listQuickSort	generic_list.c	/^void listQuickSort(sListPtr li, int left, int right){$/;"	f
+listSwapEle	generic_list.c	/^void listSwapEle(sListPtr li, sElePtr ele_a, sElePtr ele_b){$/;"	f
+logical_addr	ftl_global_var.c	/^uint logical_addr;$/;"	v
+logical_length	ftl_global_var.c	/^uint logical_length;$/;"	v
+lowLevelNandCmd	nand_cmd_layer.h	/^typedef struct lowLevelNandCmd$/;"	s
+lowLevelNandOpCode	nand_cmd_layer.h	/^typedef enum lowLevelNandOpCode$/;"	g
+m_IncomeOpList	nand_timing.h	/^	CQueueInt		*m_IncomeOpList;$/;"	m	class:COpAnalyzer
+m_LargeOpList	nand_timing.h	/^	sLargeOpQ		*m_LargeOpList;$/;"	m	class:COpAnalyzer
+m_curReq	host_machine.h	/^	DiskReq m_curReq;$/;"	m	class:cSsdHostMachine
+m_dLastReqHandle	host_machine.h	/^	double m_dLastReqHandle;$/;"	m	class:cSsdHostMachine
+m_dLastReqIssue	host_machine.h	/^	double m_dLastReqIssue;$/;"	m	class:cSsdHostMachine
+m_dSimStartTime	host_machine.h	/^	double m_dSimStartTime;$/;"	m	class:cSsdHostMachine
+m_fpWorkload	host_machine.h	/^	std::ifstream m_fpWorkload;$/;"	m	class:cSsdHostMachine
+m_opAnalyzer	host_machine.h	/^	COpAnalyzer *m_opAnalyzer;$/;"	m	class:cSsdHostMachine
+m_stat	host_machine.h	/^	sSimStat m_stat;$/;"	m	class:cSsdHostMachine
+m_temp	host_machine.h	/^	std::ofstream m_temp;$/;"	m	class:cSsdHostMachine
+m_wlName	host_machine.h	/^	std::string	*m_wlName;$/;"	m	class:cSsdHostMachine
+main	hw_main.c	/^int main()$/;"	f
+main	main.cpp	/^int main(int argc, char* argv[])$/;"	f
+mapAccCnt	host_machine.h	/^	inline void mapAccCnt() { m_stat.iMapAccCnt++; }$/;"	f	class:cSsdHostMachine
+mapBlockList	struct_dftl.h	/^	sListPtr		mapBlockList;$/;"	m	struct:Dftl
+mapBlockList	struct_dist_ftl.h	/^	sListPtr		mapBlockList;$/;"	m	struct:distFtl
+mapFetchCnt	host_machine.h	/^	inline void mapFetchCnt() { m_stat.iMapFetchCnt++; }$/;"	f	class:cSsdHostMachine
+memorySize	ftl_global_var.c	/^int memorySize;$/;"	v
+mergeValidMap	ftl_utils.c	/^void mergeValidMap(uchar *target, uchar *a, uchar *b, uint size){$/;"	f
+nandAddrtoInt	addr_trans.c	/^uint nandAddrtoInt(sNandAddr adr){$/;"	f
+nandCmd	sim_if.c	/^void nandCmd(sNandCmd cmd){$/;"	f
+nandCmdBuffer	nand_cmd_layer.h	/^typedef struct nandCmdBuffer$/;"	s
+nandCmdBufferStatus	nand_cmd_layer.h	/^typedef enum nandCmdBufferStatus$/;"	g
+nandCopyback	ftl_meta.c	/^void nandCopyback(sNandCmd cmd){$/;"	f
+nandErase	ftl_meta.c	/^void nandErase(sNandCmd cmd){$/;"	f
+nandMapCopyback	dftl_meta.c	/^void nandMapCopyback(sNandCmd cmd){$/;"	f
+nandMapErase	dftl_meta.c	/^void nandMapErase(sNandCmd cmd){$/;"	f
+nandMapInvalidate	dftl_meta.c	/^void nandMapInvalidate(sNandAddr adr){$/;"	f
+nandMapProgram	dftl_meta.c	/^void nandMapProgram(sNandCmd cmd){$/;"	f
+nandMapRead	dftl_meta.c	/^void nandMapRead(sNandCmd cmd){$/;"	f
+nandPageInvalidate	ftl_meta.c	/^void nandPageInvalidate(sNandAddr adr){$/;"	f
+nandProgram	ftl_meta.c	/^void nandProgram(sNandCmd cmd){$/;"	f
+nandRead	ftl_meta.c	/^void nandRead(sNandCmd cmd){$/;"	f
+nandSpec	ftl_global_var.c	/^sNandSpec	nandSpec;$/;"	v
+next	cache_buffer.h	/^	struct NODE* next;$/;"	m	struct:NODE	typeref:struct:NODE::NODE
+next	cache_buffer.h	/^    struct HASH_NODE* next;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::HASH_NODE
+next	generic_list.h	/^	sListElement *next;$/;"	m	struct:genericListHash
+next	generic_list.h	/^	struct genericListElement *next;$/;"	m	struct:genericListElement	typeref:struct:genericListElement::genericListElement
+nextBusEnable	struct_nand_timing.h	/^	double		nextBusEnable;$/;"	m	struct:SNANDchannel
+nextReady	struct_nand_timing.h	/^	double nextReady;$/;"	m	struct:SNANDway
+node	cache_buffer.c	/^NODE	node[LIST_SIZE];$/;"	v
+op	cache_buffer.h	/^	OP op;$/;"	m	struct:__anon3
+op	struct_sim_if.h	/^	eNandOp			op;			\/\/ nand op code$/;"	m	struct:sNandCommand
+opCode	nand_cmd_layer.h	/^	eLowNandOp	opCode;$/;"	m	struct:lowLevelNandCmd
+pTg	struct_dist_ftl.h	/^	void*			pTg;$/;"	m	struct:distGtdElement
+page	struct_meta.h	/^	sPageMeta			page[NAND_PAGE_PER_BLOCK];$/;"	m	struct:sBlockMeta
+pageChunkGen	ftl_utils.c	/^uchar pageChunkGen(uint iStartAdr, uint iSectorCnt, uint iSectorPerPage, uint order, uint *iAdr, uint *iLen, uchar *validMap)$/;"	f
+picoTick	typedefs.h	/^typedef unsigned long long int picoTick;$/;"	t
+prev	cache_buffer.h	/^	struct NODE* prev;$/;"	m	struct:NODE	typeref:struct:NODE::NODE
+prev	cache_buffer.h	/^    struct HASH_NODE* prev;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::HASH_NODE
+prev	generic_list.h	/^	struct genericListElement *prev;$/;"	m	struct:genericListElement	typeref:struct:genericListElement::genericListElement
+printCmdCnt	nand_timing.h	/^	inline void printCmdCnt(){$/;"	f	class:COpAnalyzer
+printList	generic_list.c	/^void printList(sListPtr li){$/;"	f
+printStat	host_machine.cpp	/^cSsdHostMachine::printStat(){$/;"	f	class:cSsdHostMachine
+pu	Makefile	/^	gawk -f \/opt\/synopsys\/K-2015.06-SP1\/IP\/ARM926EJS_TLM2_PSP\/Softflow\/script\/ADS_CreateSymfile.awk -v cpu="HARDWARE.i_ARM926EJS_TLM2_Model" mapfile > $(SYMFILE)$/;"	m
+range	bare_utils.h	/^	unsigned base, range;$/;"	m	struct:__heap_extent
+readAdrTg	dist_ftl_utils.c	/^uint readAdrTg(uint iLow, uint iHigh, sTransGp *tg, uint iStartOffset, uint iOffset){$/;"	f
+reclaimBlk	foreground_gc.c	/^void reclaimBlk(uint iCh, uint iWy, uint iPl)$/;"	f
+reclaimBlkBg	background_gc.c	/^void reclaimBlkBg(uint iCh, uint iWy, uint iPl){$/;"	f
+regLlnCmd	nand_cmd_layer.c	/^void regLlnCmd(sLowNandCmd cmd, uint logicalAddr){$/;"	f
+registerNandCmd	hw_if.c	/^void registerNandCmd(sNandCmd cmd)$/;"	f
+req	ftl.h	/^	DiskReq req;$/;"	m	struct:sPageRequest
+sBlkClst	dy_wl_dist_ftl.h	/^}sBlkClst;$/;"	t	typeref:struct:blockCluster
+sBlockMeta	struct_meta.h	/^typedef struct sBlockMeta$/;"	s
+sBlockMeta	struct_meta.h	/^}sBlockMeta;$/;"	t	typeref:struct:sBlockMeta
+sCmtLine	struct_dftl.h	/^}sCmtLine;$/;"	t	typeref:struct:CmtElement
+sDftl	struct_dftl.h	/^}sDftl;$/;"	t	typeref:struct:Dftl
+sDftlAdr	dftl_trans.h	/^}sDftlAdr;$/;"	t	typeref:struct:DftlAderess
+sDiskCmd	struct_sim_if.h	/^typedef enum sDiskCmd$/;"	g
+sDiskRequest	struct_sim_if.h	/^typedef struct sDiskRequest$/;"	s
+sDistFtl	struct_dist_ftl.h	/^}sDistFtl;$/;"	t	typeref:struct:distFtl
+sDistGtd	struct_dist_ftl.h	/^}sDistGtd;$/;"	t	typeref:struct:distGtdElement
+sDramInfo	struct_meta.h	/^typedef struct sDramInfo$/;"	s
+sDramInfo	struct_meta.h	/^}sDramInfo;$/;"	t	typeref:struct:sDramInfo
+sElePtr	generic_list.h	/^typedef sListElement * sElePtr;$/;"	t
+sFtlMeta	struct_meta.h	/^}sFtlMeta;$/;"	t	typeref:struct:sFtlMetaData
+sFtlMetaData	struct_meta.h	/^typedef struct sFtlMetaData$/;"	s
+sGenericList	generic_list.h	/^}sGenericList;$/;"	t	typeref:struct:genericList
+sGenericListIdx	generic_list.h	/^}sGenericListIdx;$/;"	t	typeref:struct:genericListHash
+sGtdElemnt	struct_dftl.h	/^}sGtdElemnt;$/;"	t	typeref:struct:GtdElement
+sHeap	bare_utils.h	/^}sHeap;$/;"	t	typeref:struct:__heap_extent
+sLargeOpQ	struct_nand_timing.h	/^typedef std::queue<SLargeOp, deque<SLargeOp> > sLargeOpQ;$/;"	t
+sListElement	generic_list.h	/^}sListElement;$/;"	t	typeref:struct:genericListElement
+sListHashPtr	generic_list.h	/^typedef sGenericListIdx * sListHashPtr;$/;"	t
+sListPtr	generic_list.h	/^typedef sGenericList * sListPtr;$/;"	t
+sLowNandCmd	nand_cmd_layer.h	/^}sLowNandCmd;$/;"	t	typeref:struct:lowLevelNandCmd
+sMapPage	struct_dftl.h	/^}sMapPage;$/;"	t	typeref:struct:MapPage
+sMapTable	struct_meta.h	/^typedef struct sMapTable$/;"	s
+sMapTable	struct_meta.h	/^}sMapTable;$/;"	t	typeref:struct:sMapTable
+sNandAddr	struct_sim_if.h	/^}sNandAddr;$/;"	t	typeref:struct:sNandAddress
+sNandAddress	struct_sim_if.h	/^typedef struct sNandAddress$/;"	s
+sNandCmd	struct_sim_if.h	/^}sNandCmd;$/;"	t	typeref:struct:sNandCommand
+sNandCmdBuf	nand_cmd_layer.h	/^}sNandCmdBuf;$/;"	t	typeref:struct:nandCmdBuffer
+sNandCommand	struct_sim_if.h	/^typedef struct sNandCommand$/;"	s
+sNandSpec	struct_nand_spec.h	/^typedef struct sNandSpec$/;"	s
+sNandSpec	struct_nand_spec.h	/^}sNandSpec;$/;"	t	typeref:struct:sNandSpec
+sPageDataBuffer	struct_sim_if.h	/^typedef struct sPageDataBuffer{$/;"	s
+sPageMeta	struct_meta.h	/^typedef struct sPageMeta$/;"	s
+sPageMeta	struct_meta.h	/^}sPageMeta;$/;"	t	typeref:struct:sPageMeta
+sPageReq	ftl.h	/^}sPageReq;$/;"	t	typeref:struct:sPageRequest
+sPageRequest	ftl.h	/^typedef struct sPageRequest$/;"	s
+sPgBuf	struct_sim_if.h	/^}sPgBuf;$/;"	t	typeref:struct:sPageDataBuffer
+sReq_t	struct_sim_if.h	/^typedef struct sReq_t{$/;"	s
+sSimStat	host_machine.h	/^	typedef struct sSimStat{$/;"	s	class:cSsdHostMachine
+sSimStat	host_machine.h	/^	}sSimStat;$/;"	t	class:cSsdHostMachine	typeref:struct:cSsdHostMachine::sSimStat
+sTransCache	struct_dist_ftl.h	/^}sTransCache;$/;"	t	typeref:struct:translationCache
+sTransGp	struct_dist_ftl.h	/^}sTransGp;$/;"	t	typeref:struct:translationGroup
+sectorAddr	struct_sim_if.h	/^	uint sectorAddr;	            \/\/ addr $/;"	m	struct:sDiskRequest
+sectorCount	struct_sim_if.h	/^	uint sectorCount;               \/\/ sector count$/;"	m	struct:sDiskRequest
+selectTask	nand_cmd_layer.c	/^void selectTask(uint irqType)$/;"	f
+setBlockDead	struct_meta.c	/^void setBlockDead(sBlockMeta *blk){$/;"	f
+setBlockFree	struct_meta.c	/^void setBlockFree(sBlockMeta *blk){$/;"	f
+setBlockUsed	struct_meta.c	/^void setBlockUsed(sBlockMeta *blk){$/;"	f
+setCurTgCnt	host_machine.h	/^	inline void setCurTgCnt(unsigned int val) { m_stat.dCachedTgCnt += val; }$/;"	f	class:cSsdHostMachine
+setEraseCnt	struct_meta.c	/^void setEraseCnt(sBlockMeta *blk, uint iVal){$/;"	f
+setFtlComplete	nand_cmd_layer.c	218;"	d	file:
+setFtlReady	nand_cmd_layer.c	226;"	d	file:
+setL2p	addr_trans.c	/^void setL2p(uint adr, sNandAddr phyAdr)$/;"	f
+setLatency	host_machine.cpp	/^cSsdHostMachine::setLatency(double dLat){$/;"	f	class:cSsdHostMachine
+setMap	ftl_global_var.c	/^void (*setMap)(uint, sNandAddr);$/;"	v
+setMapBlock	dftl_meta.c	/^void setMapBlock(sBlockMeta *blk){$/;"	f
+setMapBuffer	ftl_utils.c	/^void setMapBuffer(sNandCmd *cmd, sPgBuf *dataBuf){$/;"	f
+setOpAnalyzer	host_machine.h	/^	inline void setOpAnalyzer(COpAnalyzer *op){ m_opAnalyzer = op; }$/;"	f	class:cSsdHostMachine
+setPageFree	struct_meta.c	/^void setPageFree(sPageMeta *page){$/;"	f
+setPageInvalid	struct_meta.c	/^void setPageInvalid(sPageMeta *page){$/;"	f
+setPageLogicalAdr	struct_meta.c	/^void setPageLogicalAdr(sPageMeta *page, uint iLogicalAdr){$/;"	f
+setPageMapData	dftl_meta.c	/^void setPageMapData(sPageMeta *page, sMapPage *mapData){$/;"	f
+setPageValid	struct_meta.c	/^void setPageValid(sPageMeta *page){$/;"	f
+setSectorInvalid	struct_meta.c	/^void setSectorInvalid(sPageMeta *page, uint iOffset){$/;"	f
+setSectorValid	struct_meta.c	/^void setSectorValid(sPageMeta *page, uint iOffset){$/;"	f
+setValidMap	struct_meta.c	/^void setValidMap(sPageMeta *page, uchar *validMap){$/;"	f
+setWrType	dist_ftl_meta.c	/^void setWrType(sBlockMeta *blk, uint iWrType){$/;"	f
+setWritablePage	struct_meta.c	/^void setWritablePage(sBlockMeta *blk, uint iOffset){$/;"	f
+slave_addr	cache_buffer.h	/^	uint slave_addr; \/\/ sector 林家? page 林家?$/;"	m	struct:__anon3
+slave_bitmap	cache_buffer.h	/^	uint slave_bitmap;$/;"	m	struct:__anon3
+sleepcp	hw_main.c	/^void sleepcp(int nanosec){$/;"	f
+spec	nand_timing.h	/^	sNandSpec	spec;$/;"	m	class:COpAnalyzer
+src	struct_sim_if.h	/^	sNandAddr		src;		\/\/ source address for opcode like COPYBACK$/;"	m	struct:sNandCommand
+srcAddrDecode	nand_timing.cpp	/^COpAnalyzer::srcAddrDecode(SLargeOp &largeOp, sNandCmd cmd)$/;"	f	class:COpAnalyzer
+startSector	ftl.h	/^	uint startSector;$/;"	m	struct:sPageRequest
+status	struct_dftl.h	/^	eGtdStat	status;$/;"	m	struct:GtdElement
+status	struct_meta.h	/^	eBlockStat		status;$/;"	m	struct:sBlockMeta
+status	struct_meta.h	/^	ePageStat			status;$/;"	m	struct:sPageMeta
+swSim_FtlCmd	main.cpp	/^void swSim_FtlCmd(sNandCmd cmd){$/;"	f
+swSim_getCurReq	main.cpp	/^DiskReq swSim_getCurReq(){$/;"	f
+swSim_getNandSpec	main.cpp	/^sNandSpec swSim_getNandSpec(){$/;"	f
+swSim_getReqCnt	main.cpp	/^unsigned long long int swSim_getReqCnt(){$/;"	f
+swSim_incMapAccCnt	main.cpp	/^void swSim_incMapAccCnt(){$/;"	f
+swSim_incMapFetchCnt	main.cpp	/^void swSim_incMapFetchCnt(){$/;"	f
+swSim_waitNand	main.cpp	/^void swSim_waitNand()$/;"	f
+tBER	nand_timing.h	/^	double tBER;$/;"	m	class:COpAnalyzer
+tBER	struct_nand_spec.h	/^	double tBER;$/;"	m	struct:sNandSpec
+tPROG	nand_timing.h	/^	double tPROG;$/;"	m	class:COpAnalyzer
+tPROG	struct_nand_spec.h	/^	double tPROG;$/;"	m	struct:sNandSpec
+tR	nand_timing.h	/^	double tR;$/;"	m	class:COpAnalyzer
+tR	struct_nand_spec.h	/^	double tR;$/;"	m	struct:sNandSpec
+tRC	nand_timing.h	/^	double tRC;$/;"	m	class:COpAnalyzer
+tRC	struct_nand_spec.h	/^	double tRC;$/;"	m	struct:sNandSpec
+tWC	nand_timing.h	/^	double tWC;$/;"	m	class:COpAnalyzer
+tWC	struct_nand_spec.h	/^	double tWC;$/;"	m	struct:sNandSpec
+tail	generic_list.h	/^	sListElement *tail;$/;"	m	struct:genericList
+takeBus	struct_nand_timing.h	/^	takeBus,$/;"	e	enum:SmallOpType
+takeDevice	struct_nand_timing.h	/^	takeDevice$/;"	e	enum:SmallOpType
+target	generic_list.h	/^	sListElement *target;$/;"	m	struct:genericListHash
+tempData	device_if.c	/^Req_t tempData[32];$/;"	v
+testLowNandSpec	nand_cmd_layer.c	/^void testLowNandSpec(sNandSpec *spec){$/;"	f
+time	struct_nand_timing.h	/^	double			time;$/;"	m	struct:SSmallOp
+toLlnCmd	nand_cmd_layer.c	/^sLowNandCmd toLlnCmd(sNandCmd cmd){$/;"	f
+transCache	struct_dist_ftl.h	/^	sListPtr		transCache;$/;"	m	struct:distFtl
+transIrq	nand_cmd_layer.c	/^int transIrq[20] = {-1, -1, 0, -1, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1, -1, -1, -1, -1};$/;"	v
+transIrqToCh	nand_cmd_layer.c	/^uint transIrqToCh(uint irqType)$/;"	f
+translationCache	struct_dist_ftl.h	/^typedef struct translationCache{$/;"	s
+translationGroup	struct_dist_ftl.h	/^typedef struct translationGroup{$/;"	s
+type	struct_nand_timing.h	/^	SmallOpType		type;$/;"	m	struct:SSmallOp
+uchar	typedefs.h	/^typedef unsigned char uchar;$/;"	t
+uint	typedefs.h	/^typedef unsigned int uint;$/;"	t
+uint64	typedefs.h	/^typedef unsigned long long int uint64;$/;"	t
+usedBlkPool	struct_dist_ftl.h	/^	sListPtr		usedBlkPool;$/;"	m	struct:distFtl
+validMap	ftl.h	/^	uchar validMap[VALID_BITMAP_SIZE];$/;"	m	struct:sPageRequest
+vdouble	sfr_addr.h	/^typedef volatile double	vdouble;$/;"	t
+vuchar	sfr_addr.h	/^typedef volatile unsigned char vuchar;$/;"	t
+vuint	sfr_addr.h	/^typedef volatile unsigned int vuint;$/;"	t
+waitLln	nand_cmd_layer.c	/^void waitLln(uint logicalAddr){$/;"	f
+waitNand	sim_if.c	/^void waitNand(uint addr){$/;"	f
+way	struct_nand_timing.h	/^	SNANDway		*way;$/;"	m	struct:SNANDchannel
+wayOp	struct_nand_timing.h	/^	COpQ				*wayOp;$/;"	m	struct:SNANDchannel
+writeAdrTg	dist_ftl_utils.c	/^void writeAdrTg(uint iLow, uint iHigh, sTransGp *tg, uint adr, uint adrCnt){$/;"	f
+~COpAnalyzer	nand_timing.cpp	/^~COpAnalyzer()$/;"	f	class:COpAnalyzer
+~cSsdHostMachine	host_machine.cpp	/^cSsdHostMachine::~cSsdHostMachine(){$/;"	f	class:cSsdHostMachine

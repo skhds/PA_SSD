@@ -1,0 +1,2073 @@
+////--------------------------------------------------------------                //%
+// Important:  The template for this file was generated                         //%
+//  automatically and can only be re-generated if rules                         //%
+//  are followed when editing:                                                  //%
+// 1. Do not modify any line containing //%                                     //%
+// 2. Only insert your lines of code between 2 lines                            //%
+//    containing "//% user begin" and "//% user end"                            //%
+//                                                                              //%
+// :generate:date: Thu Apr 17 2014 14:08:01                                     //%
+// :generate:version: 2010.1.0-dev                                              //%
+//--------------------------------------------------------------                //%
+                                                                                //%
+#ifndef __CACHE_BUFFER_CONTROLLER_H__                                           //%
+#define __CACHE_BUFFER_CONTROLLER_H__                                           //%
+                                                                                //%USERBEGIN MODEL_DEBUG_ENABLE
+#if defined(DBG_MSG) || defined(DBG_SCP)
+# define DBG_SCP_CACHE_BUFFER_CONTROLLER
+#endif
+                                                                                //%USEREND MODEL_DEBUG_ENABLE
+#include <scml2.h>                                                              //%
+#include <systemc>                                                              //%
+#include "scmlinc/scml_command_processor.h"                                     //%
+#include "scmlinc/scml_property.h"
+#include "tlm_utils/simple_target_socket.h"
+#include "tlm.h"
+                                                                                //%USERBEGIN HEADER_H
+// TODO: Insert your includes, declarations, etc. here.
+#include "./header/Cache_Buffer_Struct.h"
+#include "./header/ssd_struct.h"
+#include "./header/memcpy.h"
+#include <math.h>
+
+#include <list>
+#include <cmath>
+
+#define Host_Addr       0x0
+#define Cache_Addr      0x0
+#define NAND_Addr       0x0
+
+#define CACHE_BUFFER_SIZE   1024
+#define MAX_QUEUE_SIZE      16
+
+#define Shift_Cache_Size    log(CACHE_BUFFER_SIZE)/log(2)
+                                                                                //%USEREND HEADER_H
+//------------------------                                                      //%
+// Module Interface                                                             //%
+//------------------------                                                      //%
+class Cache_Buffer_Controller :                                                 //%
+	public sc_core::sc_module                                               //%
+                                                                                //%USERBEGIN INHERITANCE
+    // TODO: Specify class inheritance here. Start each line with a , character
+                                                                                //%USEREND INHERITANCE
+                                                                                //%
+{                                                                               //%
+public:                                                                         //%
+	// constructor                                                          //%
+	Cache_Buffer_Controller( const sc_core::sc_module_name & n);
+	SC_HAS_PROCESS( Cache_Buffer_Controller );                              //%
+	// destructor                                                           //%
+	virtual ~Cache_Buffer_Controller();                                     //%
+private:                                                                        //%
+	// disable default and copy constructors by making them private         //%
+	Cache_Buffer_Controller() ;                                             //%
+	Cache_Buffer_Controller( const Cache_Buffer_Controller& ) ;             //%
+	Cache_Buffer_Controller & operator= ( const Cache_Buffer_Controller& ) ;//%
+public:                                                                         //%
+	// method called at end of elaboration of design -- for initialization  //%
+	virtual void end_of_elaboration();                                      //%
+	// initialization methods for ports & registers                         //%
+	virtual void initPorts();                                               //%
+	virtual void initRegisters();                                           //%
+	// method to handle interactive commands -- for dynamic instrumentation //%
+	virtual std::string commandProcessor(const std::vector<std::string>& cmd);//%
+public:                                                                         //%
+	// Port declarations                                                    //%
+	sc_core::sc_in< bool > rst_n;                                           //%
+	scml2::initiator_socket< 32 > Nandside_Mport;                           //%
+	tlm::tlm_target_socket< 32 > Nandside_Sport;                            //%
+	sc_core::sc_in< bool > Nandside_RnB;                                    //%
+	scml2::initiator_socket< 32 > Hostside_Mport;                           //%
+	tlm::tlm_target_socket< 32 > Hostside_Sport;                            //%
+	sc_core::sc_out< bool > Hostside_RnB;                                   //%
+	scml2::initiator_socket< 32 > Cacheside_Mport;                          //%
+	tlm::tlm_target_socket< 32 > SFR_port;                                  //%
+	sc_core::sc_out< bool > Interrupt_port;                                 //%
+protected:                                                                      //%
+                                                                                //%
+	// Memory declarations                                                  //%
+	scml2::memory< unsigned int > Nandside_Sport_Reg;                       //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > Nandside_Sport_Nandside_Sport_Reg_adapter;//%
+	scml2::memory< unsigned int > Hostside_Sport_Reg;                       //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > Hostside_Sport_Hostside_Sport_Reg_adapter;//%
+                                                                                //%
+	scml2::memory< unsigned int > SFR_port_Reg;                             //%
+                                                                                //%
+	scml2::tlm2_gp_target_adapter< 32 > SFR_port_SFR_port_Reg_adapter;      //%
+                                                                                //%
+public:                                                                         //%
+	// Process declarations                                                 //%
+	void rst_nHandler1();
+    void Queue_Manager();
+    void Queue_to_NAND();
+    void Queue_to_Cache();
+	void Cache_Eviction();
+    void Combine_Cache_NAND();
+    bool Is_Map_Table(uint64 addr);
+	void Check_Map_Table();
+    void Send_RnB_flag();
+	void Insert_Map_Table(std::list <sSubReqWithData_t>::iterator req_itr);
+    uchar* Setting_Valid_Bit(bool init_state, bool combine_state);
+    uchar* Find_NAND_Portion(bool init_state, bool combine_state);
+	uint Searching_Map_Table(uint64 addr);
+                                                                                //%
+protected:                                                                      //%
+	// Memory callback declarations                                         //%
+	void                                                                    //%
+	Nandside_Sport_Reg_Callback(                                            //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	Hostside_Sport_Reg_Callback(                                            //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	void                                                                    //%
+	SFR_port_Reg_Callback(                                                  //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t);          //%
+	// support for message logging                                          //%
+	void initMessageLogging();                                              //%
+	void REPORT_MSG(std::string sev, std::string msg);                      //%
+	void DBG_MSG(std::string msg)   { REPORT_MSG("debug",msg); }            //%
+	void WARN_MSG(std::string msg)  { REPORT_MSG("warn",msg); }             //%
+	void ERROR_MSG(std::string msg) { REPORT_MSG("error",msg); }            //%
+	void FATAL_MSG(std::string msg) { REPORT_MSG("fatal",msg); }            //%
+                                                                                //%USERBEGIN MEMBER_DECLS
+    enum DbgCategories { GENERAL = 0, PORTS, REGS } ;
+    bool dbgFlag[sizeof(DbgCategories)];
+
+    // TODO: Insert declarations of member data and functions here.
+
+    eWSState curr_state;
+    eWSState next_state;
+
+    /* Hostside Queue */
+	std::list <sSubReqWithData_t>	Write_Queue;
+	std::list <sSubReqWithData_t>	Read_Queue;
+	std::list <sSubReq_t>		    Seq_Op_Queue;
+
+    /* Cache and Nand side Queue */
+    std::list <sSubReqWithData_t>   Cache_Queue;        // For Cache read / write
+    std::list <mSubReqWithData_t>   Nand_Queue;         // For NAND read / write
+    std::list <sSubReqWithValid_t>  Combine_Queue;      // Combine read data from cache and nand 
+
+    BitMap_t Map_Table[CACHE_BUFFER_SIZE];
+	uint MT_Start_Ptr;
+	uint MT_Curr_Ptr;
+
+    //uchar* return_valid;
+    sSubReq_t tmp_req;
+    bool init_state;        // read queue : true, others : false
+    bool combine_state;     // cache & nand queue : false, combine_queue : true
+
+    uint new_id;
+
+    sc_core::sc_event send_req_to_NAND;
+    sc_core::sc_event send_req_to_Cache;
+    sc_core::sc_event trig_queue_manager;
+
+    inline bool IsWriteQueue_Empty()
+    {
+        return (Write_Queue.size() <= 0);
+    }
+
+    inline bool IsReadQueue_Empty()
+    {
+        return (Read_Queue.size() <= 0) ;
+    }
+
+    inline bool IsWriteQueue_Full()
+    {
+        return (Write_Queue.size() >= MAX_QUEUE_SIZE);
+    }
+
+    inline bool IsReadQueue_Full()
+    {
+        return (Read_Queue.size() >= MAX_QUEUE_SIZE);
+    }
+
+    inline bool IsQueue_Full()
+    {
+        return (Cache_Queue.size() + Nand_Queue.size() - Combine_Queue.size() >= MAX_QUEUE_SIZE);
+    }
+
+    inline void Map_Table_Ptr(uint ptr) {
+        if (ptr >= CACHE_BUFFER_SIZE) ptr = 0;
+        else ptr = ptr + 1;
+    }
+
+	inline uint Map_Table_Size()
+	{	
+        // '10' should be converted to formulation
+        if (MT_Curr_Ptr >= MT_Start_Ptr) {
+            return (MT_Curr_Ptr - MT_Start_Ptr);
+        }
+        else {
+            return (2*CACHE_BUFFER_SIZE - MT_Start_Ptr + MT_Curr_Ptr);
+        }
+	}
+
+    inline void Print_Queue_State()
+    {
+        cout << "< Queue Manager : " << Map_Table_Size() << " >" << endl;
+
+        cout << "\tSEQ SIZE : " << Seq_Op_Queue.size() << endl;
+        cout << "\tWRITE QUEUE SIZE : " << Write_Queue.size() << endl;
+        cout << "\tREAD QUEUE SIZE : " << Read_Queue.size() << endl << endl;
+
+        cout << "\tCACHE QUEUE SIZE : " << Cache_Queue.size() << endl;
+        cout << "\tNAND QUEUE SIZE : " << Nand_Queue.size() << endl;
+        cout << "\tCOMBINE QUEUE SIZE : " << Combine_Queue.size() << endl;
+    }
+
+	// Host side
+	sSubReqWithData_t	curReq;
+
+	// Nand side
+    sReadSubResp_t      Nand_reg;
+
+    // For Test
+    uint num_req;
+                                                                                //%USEREND MEMBER_DECLS
+};                                                                              //%
+                                                                                //%
+//------------------------                                                      //%
+// Module Implementation                                                        //%
+//------------------------                                                      //%
+                                                                                //%USERBEGIN HEADER_CPP
+// TODO: Insert your includes, declarations, etc. here.
+                                                                                //%USEREND HEADER_CPP
+                                                                                //%
+Cache_Buffer_Controller::Cache_Buffer_Controller( const sc_core::sc_module_name & n)
+		: sc_core::sc_module(n)                                         //%
+,                                                                               //%
+ rst_n("rst_n"),                                                                //%
+ Nandside_Mport("Nandside_Mport"),                                              //%
+ Nandside_Sport("Nandside_Sport"),                                              //%
+ Nandside_RnB("Nandside_RnB"),                                                  //%
+ Hostside_Mport("Hostside_Mport"),                                              //%
+ Hostside_Sport("Hostside_Sport"),                                              //%
+ Hostside_RnB("Hostside_RnB"),                                                  //%
+ Cacheside_Mport("Cacheside_Mport"),                                            //%
+ SFR_port("SFR_port"),                                                          //%
+ Interrupt_port("Interrupt_port"),                                              //%
+ Nandside_Sport_Nandside_Sport_Reg_adapter("Nandside_Sport_Nandside_Sport_Reg_adapter", Nandside_Sport),//%
+ Hostside_Sport_Hostside_Sport_Reg_adapter("Hostside_Sport_Hostside_Sport_Reg_adapter", Hostside_Sport),//%
+ SFR_port_SFR_port_Reg_adapter("SFR_port_SFR_port_Reg_adapter", SFR_port),      //%
+ Nandside_Sport_Reg("Nandside_Sport_Reg", 4096ULL),                             //%
+ Hostside_Sport_Reg("Hostside_Sport_Reg", 4096ULL),                             //%
+ SFR_port_Reg("SFR_port_Reg", 1ULL)                                             //%
+                                                                                //%
+                                                                                //%USERBEGIN INITIALIZER
+    // TODO: Add your class initialization here.
+                                                                                //%USEREND INITIALIZER
+                                                                                //%
+{                                                                               //%
+ // declare processes and their sensitivities                                   //%
+	SC_METHOD(rst_nHandler1);                                               //%
+	 sensitive << rst_n.neg() ;                                             //%
+	 dont_initialize();                                                     //%
+
+    SC_THREAD(Queue_Manager);
+     sensitive << trig_queue_manager;
+     dont_initialize();
+
+    SC_THREAD(Queue_to_NAND);
+     sensitive << send_req_to_NAND;
+     dont_initialize();
+
+    SC_THREAD(Queue_to_Cache);
+     sensitive << send_req_to_Cache;
+     dont_initialize();
+
+	// bind target ports to memories                                        //%
+	Hostside_Sport_Hostside_Sport_Reg_adapter(Hostside_Sport_Reg);          //%
+	SFR_port_SFR_port_Reg_adapter(SFR_port_Reg);                            //%
+	Nandside_Sport_Nandside_Sport_Reg_adapter(Nandside_Sport_Reg);          //%
+                                                                                //%
+ // setup memory callbacks                                                      //%
+	// - Memory: Nandside_Sport_Reg                                         //%
+	scml2::set_callback(                                                    //%
+		Nandside_Sport_Reg,                                             //%
+		SCML2_CALLBACK(Nandside_Sport_Reg_Callback),                    //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: Hostside_Sport_Reg                                         //%
+	scml2::set_callback(                                                    //%
+		Hostside_Sport_Reg,                                             //%
+		SCML2_CALLBACK(Hostside_Sport_Reg_Callback),                    //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+	// - Memory: SFR_port_Reg                                               //%
+	scml2::set_callback(                                                    //%
+		SFR_port_Reg,                                                   //%
+		SCML2_CALLBACK(SFR_port_Reg_Callback),                          //%
+		scml2::AUTO_SYNCING);                                           //%
+                                                                                //%
+                                                                                //%
+                                                                                //%
+#ifdef SCML_COMMAND_PROCESSOR_H                                                 //%
+	SCML_COMMAND_PROCESSOR(commandProcessor);                               //%
+	SCML_ADD_COMMAND("debug",0,6,"debug [-+][general|regs|ports|all]", "Turn on/off debug flags");//%
+#endif // SCML_COMMAND_PROCESSOR_H                                              //%
+                                                                                //%
+    initMessageLogging();                                                       //%
+                                                                                //%USERBEGIN CONSTRUCTOR
+
+    // TODO: Add constructor code here.
+    if ( dbgFlag[GENERAL] ) DBG_MSG("Created " + (std::string)this->basename());
+
+                                                                                //%USEREND CONSTRUCTOR
+                                                                                //%
+}                                                                               //%
+// destructor                                                                   //%
+Cache_Buffer_Controller::~Cache_Buffer_Controller()                             //%
+{                                                                               //%
+                                                                                //%USERBEGIN DESTRUCTOR
+
+    // TODO: Add destructor code here.
+    //delete return_valid;
+    
+    delete curReq.subReq;
+    delete curReq.cpData;
+
+    delete Nand_reg.cpData;
+                                                                                //%USEREND DESTRUCTOR
+                                                                                //
+}                                                                               //%
+// initialization method for ports                                              //%
+void                                                                            //%
+Cache_Buffer_Controller::initPorts()                                            //%
+{                                                                               //%
+	Hostside_RnB.initialize(0x0);                                           //%
+	Interrupt_port.initialize(0x0);                                         //%
+}                                                                               //%
+// initialization method for registers                                          //%
+void                                                                            //%
+Cache_Buffer_Controller::initRegisters()                                        //%
+{                                                                               //%
+    Nandside_Sport_Reg.initialize(0x0);                                         //%
+    Hostside_Sport_Reg.initialize(0x0);                                         //%
+    SFR_port_Reg.initialize(0x0);                                               //%
+}                                                                               //%
+//This method is invoked after the design is fully elaborated, but              //%
+// before simulation begins.                                                    //%
+void                                                                            //%
+Cache_Buffer_Controller::end_of_elaboration()                                   //%
+{                                                                               //%
+                                                                                //%USERBEGIN END_OF_ELAB
+    // TODO: Add end_of_elaboration code here.
+    this->initRegisters();
+    this->initPorts();
+                                                                                //%USEREND END_OF_ELAB
+}                                                                               //%
+// command processing method                                                    //%
+//  During simulation, this command may be called to handle                     //%
+//  interactive commands -- for dynamic instrumentation of the instance.        //%
+std::string                                                                     //%
+Cache_Buffer_Controller::commandProcessor(const std::vector< std::string >& cmd)//%
+{                                                                               //%
+                                                                                //%USERBEGIN CMD_PROCESSOR
+    // TODO: Add commandProcessor code here.
+    //  The default code generated here handles toggling off/on the
+    //  default debug instrumentation flags: GENERAL, PORTS, and REGS.
+
+    std::string command = cmd[0];
+    std::ostringstream outs;
+
+    if (command == "debug") {
+        bool print_usage_flag = false;
+        std::string debug_cmd;
+
+        if ((cmd.size() == 1) || (cmd[1] == "?")) {
+            print_usage_flag = true;
+        } else {
+            int i = 1;
+            while (i < cmd.size()) {
+                bool flag = true;
+                if ((cmd[i] == "-") || (cmd[i] == "+")) {
+                    if (cmd[i] == "-") {
+                        flag = false;
+                    }
+                    i++;
+                }
+                debug_cmd = cmd[i];
+                if ((debug_cmd[0] == '+') || (debug_cmd[0] == '-')) {
+                    if (debug_cmd[0] == '-') {
+                        flag = false;
+                    }
+                    debug_cmd = debug_cmd.substr(1,debug_cmd.size()-1);
+                }
+                if (debug_cmd == "all") {
+		    for ( int jj = 0; jj<sizeof(DbgCategories); jj++ ) {
+		    	dbgFlag[jj] = flag;
+		    }
+                } else if (debug_cmd == "general") {
+                    dbgFlag[GENERAL] = flag;
+                } else if (debug_cmd == "ports" || debug_cmd == "pins") {
+                    dbgFlag[PORTS] = flag;
+                } else if (debug_cmd == "regs") {
+                    dbgFlag[REGS] = flag;
+                } else {
+		    DBG_MSG(std::string("ERROR: Unknown Option:") + debug_cmd);
+                    print_usage_flag = true;
+                    break;
+                }
+                i++;
+            }
+        }
+        outs << "Current debug options:"
+            << (dbgFlag[GENERAL] ? " general" : "")
+            << (dbgFlag[PORTS] ? " ports" : "")
+            << (dbgFlag[REGS] ? " regs" : "")
+            << ((dbgFlag[GENERAL] || dbgFlag[PORTS] || dbgFlag[REGS] )? "" : " Off")
+            << std::endl;
+        if (print_usage_flag) {
+            outs << "Usage: debug [-+][general|ports|regs|all]" << std::endl;
+            outs << " Example1: 'debug -ports' toggles OFF the debug flag for ports." << std::endl;
+            outs << " Example2: 'debug ports regs' toggles ON the flags for ports & registers." << std::endl;
+        }
+    }
+    return outs.str();
+                                                                                //%USEREND CMD_PROCESSOR
+}                                                                               //%
+                                                                                //%
+// initialization method for logging messages                                   //%
+                                                                                //%
+void                                                                            //%
+Cache_Buffer_Controller::initMessageLogging()                                   //%
+{                                                                               //%
+                                                                                //%USERBEGIN MODEL_DEBUG_INIT
+    // toggle on/off debugging flags
+    for (int i=0;i<sizeof(DbgCategories);i++) {
+#ifdef DBG_SCP_CACHE_BUFFER_CONTROLLER
+        dbgFlag[i] = true;
+#else
+        dbgFlag[i] = false;
+#endif
+    }
+                                                                                //%USEREND MODEL_DEBUG_INIT
+                                                                                //%
+}                                                                               //%
+// method for logging messages                                                  //%
+void                                              //%
+Cache_Buffer_Controller::REPORT_MSG(std::string sev, std::string msg)//%
+{                                                 //%
+                                                                                //%USERBEGIN REPORT_MSG
+    std::cout << sev << ": " << msg << " [" << this->basename() << "@" << sc_core::sc_time_stamp() << "]" << std::endl;
+                                                                                //%USEREND REPORT_MSG
+                                                                                //%
+}                                                                               //%
+void                                                                            //%
+Cache_Buffer_Controller::rst_nHandler1()                                        //%
+                                                                                //%USERBEGIN rst_nHandler1
+{
+	if ( dbgFlag[PORTS] ) DBG_MSG( "rst_nHandler1 invoked because of event on port rst_n" );
+
+	// TODO: INSERT code for the rst_nHandler1 method here.
+	curr_state = IDLE;
+    
+    curReq.subReq = new sSubReq_t;
+    curReq.cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+    Nand_reg.cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+	MT_Start_Ptr = 0;
+	MT_Curr_Ptr = 0;
+
+    new_id = 0;
+    init_state = true;
+    combine_state = false;
+    Hostside_RnB.write(1);
+
+    // For Test
+    num_req = 0;
+}
+
+/* Whenever request is come from Hostside
+ * Request in Read and Write Queue is distributed to The OTHER QUEUES
+ * (Cache_Queue, Nand_Queue, Combine_Queue) for multi-threading */
+void
+Cache_Buffer_Controller::Queue_Manager()
+{
+    std::list < sSubReqWithData_t >::iterator req_itr;
+    std::list < sSubReq_t >::iterator op_itr;
+	
+    HOST_REQ_OP curr_op;
+	uint data_len;
+	uint req_len;
+	uint addr_idx;
+    uint cache_idx;
+
+	uint64 Start_Addr;
+	uint64 tmp_addr;
+	uint64 Page_Addr;
+
+    uint init_ptr;
+    uint fin_ptr;
+    uint count_sequential_data;
+
+    uchar* valid_bit = new uchar[SECTOR_PER_PAGE];          // Required whole data sequence
+    uchar* nand_portion = new uchar[SECTOR_PER_PAGE];
+
+    uint prev_num = 0;
+
+    while(1) {
+
+        bool Find_Addr = false;
+        bool find_cache_data = false;
+        bool init = true;
+
+        bool first_case = false;
+        bool second_case = false;
+        bool third_case = false;
+
+        op_itr = Seq_Op_Queue.begin();
+        curr_op = op_itr ->oriReq.Op;
+
+        if (curr_op == HOST_WRITE) {
+            if (!IsWriteQueue_Empty()) {
+                //cout << "Cache Write" << endl;
+                //Print_Queue_State();
+
+                req_itr = Write_Queue.begin();
+
+                sSubReqWithData_t* sub_queue = new sSubReqWithData_t();
+                sub_queue->subReq = new sSubReq_t();
+                sub_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                memcpy(sub_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                memcpy(sub_queue->cpData, req_itr->cpData, req_itr->subReq->iLen*SECTOR_SIZE_BYTE);
+                Cache_Queue.push_back(*sub_queue);
+
+                init_state = true;
+                combine_state = false;
+
+                send_req_to_Cache.notify();
+
+                delete req_itr->subReq;
+                delete req_itr->cpData;
+
+                Write_Queue.pop_front();
+                Seq_Op_Queue.pop_front();
+            }
+            else {
+                cout << "Wrong access to empty write queue!" << endl;
+                sc_stop();
+            }
+        }
+
+        /* 1st case, cache queue
+         * 2nd case, combine queue
+         * 3rd case, nand queue */
+
+        else if(curr_op == HOST_READ) {     
+            if (!IsReadQueue_Empty()) {
+                req_itr = Read_Queue.begin();
+
+                if (Map_Table_Size()) {
+
+                    req_len = req_itr->subReq->iLen;
+                    Start_Addr = req_itr->subReq->iStartAddr;
+                    Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE))*SECTOR_PER_PAGE;
+
+                    Find_Addr = Is_Map_Table(Page_Addr);
+
+                    if (Find_Addr) {    // 1st & 2nd case
+
+                        init_state = true;
+                        combine_state = false;
+
+                        valid_bit = Setting_Valid_Bit(init_state, combine_state);            // valid bit setting
+                        nand_portion = Find_NAND_Portion(init_state, combine_state);         // nand portion check
+
+                        // Classify the READ CASE
+                        for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                            if (nand_portion[i] == '0') first_case = true;
+                            else {
+                                first_case = false;
+                                break;
+                            }
+                        }
+                        for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                            if (!first_case) {
+                                if (valid_bit[i] != nand_portion[i]) {
+                                    second_case = true;
+                                    third_case = false;
+                                    break;
+                                }
+                                else {
+                                    second_case = false;
+                                    third_case = true;
+                                }
+                            }
+                        }
+
+                        delete nand_portion;
+                        delete valid_bit;
+
+                        if (first_case) {      // 1st case.
+                            //cout << "All in Cache Buffer" << endl;
+                            //Print_Queue_State();
+
+                            sSubReqWithData_t* sub_queue = new sSubReqWithData_t();
+                            sub_queue->subReq = new sSubReq_t();
+                            sub_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                            memcpy(sub_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                            Cache_Queue.push_back(*sub_queue);
+
+                            init_state = false;
+                            combine_state = false;
+
+                            send_req_to_Cache.notify();
+                        }
+                        else if (second_case) {         // 2nd case
+                            //cout << "A data portion in cache buffer" << endl;
+                            //Print_Queue_State();
+
+                            sSubReqWithData_t* cache_queue = new sSubReqWithData_t();
+                            cache_queue->subReq = new sSubReq_t();
+                            cache_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                            mSubReqWithData_t* nand_queue = new mSubReqWithData_t();
+                            nand_queue->subReq = new sSubReq_t();
+                            nand_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                            sSubReqWithValid_t* combine_queue = new sSubReqWithValid_t();
+                            combine_queue->subReq = new sSubReq_t();
+                            combine_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                            memcpy(cache_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                            memcpy(nand_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                            memcpy(combine_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+
+                            nand_queue->check_trans = false;
+
+                            combine_queue->Valid_bit = Setting_Valid_Bit(init_state, combine_state);
+                            combine_queue->Nand_bit = Find_NAND_Portion(init_state, combine_state);
+
+                            Cache_Queue.push_back(*cache_queue);
+                            Nand_Queue.push_back(*nand_queue);
+                            Combine_Queue.push_back(*combine_queue);
+
+                            init_state = false;
+                            combine_state = true;
+
+                            send_req_to_Cache.notify();     // send req to nand
+                            send_req_to_NAND.notify();      // send req to cache
+                        }
+                        else if (third_case) {              // 3rd case
+                            //cout << "Find but data is not cache" << endl;
+                            //Print_Queue_State();
+
+                            mSubReqWithData_t* sub_queue = new mSubReqWithData_t();
+                            sub_queue->subReq = new sSubReq_t();
+                            sub_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                            sub_queue->check_trans = false;
+
+                            memcpy(sub_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                            Nand_Queue.push_back(*sub_queue);
+
+                            init_state = false;
+                            combine_state = false;
+
+                            send_req_to_NAND.notify();
+                        }
+                        else {
+                            cout << "None target case!" << endl;
+                            sc_stop();
+                        }
+                    }
+                    else {
+                        //cout << "No data in Bit Map" << endl;
+                        //Print_Queue_State();
+
+                        mSubReqWithData_t* sub_queue = new mSubReqWithData_t();
+                        sub_queue->subReq = new sSubReq_t();
+                        sub_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                        sub_queue->check_trans = false;
+
+                        memcpy(sub_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                        Nand_Queue.push_back(*sub_queue);
+
+                        init_state = false;
+                        combine_state = false;
+
+                        send_req_to_NAND.notify();
+                    }
+                }
+                else {
+                    //cout << "System is just begun " << endl;
+                    //Print_Queue_State();
+
+                    mSubReqWithData_t* sub_queue = new mSubReqWithData_t();
+                    sub_queue->subReq = new sSubReq_t();
+                    sub_queue->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                    sub_queue->check_trans = false;
+
+                    memcpy(sub_queue->subReq, req_itr->subReq, sizeof(sSubReq_t));
+                    Nand_Queue.push_back(*sub_queue);
+
+                    init_state = false;
+                    combine_state = false;
+
+                    send_req_to_NAND.notify();
+                }
+            }
+            else {
+                cout << "Wrong access to empty read queue" << endl;
+                sc_stop();
+            }
+            
+            delete req_itr->subReq;
+            delete req_itr->cpData;
+
+            Read_Queue.pop_front();
+            Seq_Op_Queue.pop_front();
+        }
+        else {
+            cout << "Nothing happened!" << endl;
+            sc_stop();
+        }
+
+        Send_RnB_flag();
+
+        if (Seq_Op_Queue.size() > 0) {
+            wait(CLOCK_PERIOD_NS, SC_NS);
+        }
+        else {
+            wait();
+        }
+    }
+}
+
+uchar*
+Cache_Buffer_Controller::Find_NAND_Portion(bool init_state, bool combine_state)
+{
+    bool init = true;
+    bool Init_State = init_state;
+    bool Combine_nandData = combine_state;
+
+    uint addr_idx;
+    uint init_ptr = SECTOR_PER_PAGE;
+    uint fin_ptr = SECTOR_PER_PAGE;
+
+    uchar* valid_bit = new uchar[SECTOR_PER_PAGE];
+    
+    if (Init_State) {
+        std::list <sSubReqWithData_t>::iterator req_itr;
+
+        req_itr = Read_Queue.begin();
+        uint64 Start_Addr = req_itr->subReq->iStartAddr;
+        uint64 Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE))*SECTOR_PER_PAGE;
+    
+        addr_idx = Searching_Map_Table(Page_Addr);
+        addr_idx = addr_idx*10 + (Start_Addr - Page_Addr);
+
+        valid_bit = Setting_Valid_Bit(Init_State, Combine_nandData);
+
+        for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+            if ((uint)Map_Table[addr_idx/10].Valid[i] < (uint)valid_bit[i]) {
+                if (init) {
+                    init_ptr = i;
+                    fin_ptr = i;
+    
+                    init = false;
+                }
+                else fin_ptr = i;
+            }
+        }
+        for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+            if ((i>=init_ptr) && (i<=fin_ptr)) {
+                valid_bit[i] = '1';
+            }
+            else valid_bit[i] = '0';
+        }
+
+        return valid_bit;
+    }
+    else {
+        if (Combine_nandData) {
+            std::list <sSubReqWithValid_t>::iterator req_itr;
+
+            req_itr = Combine_Queue.begin();
+            uint64 Start_Addr = req_itr->subReq->iStartAddr;
+            uint64 Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE))*SECTOR_PER_PAGE;
+    
+            addr_idx = Searching_Map_Table(Page_Addr);
+            addr_idx = addr_idx*10 + (Start_Addr - Page_Addr);
+
+            valid_bit = Setting_Valid_Bit(Init_State, Combine_nandData);
+    
+            for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                if ((uint)Map_Table[addr_idx/10].Valid[i] < (uint)valid_bit[i]) {
+                    if (init) {
+                        init_ptr = i;
+                        fin_ptr = i;
+    
+                        init = false;
+                    }
+                    else fin_ptr = i;
+                }
+            }
+            for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                if ((i>=init_ptr) && (i<=fin_ptr)) {
+                    valid_bit[i] = '1';
+                }
+                else valid_bit[i] = '0';
+            }
+        
+            return valid_bit;
+        }
+        else ;
+    }
+}
+
+void
+Cache_Buffer_Controller::Queue_to_Cache()
+{
+    std::list <sSubReqWithValid_t>::iterator comb_itr;
+    std::list <mSubReqWithData_t>::iterator nand_itr;
+    std::list <sSubReqWithData_t>::iterator cache_itr;
+
+    std::list <sSubReq_t>::iterator op_itr;
+    uint64 Start_Addr;
+    uint64 Page_Addr;
+    uint req_len;
+    uint addr_idx;
+    uint cache_idx;
+    uint count_sequential_data;
+    uint data_seq;
+
+    HOST_REQ_OP curr_op;
+
+    bool prev_state;
+    bool find_cache_data;
+
+    while(1) {
+
+        //cout << " < Cache Manager >" << endl;
+
+        cache_itr = Cache_Queue.begin();
+        curr_op = cache_itr->subReq->oriReq.Op;
+
+        bool Init_State = init_state;
+        bool Combine_nandData = false;
+        bool Combine_Flag = false;
+
+        if (curr_op == HOST_WRITE) {        // Write Queue
+
+            Start_Addr = cache_itr->subReq->iStartAddr;
+            Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE)) * SECTOR_PER_PAGE;
+   
+            req_len = cache_itr->subReq->iLen;
+
+        	Insert_Map_Table(cache_itr);
+            //Check_Map_Table();
+            addr_idx = Searching_Map_Table(Page_Addr);
+            addr_idx = addr_idx*10 + (uint)(Start_Addr-Page_Addr);
+    
+            Cacheside_Mport.write(addr_idx, cache_itr->cpData, req_len * SECTOR_SIZE_BYTE);
+    
+            delete cache_itr->subReq;
+            delete cache_itr->cpData;
+        
+            Cache_Queue.erase(cache_itr);
+            Send_RnB_flag();
+        }
+        else if (curr_op == HOST_READ) {    //Read 2nd Queue
+
+            for (comb_itr = Combine_Queue.begin(); comb_itr != Combine_Queue.end(); comb_itr++) {
+                if ((cache_itr->subReq->oriReq.iId == comb_itr->subReq->oriReq.iId) && (cache_itr->subReq->iStartAddr == comb_itr->subReq->iStartAddr)) {
+                    Combine_nandData = true;
+                    break;
+                }
+                else {
+                    Combine_nandData = false;
+                }
+            }
+
+            if (Combine_nandData) {
+
+                // combine nand data with cache data
+                uint combine_len = 0;
+
+                uchar Cache_Data[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+                uchar NAND_Data[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+                uchar Combine_Data[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+                
+                Start_Addr = comb_itr->subReq->iStartAddr;
+                Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE))*SECTOR_PER_PAGE;
+                addr_idx = Searching_Map_Table(Page_Addr);
+                addr_idx = addr_idx*10 + (Start_Addr - Page_Addr);
+
+                data_seq = 0;
+                count_sequential_data = 0;
+                find_cache_data = false;
+
+                cache_idx = Searching_Map_Table(Page_Addr);
+                cache_idx = cache_idx * 10;
+
+                prev_state = find_cache_data;
+                for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+    
+                    if ((comb_itr->Valid_bit[i] == '1') && (Map_Table[addr_idx/10].Valid[i] == '1')) {
+                        count_sequential_data++;
+                        combine_len ++;
+                        find_cache_data = true;
+                    }
+                    else {
+                        find_cache_data = false;
+                    }
+
+                    // Problem
+                    if ((prev_state) && (!find_cache_data)) {
+        
+                        cache_idx = cache_idx + i- count_sequential_data;
+        
+                        // send req to cache Problem
+                        Cacheside_Mport.read(cache_idx, (uchar*)Cache_Data, count_sequential_data*SECTOR_SIZE_BYTE);
+                        for (uint i=0; i<count_sequential_data*SECTOR_SIZE_BYTE; i++) {
+                            Combine_Data[data_seq*SECTOR_SIZE_BYTE + i] = Cache_Data[i];
+                        }
+    
+                        data_seq = data_seq + count_sequential_data;
+                        count_sequential_data = 0;
+                    }
+                    else if (i == SECTOR_PER_PAGE-1) {
+                        cache_idx = cache_idx + i -count_sequential_data;
+
+                        Cacheside_Mport.read(cache_idx, (uchar*)Cache_Data, count_sequential_data*SECTOR_SIZE_BYTE);
+                        for (uint i=0; i<count_sequential_data*SECTOR_SIZE_BYTE; i++) {
+                            Combine_Data[data_seq*SECTOR_SIZE_BYTE + i] = Cache_Data[i];
+                        }
+                    }
+                    else ;
+                            
+                    prev_state = find_cache_data;
+                    cache_idx = cache_idx + 1;
+
+                }
+
+                for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {
+                    if ((nand_itr->subReq->oriReq.iId == comb_itr->subReq->oriReq.iId) &&
+                            (nand_itr->subReq->iStartAddr == comb_itr->subReq->iStartAddr)) {
+                        Combine_Flag = true;
+                        break;
+                    }
+                }
+                if (Combine_Flag == true) {
+                    memcpy(comb_itr->cpData, Combine_Data, combine_len*SECTOR_SIZE_BYTE);
+                    
+                    delete cache_itr->subReq;
+                    delete cache_itr->cpData;
+                    
+                    Cache_Queue.erase(cache_itr);
+                    Send_RnB_flag();
+                }
+                else {  
+                    uint start = 0;
+                    uint end = 0;
+                    uint m = 0;
+                    uint k = 0;
+                    uint j = 0;
+
+                    for(uint i=0; i<SECTOR_PER_PAGE; i++){
+                        if(comb_itr->Valid_bit[i] == '1'){
+                            start = i;
+                            break;
+                        }
+                    }
+                    for (uint i=start; i<SECTOR_PER_PAGE; i++) {
+                        if((comb_itr->Valid_bit[i] == '0' && comb_itr->Nand_bit[i] == '0') && start != 0) {
+                            end = i;
+                            break;
+                        }
+                        if (i == SECTOR_PER_PAGE-1) {
+                            end = i+1;
+                        }
+                        
+                    }
+
+                    for(uint i = start; i < end;i++){
+                        if(comb_itr->Nand_bit[i] == '1'){
+                            memcpy(&NAND_Data[j*SECTOR_SIZE_BYTE], &(comb_itr->cpData[k*SECTOR_SIZE_BYTE]), SECTOR_SIZE_BYTE);
+                            k++;
+                        }
+                        else{
+                            memcpy(&NAND_Data[j*SECTOR_SIZE_BYTE], &(Combine_Data[m*SECTOR_SIZE_BYTE]), SECTOR_SIZE_BYTE);
+                            m++;
+                        }
+                        j++;
+                    }
+
+                    memcpy(comb_itr->cpData, NAND_Data, comb_itr->subReq->iLen*SECTOR_SIZE_BYTE);
+
+                    sReadSubResp_t Rreqdata;        // return to hostside
+                    memcpy(&Rreqdata.subReq, comb_itr->subReq, sizeof(sSubReq_t));
+                    Rreqdata.cpData = new uchar[Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE];
+                    memcpy(Rreqdata.cpData, comb_itr->cpData, Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE);
+
+                    Hostside_Mport.write(Host_Addr, (void*) &Rreqdata, sizeof(sReadSubResp_t));
+
+                    delete comb_itr->subReq;
+                    delete comb_itr->cpData;
+                    delete comb_itr->Valid_bit;
+                    delete comb_itr->Nand_bit;
+
+                    delete cache_itr->subReq;
+                    delete cache_itr->cpData;
+
+                    delete Rreqdata.cpData;
+
+                    Combine_Queue.erase(comb_itr);
+                    Cache_Queue.erase(cache_itr);
+
+                    Send_RnB_flag();
+                }
+            }
+
+            else {                                      // Read 1st Queue
+                Start_Addr = cache_itr->subReq->iStartAddr;
+                Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE)) * SECTOR_PER_PAGE;
+   
+                req_len = cache_itr->subReq->iLen;
+                addr_idx = Searching_Map_Table(Page_Addr);
+                addr_idx = addr_idx*10 + (uint)(Start_Addr-Page_Addr);
+
+                Cacheside_Mport.read(addr_idx, (uchar*) cache_itr->cpData, req_len * SECTOR_SIZE_BYTE);
+
+                sReadSubResp_t Rreqdata;                // return to hostside
+                memcpy(&Rreqdata.subReq, cache_itr->subReq, sizeof(sSubReq_t));
+                Rreqdata.cpData = new uchar[Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE];
+                memcpy(Rreqdata.cpData, cache_itr->cpData, Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE);
+
+                Hostside_Mport.write(Host_Addr, (void*) &Rreqdata, sizeof(sReadSubResp_t));
+
+                delete cache_itr->subReq;
+                delete cache_itr->cpData;
+
+                delete Rreqdata.cpData;
+
+                Cache_Queue.erase(cache_itr);
+                Send_RnB_flag();
+
+            }
+        }
+        else {
+            cout << "Nothing happened" << endl;
+            sc_stop();
+        }
+
+        if (Cache_Queue.size() > 0) {
+            wait(CLOCK_PERIOD_NS, SC_NS);
+        }
+        else {
+            wait();
+        }
+    }
+}
+
+void
+Cache_Buffer_Controller::Queue_to_NAND()
+{
+    std::list < mSubReqWithData_t >::iterator nand_itr;
+    std::list < sSubReqWithValid_t >::iterator comb_itr;
+    std::list < sSubReqWithData_t >::iterator cache_itr;
+    std::list < sSubReq_t >::iterator op_itr;
+ 
+    uint64 Start_Addr;
+    uint64 Page_Addr;
+
+    uint init_ptr;
+    uint fin_ptr;
+
+    HOST_REQ_OP curr_op;
+
+    while(1) {
+
+        uint64 prev_addr = 0;
+
+        //cout << "< NAND QUEUE >" << endl;        
+        for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {     // Problem
+            //cout << nand_itr->subReq->iStartAddr << "( " << nand_itr->check_trans << " )" << endl;
+            if (prev_addr == nand_itr->subReq->iStartAddr) {
+                cout << "Eviction should be check (duplicated address is selected)" << endl;
+                //getchar();
+            }
+            prev_addr = nand_itr->subReq->iStartAddr;
+        }
+        //cout << endl;
+
+        /*cout << "< COMBINE QUEUE >" << endl;
+        for (comb_itr = Combine_Queue.begin(); comb_itr != Combine_Queue.end(); comb_itr++) {
+            cout << comb_itr->subReq->iStartAddr << endl;
+        }
+        cout << endl;
+
+        cout << "< CACHE QUEUE >" << endl;
+        for (cache_itr = Cache_Queue.begin(); cache_itr != Cache_Queue.end(); cache_itr++) {
+            cout << cache_itr->subReq->iStartAddr << endl;
+        }
+        cout << endl;*/
+
+
+        bool Init_State = init_state;
+        bool init = true;
+        bool Combine_nandData = false;
+        bool iter_nand_count = false;
+
+        if (Nandside_RnB.read()== 0) {
+            wait(Nandside_RnB.posedge_event());
+        }
+
+        for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {
+            if (nand_itr->check_trans != true) {
+                curr_op = nand_itr->subReq->oriReq.Op;
+                break;
+            }
+        }
+
+        if (curr_op == HOST_WRITE) {
+            Nandside_Mport.write(NAND_Addr, (uchar*) nand_itr->subReq, sizeof(sSubReq_t));
+            wait(SC_ZERO_TIME);
+            Nandside_Mport.write(NAND_Addr, (uchar*) nand_itr->cpData, nand_itr->subReq->iLen*SECTOR_SIZE_BYTE);
+            wait(SC_ZERO_TIME);
+
+            delete nand_itr->subReq;
+            delete nand_itr->cpData;
+
+            Nand_Queue.erase(nand_itr);
+            Send_RnB_flag();
+        }
+        else if (curr_op == HOST_READ) {
+
+            for (comb_itr = Combine_Queue.begin(); comb_itr != Combine_Queue.end(); comb_itr++) {
+                if ((nand_itr->subReq->oriReq.iId == comb_itr->subReq->oriReq.iId) && (nand_itr->subReq->iStartAddr == comb_itr->subReq->iStartAddr)) {
+                    Combine_nandData = true;
+                    break;
+                }
+                else {
+                    Combine_nandData = false;
+                }
+            }
+
+            if (Combine_nandData) {
+
+                uint init_ptr;
+                uint fin_ptr;
+
+                Start_Addr = nand_itr->subReq->iStartAddr;
+                Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE))*SECTOR_PER_PAGE;
+
+                for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                    if (comb_itr->Nand_bit[i] == '1') {
+                        if (init) {
+                            init_ptr = i;
+                            fin_ptr = i;
+                            init = false;
+                        }
+                        else fin_ptr = i;
+                    }
+
+                }
+
+                sSubReqWithData_t* nandReq = new sSubReqWithData_t();
+                nandReq->subReq = new sSubReq_t();
+                nandReq->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                nandReq->subReq->oriReq.iId = nand_itr->subReq->oriReq.iId;
+                nandReq->subReq->oriReq.Op = nand_itr->subReq->oriReq.Op;
+                nandReq->subReq->iStartAddr = Page_Addr + init_ptr;
+                nandReq->subReq->iLen = fin_ptr-init_ptr+1;
+
+                Nandside_Mport.write(NAND_Addr, (uchar*) nandReq->subReq, sizeof(sSubReq_t));
+                wait(SC_ZERO_TIME);
+
+                delete nandReq->subReq;
+                delete nandReq->cpData;
+                delete nandReq;
+
+                nand_itr->check_trans = true;
+            }
+            else {
+                Nandside_Mport.write(NAND_Addr, (uchar*) nand_itr->subReq, sizeof(sSubReq_t));
+                wait(SC_ZERO_TIME);
+                nand_itr->check_trans = true;
+            }
+        }
+        else {
+            cout << "Nothing happend" << endl;
+            cout << "QUEUE TO NAND is raised at only READ OPERATION" << endl;
+            sc_stop();
+        }
+
+        for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {
+            if (nand_itr->check_trans == false) {
+                iter_nand_count = true;
+                break;
+            }
+            else iter_nand_count = false;
+        }
+
+        if (iter_nand_count) {
+            wait(CLOCK_PERIOD_NS, SC_NS);
+        }
+        else {
+            wait();
+        }
+    }
+}
+
+void
+Cache_Buffer_Controller::Cache_Eviction()
+{
+    bool prev_state;
+    bool find_cache_data;
+    uint count_sequential_data;
+    uint cache_addr;
+    
+    uchar Cache_Data[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+    find_cache_data = false;
+    prev_state = find_cache_data;
+    count_sequential_data = 0;
+
+    // Eviction occured from cache buffer
+    if (Nandside_RnB.read()==0) {
+        wait(Nandside_RnB.posedge_event());
+    }
+
+    //cout << "< Map Table Eviction >" << endl;
+    for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+
+        if (Map_Table[MT_Start_Ptr%CACHE_BUFFER_SIZE].Valid[i] == '1') {
+            count_sequential_data = count_sequential_data + 1;
+            find_cache_data = true;
+        }
+        else {
+            find_cache_data = false;
+        }
+
+        if ((prev_state) && (!find_cache_data)) {
+            mSubReqWithData_t* tmp_req = new mSubReqWithData_t();
+            tmp_req->subReq = new sSubReq_t();
+            tmp_req->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+            tmp_req->subReq->oriReq.iId = new_id;
+            tmp_req->subReq->oriReq.Op = HOST_WRITE;
+            tmp_req->subReq->iStartAddr = Map_Table[MT_Start_Ptr%CACHE_BUFFER_SIZE].Addr+i-count_sequential_data;
+            tmp_req->subReq->iLen = count_sequential_data;
+            tmp_req->check_trans = false;
+
+            cache_addr =(MT_Start_Ptr%CACHE_BUFFER_SIZE)*10 + i-count_sequential_data;
+            Cacheside_Mport.read(cache_addr, (uchar*) Cache_Data, count_sequential_data*SECTOR_SIZE_BYTE);
+            wait(SC_ZERO_TIME);
+
+            memcpy(tmp_req->cpData, &Cache_Data, tmp_req->subReq->iLen * SECTOR_SIZE_BYTE);
+            Nand_Queue.push_back(*tmp_req);
+
+            count_sequential_data = 0;
+            new_id = new_id + 1;
+        }
+        else if (i==SECTOR_PER_PAGE-1) {
+            if (count_sequential_data != 0) {
+                mSubReqWithData_t* tmp_req = new mSubReqWithData_t();
+                tmp_req->subReq = new sSubReq_t();
+                tmp_req->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                tmp_req->subReq->oriReq.iId = new_id;
+                tmp_req->subReq->oriReq.Op = HOST_WRITE;
+                tmp_req->subReq->iStartAddr = Map_Table[MT_Start_Ptr%CACHE_BUFFER_SIZE].Addr+i+1-count_sequential_data;
+                tmp_req->subReq->iLen = count_sequential_data;
+                tmp_req->check_trans = false;
+
+                cache_addr =(MT_Start_Ptr%CACHE_BUFFER_SIZE)*10 + i+1-count_sequential_data;
+                Cacheside_Mport.read(cache_addr, (uchar*) Cache_Data, count_sequential_data*SECTOR_SIZE_BYTE);
+                wait(SC_ZERO_TIME);
+
+                memcpy(tmp_req->cpData, &Cache_Data, tmp_req->subReq->iLen * SECTOR_SIZE_BYTE);
+                Nand_Queue.push_back(*tmp_req);
+
+                new_id = new_id + 1;
+            }
+        }
+        else;
+        prev_state = find_cache_data;
+    }
+    //cout << " </ Eviction Fin >" << endl;
+
+    send_req_to_NAND.notify();
+
+    // delete eviction page
+    Map_Table[MT_Start_Ptr%CACHE_BUFFER_SIZE].Addr = LONG_MAX;
+
+    for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+        Map_Table[MT_Start_Ptr%CACHE_BUFFER_SIZE].Valid[i] = '0';
+    }
+
+    if (MT_Start_Ptr >= 2*CACHE_BUFFER_SIZE-1) MT_Start_Ptr = 0;
+    else MT_Start_Ptr++;
+}
+
+uchar*
+Cache_Buffer_Controller::Setting_Valid_Bit (bool init_state, bool combine_state)
+{
+
+    bool Init_State = init_state;
+    bool Combine_nandData = combine_state;
+
+    uchar* return_valid = new uchar[SECTOR_PER_PAGE];
+
+    if (init_state) {
+        
+        std::list <sSubReqWithData_t>::iterator req_itr;
+        req_itr = Read_Queue.begin();
+
+        uint64 Start_Addr = req_itr->subReq->iStartAddr;
+        uint64 Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE)) * SECTOR_PER_PAGE;
+        uint req_len = req_itr->subReq->iLen;
+
+        if (Start_Addr == Page_Addr) {
+            for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                if (i < req_len) return_valid[i] = '1';
+                else return_valid[i] = '0';
+            }
+        }
+        else {
+            for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                if (i < Start_Addr - Page_Addr) return_valid[i] = '0';
+                else if ((i >= Start_Addr - Page_Addr) && (i <= Start_Addr - Page_Addr + (req_len-1))) return_valid[i] = '1';
+                else return_valid[i] = '0';
+           }
+        }
+
+        return return_valid;
+    }
+    else {
+
+        if (Combine_nandData) {
+            std::list <sSubReqWithValid_t>::iterator req_itr;
+            req_itr = Combine_Queue.begin();
+
+            uint64 Start_Addr = req_itr->subReq->iStartAddr;
+            uint64 Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE)) * SECTOR_PER_PAGE;
+            uint req_len = req_itr->subReq->iLen;
+
+            if (Start_Addr == Page_Addr) {
+                for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                    if (i < req_len) return_valid[i] = '1';
+                    else return_valid[i] = '0';
+                }
+            }
+            else {
+                for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                    if (i < Start_Addr - Page_Addr) return_valid[i] = '0';
+                    else if ((i >= Start_Addr - Page_Addr) && (i <= Start_Addr - Page_Addr + (req_len-1))) return_valid[i] = '1';
+                    else return_valid[i] = '0';
+               }
+            }
+        
+            return return_valid;
+        }
+        else {
+            std::list <sSubReqWithData_t>::iterator req_itr;
+            req_itr = Cache_Queue.begin();
+    
+            uint64 Start_Addr = req_itr->subReq->iStartAddr;
+            uint64 Page_Addr = ((uint64)(Start_Addr / SECTOR_PER_PAGE)) * SECTOR_PER_PAGE;
+            uint req_len = req_itr->subReq->iLen;
+    
+            if (Start_Addr == Page_Addr) {
+                for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                    if (i < req_len) return_valid[i] = '1';
+                    else return_valid[i] = '0';
+                }
+            }
+            else {
+                for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                    if (i < Start_Addr - Page_Addr) return_valid[i] = '0';
+                    else if ((i >= Start_Addr - Page_Addr) && (i <= Start_Addr - Page_Addr + (req_len-1))) return_valid[i] = '1';
+                    else return_valid[i] = '0';
+               }
+            }
+        
+            return return_valid;
+        }
+    }
+}
+
+void 
+Cache_Buffer_Controller::Insert_Map_Table (std::list <sSubReqWithData_t>::iterator req_itr)
+{
+	bool Find_Addr = false;
+	uint addr_idx;
+
+    uint64 Start_Addr = req_itr->subReq->iStartAddr;
+    uint64 tmp_addr = (uint64)(Start_Addr / SECTOR_PER_PAGE);
+    uint64 Page_Addr = tmp_addr * SECTOR_PER_PAGE;
+    uint64 Upper_Addr = Page_Addr + SECTOR_PER_PAGE;
+    uint Req_len = req_itr->subReq->iLen;
+
+	uchar valid_bit[SECTOR_PER_PAGE];
+
+	if (Upper_Addr < Start_Addr + Req_len) {
+		cout << "Overflow occured!!" << endl;
+		sc_stop();
+	}
+
+    if (Start_Addr == Page_Addr) {
+	        
+		Find_Addr = Is_Map_Table(Page_Addr);
+		if (Find_Addr) {		// Modify the bit map
+
+			addr_idx = Searching_Map_Table(Page_Addr);
+
+			for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                                
+				if (i < Req_len) valid_bit[i] = '1';
+                else valid_bit[i] = Map_Table[addr_idx].Valid[i];
+            }
+			for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+				Map_Table[addr_idx].Valid[i] = valid_bit[i];
+			}
+		}
+		else {			        // Newly insert addr to bit map
+            if (Map_Table_Size() >= CACHE_BUFFER_SIZE) {
+                Cache_Eviction();
+                wait(SC_ZERO_TIME);
+            }
+
+			Map_Table[MT_Curr_Ptr%CACHE_BUFFER_SIZE].Addr = Page_Addr;
+
+	        for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+
+	            if (i < Req_len) valid_bit[i] = '1';
+	            else valid_bit[i] = '0';			
+	        }
+	        for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                Map_Table[MT_Curr_Ptr%CACHE_BUFFER_SIZE].Valid[i] = valid_bit[i];
+            }
+     
+            if (MT_Curr_Ptr >= 2*CACHE_BUFFER_SIZE-1) MT_Curr_Ptr = 0;
+            else MT_Curr_Ptr++;
+		}
+	}
+
+	else {
+		Find_Addr = Is_Map_Table(Page_Addr);
+
+		if (Find_Addr) {
+
+			addr_idx = Searching_Map_Table(Page_Addr);
+
+            for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                if (i < Start_Addr - Page_Addr) valid_bit[i] = Map_Table[addr_idx].Valid[i];
+                else if ((i >= Start_Addr - Page_Addr) && (i <= Start_Addr - Page_Addr + (Req_len - 1))) valid_bit[i] = '1';
+                else valid_bit[i] = Map_Table[addr_idx].Valid[i];
+            }
+            for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+                Map_Table[addr_idx].Valid[i] = valid_bit[i];
+            }
+		}
+		else {
+            if (Map_Table_Size() >= CACHE_BUFFER_SIZE) {
+                Cache_Eviction();
+                wait(SC_ZERO_TIME);
+            }
+
+	        Map_Table[MT_Curr_Ptr%CACHE_BUFFER_SIZE].Addr = Page_Addr;
+	
+        	for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+	           	if (i < Start_Addr - Page_Addr) valid_bit[i] = '0';
+	            else if ((i >= Start_Addr - Page_Addr) && (i <= Start_Addr - Page_Addr + (Req_len - 1))) valid_bit[i] = '1';
+	            else valid_bit[i] = '0';
+            }
+			for (uint i=0; i<SECTOR_PER_PAGE; i++) {
+				Map_Table[MT_Curr_Ptr%CACHE_BUFFER_SIZE].Valid[i] = valid_bit[i];
+			}
+	        
+            if (MT_Curr_Ptr >= 2*CACHE_BUFFER_SIZE-1) MT_Curr_Ptr = 0;	
+            else MT_Curr_Ptr++;
+        }
+    }
+}
+
+bool
+Cache_Buffer_Controller::Is_Map_Table(uint64 req_addr)
+{
+	bool Find = false;
+
+    for (uint i=0; i < Map_Table_Size(); i++) {
+        if (req_addr == Map_Table[i].Addr) {
+            Find = true;
+            break;
+        }
+        else {
+            Find = false;
+        }
+    }
+
+	return Find;
+}
+
+void
+Cache_Buffer_Controller::Check_Map_Table()
+{
+	cout << "\t\t< Map_Table : " << Map_Table_Size() << " >" << endl;
+    for (uint i=0; i < CACHE_BUFFER_SIZE; i++) {		
+
+        cout << "\t\t[" << i << "] " << Map_Table[i].Addr << "\t";
+    	for (uint j=0; j < SECTOR_PER_PAGE; j++) {
+    	    cout <<  Map_Table[i].Valid[j];
+    	}
+    	cout << endl;
+    }
+    cout << endl;
+}
+
+uint
+Cache_Buffer_Controller::Searching_Map_Table(uint64 addr)
+{
+	uint return_idx = 0;
+
+	for (uint i=0; i<Map_Table_Size(); i++) {
+		if (addr == Map_Table[i].Addr) {
+			return_idx =  i;
+			break;
+		}
+	}
+	return return_idx;
+}
+
+void
+Cache_Buffer_Controller::Send_RnB_flag()        // Send RnB signal to host side device.
+{
+    //cout << "\tQueue size : " << Seq_Op_Queue.size() << endl;
+
+    if (IsQueue_Full()) {
+        //cout << "\tHostside RnB : 0" << endl;
+        Hostside_RnB.write(0);
+    }
+    else {
+        //cout << "\tHostside RnB : 1" << endl;
+        Hostside_RnB.write(1);
+    }
+}
+
+void                                                                            //%
+Cache_Buffer_Controller::Nandside_Sport_Reg_Callback(                           //%
+		tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory Nandside_Sport_Reg"; //%
+    scml2::memory< unsigned int >& m = this->Nandside_Sport_Reg;                //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+                                                                                //%USERBEGIN Nandside_Sport_Reg_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the Nandside_Sport_Reg_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+    }
+
+    std::list <mSubReqWithData_t> ::iterator nand_itr;
+    std::list <sSubReqWithData_t> ::iterator cache_itr;
+    std::list <sSubReqWithValid_t> ::iterator comb_itr;
+
+    //cout << "< NAND_SPORT > " << endl;
+
+    uint set_data = 0;
+    uint cp_idx = 0;
+    uint cache_idx_1 = 0;
+    uint cache_idx_2 = 0;
+
+    bool find_read_one_queue = true;
+    bool find_read_two_queue = true;
+    bool Cache_Flag = false;
+    bool Combine_Flag = false;
+
+    uchar NAND_Data[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+    
+    memcpy(&Nand_reg, ptr, sizeof(sReadSubResp_t));
+
+    for (comb_itr = Combine_Queue.begin(); comb_itr != Combine_Queue.end(); comb_itr++) {
+        if ((comb_itr->subReq->oriReq.iId == Nand_reg.subReq.oriReq.iId) && 
+                (((uint64)(comb_itr->subReq->iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE) == ((uint64)(Nand_reg.subReq.iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE))) {
+            Combine_Flag = true;
+            break;
+        }
+        else {
+            Combine_Flag = false;
+        }
+    }
+
+    if (Combine_Flag) {
+        for (cache_itr = Cache_Queue.begin(); cache_itr != Cache_Queue.end(); cache_itr++) {
+            if ((cache_itr->subReq->oriReq.iId == Nand_reg.subReq.oriReq.iId) && 
+                    (((uint64)(cache_itr->subReq->iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE) == ((uint64)(Nand_reg.subReq.iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE))) {
+                Cache_Flag = true;
+                break;
+            }
+            else {
+                Cache_Flag = false;
+            }
+        }
+            
+        if (Cache_Flag) {
+            memcpy(comb_itr->cpData, &(Nand_reg.cpData), Nand_reg.subReq.iLen*SECTOR_SIZE_BYTE);
+
+            for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {
+                if ((nand_itr->subReq->oriReq.iId == Nand_reg.subReq.oriReq.iId) &&
+                   (((uint64)(nand_itr->subReq->iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE) == ((uint64)(Nand_reg.subReq.iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE))) {
+                    break;
+                }
+            }
+
+            if (nand_itr == Nand_Queue.end()) {
+                cout << "Can't find corresponded req 1" << endl;
+                sc_stop();
+            }
+
+            delete nand_itr->subReq;
+            delete nand_itr->cpData;
+
+            Nand_Queue.erase(nand_itr);
+            Send_RnB_flag();
+        }
+        else {
+
+            for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {
+                if ((nand_itr->subReq->oriReq.iId == Nand_reg.subReq.oriReq.iId) &&
+                   (((uint64)(nand_itr->subReq->iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE) == ((uint64)(Nand_reg.subReq.iStartAddr/SECTOR_PER_PAGE)*SECTOR_PER_PAGE))) {
+                    break;
+                }
+            }
+
+            if (nand_itr == Nand_Queue.end()) {
+                cout << "Can't find corresponded req 2" << endl;
+                sc_stop();
+            }
+
+            uint start = 0;
+            uint end = 0;
+            uint j = 0;
+            uint m = 0;
+            uint k = 0;
+
+            for(uint i=0; i<SECTOR_PER_PAGE; i++){
+                if(comb_itr->Valid_bit[i] == '1'){
+                    start = i;
+                    break;
+                }
+            }
+            for (uint i=start; i<SECTOR_PER_PAGE; i++) {
+                if((comb_itr->Valid_bit[i] == '0' & comb_itr->Nand_bit[i] == '0') && start != 0) {
+                    end = i;
+                    break;
+                }
+                if (i == SECTOR_PER_PAGE-1) {
+                    end = i+1;
+                }
+
+            }
+            for(uint i = start; i < end; i++){
+                if(comb_itr->Nand_bit[i] == '1'){
+                    memcpy(&NAND_Data[j*SECTOR_SIZE_BYTE], &(Nand_reg.cpData[k*SECTOR_SIZE_BYTE]), SECTOR_SIZE_BYTE);
+                    /*for(uint n=0; n < SECTOR_SIZE_BYTE;n++){
+                        NAND_Data[j*SECTOR_SIZE_BYTE + n] = 'a';
+                    }*/
+                    k++;
+                }
+                else{
+                    memcpy(&NAND_Data[j*SECTOR_SIZE_BYTE], &(comb_itr->cpData[m*SECTOR_SIZE_BYTE]), SECTOR_SIZE_BYTE);
+                    m++;
+                }
+                j++;
+            }
+
+            //memcpy(comb_itr->cpData, NAND_Data, comb_itr->subReq->iLen*SECTOR_SIZE_BYTE);
+            for (uint i=0; i<comb_itr->subReq->iLen*SECTOR_SIZE_BYTE; i++) {
+                comb_itr->cpData[i] = NAND_Data[i];
+            }
+
+            sReadSubResp_t Rreqdata;        // return to hostside
+            memcpy(&Rreqdata.subReq, comb_itr->subReq, sizeof(sSubReq_t));
+            Rreqdata.cpData = new uchar[comb_itr->subReq->iLen*SECTOR_SIZE_BYTE];
+            memcpy(Rreqdata.cpData, comb_itr->cpData, Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE);
+            
+            Hostside_Mport.write(Host_Addr, (void*) &Rreqdata, sizeof(sReadSubResp_t));
+
+            delete comb_itr->subReq;
+            delete comb_itr->cpData;
+            delete comb_itr->Valid_bit;
+            delete comb_itr->Nand_bit;
+
+            delete nand_itr->subReq;
+            delete nand_itr->cpData;
+            
+            delete Rreqdata.cpData;
+
+            Combine_Queue.erase(comb_itr);
+            Nand_Queue.erase(nand_itr);
+            Send_RnB_flag();
+        }
+    }
+    else {
+        for (nand_itr = Nand_Queue.begin(); nand_itr != Nand_Queue.end(); nand_itr++) {
+            if ((nand_itr->subReq->oriReq.iId == Nand_reg.subReq.oriReq.iId) && 
+                    (nand_itr->subReq->iStartAddr == Nand_reg.subReq.iStartAddr)) {
+                break;
+            }
+        }
+        sReadSubResp_t Rreqdata;        // return to hostside
+        memcpy(&Rreqdata.subReq, nand_itr->subReq, sizeof(sSubReq_t));
+        Rreqdata.cpData = new uchar[Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE];
+        memcpy(Rreqdata.cpData, nand_itr->cpData, Rreqdata.subReq.iLen*SECTOR_SIZE_BYTE);
+        Hostside_Mport.write(Host_Addr, (void*) &Rreqdata, sizeof(sReadSubResp_t));
+
+        delete nand_itr->subReq;
+        delete nand_itr->cpData;
+
+        delete Rreqdata.cpData;
+
+        Nand_Queue.erase(nand_itr);
+        Send_RnB_flag();
+    }
+
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+    //%USEREND Nandside_Sport_Reg_Callback
+}   
+
+void                                                                            //%
+Cache_Buffer_Controller::Hostside_Sport_Reg_Callback(                           //%
+        tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory Hostside_Sport_Reg"; //%
+    scml2::memory< unsigned int >& m = this->Hostside_Sport_Reg;                //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+    //%USERBEGIN Hostside_Sport_Reg_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the Hostside_Sport_Reg_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    std::list < sSubReqWithData_t >::iterator req_itr;
+    std::list < sSubReqWithData_t >::iterator data_itr;
+    std::list < sSubReq_t >::iterator op_itr;
+
+    sSubReqWithData_t* read_request;
+    sSubReqWithData_t* write_request;
+
+    bool notify_flag = false;;
+
+    //cout << " < Cache Buffer Controller > " << endl;
+    if (Seq_Op_Queue.size() <= 0) {
+        notify_flag = true;
+    }
+
+    switch (curr_state)
+    {
+        case IDLE :
+            memcpy(curReq.subReq, ptr, sizeof(sSubReq_t));
+
+            if (curReq.subReq->oriReq.Op == HOST_WRITE) {
+                if (IsQueue_Full()) {
+                    trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+                }
+                else {
+                    //cout << "WRITE IDLE" << endl;
+                    next_state = CMD;
+                }
+            }
+            else if (curReq.subReq->oriReq.Op == HOST_READ) {
+                if (IsQueue_Full()) {
+                    trans.set_response_status(tlm::TLM_INCOMPLETE_RESPONSE);
+                }
+                else {
+                    /*num_req++;
+                    cout << "\t\t\t Num Cache Req : " << num_req << endl;*/
+                    //cout << "READ IDLE" << endl;
+
+                    read_request = new sSubReqWithData_t();
+                    read_request->subReq = new sSubReq_t();
+                    read_request->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+                    memcpy(read_request->subReq, curReq.subReq, sizeof(sSubReq_t));
+
+                    Read_Queue.push_back(*read_request);
+                    Seq_Op_Queue.push_back(*read_request->subReq);
+
+                    next_state = IDLE;
+
+                    if (notify_flag) {
+                        trig_queue_manager.notify();
+                    }
+                }
+            }
+            break;
+
+        case CMD :
+            {
+                /*num_req++;
+                cout << "\t\t\t Num Cache Req : " << num_req << endl;*/
+                //cout << "WRITE CMD" << endl;
+
+                write_request = new sSubReqWithData_t();
+                write_request->subReq = new sSubReq_t();
+                write_request->cpData = new uchar[SECTOR_PER_PAGE * SECTOR_SIZE_BYTE];
+
+                memcpy(curReq.cpData, ptr, curReq.subReq->iLen*SECTOR_SIZE_BYTE);
+
+                memcpy(write_request->subReq, curReq.subReq, sizeof(sSubReq_t));
+                memcpy(write_request->cpData, curReq.cpData, write_request->subReq->iLen * SECTOR_SIZE_BYTE);
+
+                Write_Queue.push_back(*write_request);
+                Seq_Op_Queue.push_back(*write_request->subReq);
+
+                next_state = IDLE;
+                if (notify_flag) {
+                    trig_queue_manager.notify();
+                }
+            }
+            break;
+
+        default :
+            cout << "\tCurr_state : default" << endl;
+            sc_stop();
+            break;
+    }
+    curr_state = next_state;
+    Send_RnB_flag();
+
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+    //%USEREND Hostside_Sport_Reg_Callback
+}    
+
+void                                                                            //%
+Cache_Buffer_Controller::SFR_port_Reg_Callback(                                 //%
+        tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
+{                                                                               //%
+    const char* dbgMsgText = "TRANSPORT handler for memory SFR_port_Reg";       //%
+    scml2::memory< unsigned int >& m = this->SFR_port_Reg;                      //%
+    tlm::tlm_command cmd = trans.get_command();                                 //%
+    sc_dt::uint64 adr = trans.get_address();                                    //%
+    unsigned char* ptr = trans.get_data_ptr();                                  //%
+    unsigned int len = trans.get_data_length();                                 //%
+    unsigned char* byt = trans.get_byte_enable_ptr();                           //%
+    unsigned int wid = trans.get_streaming_width();                             //%
+    //%USERBEGIN SFR_port_Reg_Callback
+    if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+    // TODO: INSERT code for the SFR_port_Reg_Callback method here.
+
+    if (byt) { // Target unable to support byte enable attribute
+        trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+        return;
+    }
+    if (wid < len) { // Target unable to support streaming width attribute
+        trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+        return;
+    }
+    if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+        // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+    } else if (cmd == tlm::TLM_READ_COMMAND) {
+        // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+    }
+    trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+    //%USEREND SFR_port_Reg_Callback
+}                                                                               //%
+//%
+//%USERBEGIN MEMBER_DEFNS
+// TODO: Insert definitions of your member functions, etc. here.
+//%USEREND MEMBER_DEFNS
+//%
+//%
+//----------------------------------------------------------------------        //%
+// 'Orphaned' code section                                                      //%
+//                                                                              //%
+// This section contains code snippets saved from previous versions of          //%
+// the model because they may have been user-written and they could             //%
+// not be associated with any tagged code sections when the                     //%
+// code was re-generated.                                                       //%
+//                                                                              //%
+// The most likely reason for this is that before the code was                  //%
+// re-generated, a function name was changed. Now, the section of code          //%
+// that was associated with the old name cannot be re-associated with           //%
+// the new name.  In that case, the recommended course of actions is            //%
+// to simply copy the relevant lines out of this section back into the          //%
+// function whose name has been changed.                                        //%
+#ifdef ORPHANED_CODE                                                            //%
+//%USERBEGIN ORPHANED_CODE
+
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: Hostside_RnB_Reg
+if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+// TODO: INSERT code for the Hostside_RnB_Reg method here.
+
+if (byt) { // Target unable to support byte enable attribute
+    trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+    return;
+}
+if (wid < len) { // Target unable to support streaming width attribute
+    trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+    return;
+}
+if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+    // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+} else if (cmd == tlm::TLM_READ_COMMAND) {
+    // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+}
+trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+//% end section previously tagged: Hostside_RnB_Reg
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: Nandside_RnB_Reg
+if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+// TODO: INSERT code for the Nandside_RnB_Reg method here.
+
+if (byt) { // Target unable to support byte enable attribute
+    trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+    return;
+}
+if (wid < len) { // Target unable to support streaming width attribute
+    trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+    return;
+}
+if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+    // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+} else if (cmd == tlm::TLM_READ_COMMAND) {
+    // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+}
+trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+//% end section previously tagged: Nandside_RnB_Reg
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: Buffer_Sport_Reg
+if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+// TODO: INSERT code for the Buffer_Sport_Reg method here.
+
+if (byt) { // Target unable to support byte enable attribute
+    trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+    return;
+}
+if (wid < len) { // Target unable to support streaming width attribute
+    trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+    return;
+}
+if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+    // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+} else if (cmd == tlm::TLM_READ_COMMAND) {
+    // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+}
+trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+//% end section previously tagged: Buffer_Sport_Reg
+//% begin section previously tagged: SFR_port_Reg
+if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+// TODO: INSERT code for the SFR_port_Reg method here.
+
+if (byt) { // Target unable to support byte enable attribute
+    trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+    return;
+}
+if (wid < len) { // Target unable to support streaming width attribute
+    trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+    return;
+}
+if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+    // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+} else if (cmd == tlm::TLM_READ_COMMAND) {
+    // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+}
+trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+//% end section previously tagged: SFR_port_Reg
+//% begin section previously tagged: Nandside_Sport_Reg
+if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+// TODO: INSERT code for the Nandside_Sport_Reg method here.
+
+if (byt) { // Target unable to support byte enable attribute
+    trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+    return;
+}
+if (wid < len) { // Target unable to support streaming width attribute
+    trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+    return;
+}
+if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+    // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+} else if (cmd == tlm::TLM_READ_COMMAND) {
+    // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+}
+trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+//% end section previously tagged: Nandside_Sport_Reg
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//% begin section previously tagged: Hostside_Sport_Reg
+if ( dbgFlag[REGS] ) DBG_MSG( dbgMsgText );
+// TODO: INSERT code for the Hostside_Sport_Reg method here.
+
+if (byt) { // Target unable to support byte enable attribute
+    trans.set_response_status( tlm::TLM_BYTE_ENABLE_ERROR_RESPONSE );
+    return;
+}
+if (wid < len) { // Target unable to support streaming width attribute
+    trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
+    return;
+}
+if (cmd == tlm::TLM_WRITE_COMMAND) { // Execute command
+    // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
+} else if (cmd == tlm::TLM_READ_COMMAND) {
+    // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
+}
+trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
+//% end section previously tagged: Hostside_Sport_Reg
+//% begin section previously tagged: FOOTER_H
+
+//% end section previously tagged: FOOTER_H
+//%USEREND ORPHANED_CODE
+#endif // ORPHANED_CODE                                                         //%
+//%USERBEGIN FOOTER_H
+
+//%USEREND FOOTER_H
+#endif // __CACHE_BUFFER_CONTROLLER_H__                                         //%
