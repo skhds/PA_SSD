@@ -29,7 +29,7 @@ const int NUM_OF_WAY = 4;
 const int NUM_OF_CHANNEL = 4;
 //const int NUM_OF_CHANNEL = 1;
 const int NAND_I_O_BITWIDTH = 8;
-const int NUM_OF_BLOCK_PER_WAY = 1024;
+const int NUM_OF_BLOCK_PER_WAY = 64;
 const int NUM_OF_PAGE_PER_BLOCK = 64;
 const int DATA_PAGE_SIZE = 16384;
 const int SPARE_PAGE_SIZE = 128;
@@ -41,7 +41,7 @@ const int BLOCK_SIZE = (PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK);
 const int BYTE_PER_SECTOR_BIT = 9;
 const int SECTOR_PER_PAGE_BIT = 5;
 const int PAGE_PER_BLOCK_BIT = 6;
-const int BLOCK_PER_WAY_BIT = 10;
+const int BLOCK_PER_WAY_BIT = 6;
 const int WAY_PER_CHANNEL_BIT = 2;
 const int CHANNEL_PER_SSD_BIT = 2;
 

@@ -917,6 +917,9 @@ void NAND_Manager< NUM_CHANNEL >::data_queue_thread()
 
                     if(NAND_DEBUG)cout << DEV_AND_TIME <<"[data_queue_thread] (Channel " << iChannel << ") Current command : " << currentCmd->cmd.opCode << " on Channel " << iChannel << " iWay"<< iWay<< endl;
 
+#ifdef DATA_COMPARE_ON
+                    DTCMP::writeData(DTCMP::mmNAND, current_NAND_Cmd.iAddr1, current_NAND_Cmd.iAddr3, SECTOR_PER_PAGE, (uchar*)NandDataBuffer[bufIdx].data);
+#endif
                     NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&current_NAND_Cmd, sizeof(NAND_Cmd));
                     while((NAND_RnB[iChannel].read()&(1<<iWay))==0){ //wait for RnB
                         DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting for NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());

@@ -524,9 +524,9 @@ void SubReqMan::IRQThread()
                         cout << DEV_AND_TIME << "[IRQThread] \tDRAM op : "<< tmpSubReq->cmd.cmd.Op << endl;
                     }   
                     DataMaster.write(_ADDR_DRAM_DATA_ + tmpSubReq->cmd.cmd.Id * DATA_PAGE_SIZE, (void*)tmpDataBuf, SECTOR_PER_PAGE);
-                
-                
-                
+#ifdef DATA_COMPARE_ON             
+                    DTCMP::writeData(DTCMP::mmDRAM, tmpSubReq->cmd.cmd.Id, tmpSubReq->cmd.cmd.Addr/UNIT_OF_REQUEST, SECTOR_PER_PAGE, tmpDataBuf->buf); 
+#endif
                     if(buffer_write_count >= (uint)(0x0 - 0x200)) cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
                     buffer_write_count += 512;
                 }

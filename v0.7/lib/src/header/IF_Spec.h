@@ -19,8 +19,10 @@
 //#define MAX_ADDR        (62272 * 8)
 //#define MAX_ADDR        (496128)
 //#define MAX_ADDR        (8192)
-#define MAX_ADDR        (33554432)
 
+
+//#define MAX_ADDR        (33554432)
+#define MAX_ADDR          (4096)
 //data comparison
 #define COMPARISON  0   //0:OFF, 1:ON 
 

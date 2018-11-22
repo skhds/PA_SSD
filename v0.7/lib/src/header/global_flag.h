@@ -4,6 +4,7 @@
 #include "BTN_waitingTime.h"
 #include "trackByID.h"
 #include "MemoryModeling.h"
+#include "data_compare.h"
 
 #define SECTOR_SIZE_BYTE 512
 

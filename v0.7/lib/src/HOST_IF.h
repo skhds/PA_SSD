@@ -939,6 +939,10 @@ HOST_IF::HOST_Interface()
                     testTrack.IDFinish();
                 }
 
+#ifdef DATA_COMPARE_ON
+                  assert(DTCMP::confirm_data());
+#endif
+
 //                ofstream temp_debug("./../results/test_result_debug.txt");
 //                testTrack.IDForceFinish(temp_debug);
 
@@ -1287,9 +1291,13 @@ HOST_IF::Push_Request(int addr, uint len, uint op)
         requestBuffer[reqBufferTail].Op = HOST_WRITE;        
         //create data
         Create_Data(len);
+        
+#ifdef DATA_COMPARE_ON
 
-        if(COMPARISON)
-            Write_Data_Map(addr, len);            
+        DTCMP::writeData(DTCMP::mmLogical, 0, addr, len, (uchar*)requestData[reqBufferTail] );
+#endif
+        //if(COMPARISON)
+        //    Write_Data_Map(addr, len);            
 
     }else if(op == HOST_READ){
         requestBuffer[reqBufferTail].Op = HOST_READ;
@@ -1310,7 +1318,7 @@ HOST_IF::Create_Data(uint64 len)
     
 
 }
-
+            
 
 void
 HOST_IF::Compare_Data()
