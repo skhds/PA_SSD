@@ -25,4 +25,19 @@ To be added in the future :
 - test GC/ implement GC correctly
 
 
+v0.71
 
+Added :
+
+
+- Data compare feature, to verify if the resulting memory storage matches the logical memory map acknowledged from the host 
+- Prints in cout for each false entry
+- Not completely verified to be accurate yet, but I'm seeing some errors (null data stored)
+
+
+To do :
+
+- Clean up headers, I'll try to make a "configure" file for setting up parameters 
+- Better format for error detections
+- Edit and fix whatever caused data errors
+- More lightweight simulation... only one char for each 512B sector
