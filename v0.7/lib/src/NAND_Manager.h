@@ -29,17 +29,14 @@
                                                                                 //%USERBEGIN HEADER_H
 // TODO: Insert your includes, declarations, etc. here.
 //#include "NAND_Struct.h"
-#include "./header/global_flag.h"
-#include "./header/ssd_struct.h"
-#include "./header/memcpy.h"
-#include "./header/NAND_MAN_Spec.h"
-#include "./header/buffer_ctrl.h"
-#include "./header/Queue.h"
+#include "./header/global_header.h"
+#include "./header/header_NAND.h"
 
 #define ABORT(cond,msg) {\
     if(cond){ \
         std::cout << "[" << sc_core::sc_time_stamp() << "] " <<  __FILE__ << ":" << __LINE__ << " " << msg << std::endl;   \
         sc_stop();} }
+
 
 #define DEBUG(msg) { /* std::cout << "[" << this->basename() << " - " << sc_core::sc_time_stamp() << "] [" << __FUNCTION__ << "] " << msg << std::endl; */ }
 
@@ -149,8 +146,6 @@ protected:                                                                      
     sc_core::sc_event eIRQ1end;
     sc_core::sc_event eIRQ2end;
 
-    //parameters
-    unsigned int CMD_QUEUE_MAX_SIZE = 16;
 
     // Write Queue (it's actually data queue)
     NAND_Cmd_Buffer NandQueue[NUM_CHANNEL][NAND_CMD_QUEUE_SIZE]; //Command Queue implemented in FIFO
@@ -596,7 +591,6 @@ NAND_Manager< NUM_CHANNEL >::collectHostRequest(sc_dt::uint64 adr, unsigned int*
             case _OFFSET_HOST_ID_ : //DRAM node ID
                 reqHOST.id = *ptr;
                 return false;
-                break;
 
             case _OFFSET_HOST_ADDR_ : //LPA 
                 reqHOST.addr = *ptr;
@@ -607,13 +601,11 @@ NAND_Manager< NUM_CHANNEL >::collectHostRequest(sc_dt::uint64 adr, unsigned int*
                     cout << DEV_AND_TIME << "[collectHostRequest] reqHOST - id : " << reqHOST.id << "  addr : " << reqHOST.addr << endl;
                 }
                 return true;
-                break;
             
             default :
 
                 assert(0 && offset);
                 return false;
-                break;
                 
         }
 
@@ -629,7 +621,6 @@ NAND_Manager< NUM_CHANNEL >::collectIRQRequest(sc_dt::uint64 adr, unsigned int* 
             case _OFFSET_IRQ_ID_ : //DRAM node ID
                 reqIRQ.id = *ptr;
                 return false;
-                break;
 
             case _OFFSET_IRQ_ADDR_ : //LPA 
                 reqIRQ.addr = *ptr;
@@ -639,13 +630,11 @@ NAND_Manager< NUM_CHANNEL >::collectIRQRequest(sc_dt::uint64 adr, unsigned int* 
                     cout << DEV_AND_TIME << "[collectIRQRequest] reqIRQ - id : " << reqIRQ.id << "  addr : " << reqIRQ.addr << endl;
                 }
                 return true;
-                break;
             
             default :
 
                 assert(0 && offset);
                 return false;
-                break;
                 
         }
 
@@ -664,24 +653,19 @@ NAND_Manager< NUM_CHANNEL >::collectFTLRequest(sc_dt::uint64 adr, unsigned int* 
             case _OFFSET_NAND_CMD_ : //DRAM node ID
                 tmpNAND.cmd.opCode = (NAND_CMD_SET)*ptr;
                 return false;
-                break;
 
             case _OFFSET_NAND_ADDR1_ : //DRAM node ID
                 tmpNAND.cmd.iAddr1 = *ptr;
                 return false;
-                break;
             case _OFFSET_NAND_ADDR2_ : //DRAM node ID
                 tmpNAND.cmd.iAddr2 = *ptr;
                 return false;
-                break;
             case _OFFSET_NAND_ADDR3_ : //DRAM node ID
                 tmpNAND.cmd.iAddr3 = *ptr;
                 return false;
-                break;
             case _OFFSET_NAND_ADDR4_ : //DRAM node ID
                 tmpNAND.cmd.iAddr4 = *ptr;
                 return false;
-                break;
             case _OFFSET_DRAM_REQ_ID_ : //LPA 
                 
                 
@@ -702,13 +686,11 @@ NAND_Manager< NUM_CHANNEL >::collectFTLRequest(sc_dt::uint64 adr, unsigned int* 
                 }
                 data_queue_event[ch].notify();
                 return true;
-                break;
             
             default :
 
                 assert(0 && offset);
                 return false;
-                break;
                 
         }
 
@@ -724,7 +706,6 @@ NAND_Manager< NUM_CHANNEL >::sendIRQRequest(sc_dt::uint64 adr, unsigned int* ptr
                 if(reqHOST.state != REQ_READY) *ptr = M_GETELE(IRQ_Queue).id;
                 else *ptr = reqHOST.id;
                 return false;
-                break;
 
             case _OFFSET_IRQ_ADDR_ : //LPA
                 if(reqHOST.state != REQ_READY) {
@@ -740,13 +721,11 @@ NAND_Manager< NUM_CHANNEL >::sendIRQRequest(sc_dt::uint64 adr, unsigned int* ptr
                     reqHOST.state = REQ_EMPTY;
                 }
                 return true;
-                break;
             
             default :
 
                 assert(0 && offset);
                 return false;
-                break;
                 
         }
         

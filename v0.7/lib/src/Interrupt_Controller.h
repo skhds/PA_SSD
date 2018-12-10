@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////
 
 #include <list>
-#include "./header/global_flag.h"
+#include "./header/global_header.h"
 
 
 using namespace std;

@@ -1,17 +1,14 @@
 #ifndef __GLOBAL_FLAG_H__
 #define __GLOBAL_FLAG_H__
 
-#include "BTN_waitingTime.h"
-#include "trackByID.h"
-#include "MemoryModeling.h"
-#include "data_compare.h"
+#include "etc/etc_main.h"
+#include "utils/utils_main.h"
+#include "structs/structs_main.h"
+#include "specs/specs_main.h"
+#include "addr/addr_main.h"
 
-#define SECTOR_SIZE_BYTE 512
 
-#define NUM_OF_CORE 1
 
-#define CMD_BUS_TOTAL_BW 1.6 //in B/ns (400MHz - 32bit)
-#define DATA_BUS_TOTAL_BW 1.6 //in B/ns (400MHz - 32bit)
 
 #define HOSTIF_DEBUG 0 
 #define DEVIF_DEBUG 0
@@ -28,7 +25,6 @@
 #define SIZE_BUF_EVICT 64
 
 
-#define DEV_AND_TIME "[" << sc_time_stamp() << " @ " << this->basename() << "]\t"
 
 long long int NAND_STATS[13][4][4][1024] = {0}; //12 : # of nand opcodes, 4 : # channel, 4 : # way, 1024 : # of blocks
 long long int DRAM_STATS[CacheStatMAX][CacheTypeMAX][cacheOpMAX] = {0}; //2 : Cache Buffer/Metadata, 2: Write/Read

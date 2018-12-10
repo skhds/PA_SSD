@@ -7,28 +7,17 @@
 
 #include "NAND_Struct.h"
 
-#define DEV_AND_TIME "[" << sc_time_stamp() << " @ " << this->basename() << "]\t"
-#define ADR_NAND_CMD 0x00
-#define ADR_NAND_DATA 0x14
 
 #define BITWIDTH_NAND_CTRL		32
 #define NAND_CTRL_CLK_PERIOD 5
 #define NAND_CLK_PERIOD   5
-/*
-typedef enum NAND_TIMING
-{
-    T_PROG = 800000,
-    //T_PROG = 300000,
-    T_R = 25000,
-    T_BER = 2000000
-}NAND_TIMING;
-*/
 
 
+#define NAND_BUF_ENTRY 8
+#define NAND_CMD_QUEUE_SIZE 8
 
 typedef enum NAND_TIMING
 {
-    //T_PROG = 800000,
     T_PROG = 660000,
     T_R = 45000,
     T_BER = 3500000
@@ -80,11 +69,5 @@ const int MASK_WAY = ((0x1 << WAY_PER_CHANNEL_BIT) - 1) << BIT_FOR_WAY;
 const int MASK_BLOCK = ((0x1 << BLOCK_PER_WAY_BIT) - 1) << BIT_FOR_BLOCK;
 const int MASK_PAGE = ((0x1 << PAGE_PER_BLOCK_BIT) - 1) << BIT_FOR_PAGE;
 
-
-typedef struct sPageBuf{
-
-    unsigned char buf[DATA_PAGE_SIZE];
-
-}PageBuf_t;
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef __MEMORY_MODELING_H__
 #define __MEMORY_MODELING_H__
 
+/*
 #define DRAM_PAGE 4096 // in B
 #define DRAM_READ_BW 1.6 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.72 GB/s) note : PRAM bw is not exact 
 #define DRAM_WRITE_BW 1.6 // in B/ns (DRAM : 1.6 GB/s, PRAM : 0.144 GB/s) PRAM bw = DRAM bw * DRAM lat / PRAM lat
@@ -13,8 +14,10 @@
 #define PRAM_READ_LATENCY 100 // in ns (DRAM : 45 ns, PRAM : 500 ns)
 #define PRAM_WRITE_LATENCY 500 // in ns (DRAM : 45 ns, PRAM : 500 ns)
 
-#define CURRENT_DRAM_SIZE 0.625//MB
 
+#define CURRENT_DRAM_SIZE 1//MB
+
+*/
 
 typedef enum CACHE_METHOD{
     DRAM_ONLY=0,
@@ -22,7 +25,7 @@ typedef enum CACHE_METHOD{
     HYBRID=2
 }cache_method;
 
-CACHE_METHOD CACHE_BUFFER_METHOD=HYBRID;
+CACHE_METHOD CACHE_BUFFER_METHOD=DRAM_ONLY;
 
 enum eCacheStat{
   

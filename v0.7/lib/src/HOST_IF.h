@@ -24,19 +24,17 @@
 #include "scmlinc/scml_command_processor.h" 
                                                                                 //%USERBEGIN HEADER_H
 // TODO: Insert your includes, declarations, etc. here.
-#include "./header/ssd_struct.h"
-#include "./header/memcpy.h"
-#include "./header/IF_Spec.h"
-#include "./header/global_flag.h"
+#include "./header/global_header.h"
+#include "./header/header_HOSTIF.h"
+
+
 #include <fstream>
 #include <sys/time.h>
-#define NUM_OF_REQUESTS 1000000
 
 //for data comparison
 //char data_map[MEMORY_SIZE];
-#define max_req_len 1024
 
-char requestData[Q_SIZE][max_req_len*UNIT_OF_REQUEST];
+char requestData[Q_SIZE][MAX_REQ_LEN*SECTOR_BYTES];
 
                                                                                 //%USEREND HEADER_H
                                                                                 //%
@@ -89,8 +87,6 @@ public:                                                                         
 	void                                                                    //%
 	rst_nHandler1();                                                        //%
     void
-    HOST_monitor();
-    void
     HOST_Interface();
     void
     HOST_To_Device_Req_Trans();
@@ -127,15 +123,11 @@ protected:                                                                      
     uint reqBufferPoint;
     uint requestId;
    
-    FILE *traceFile;
-    FILE *initFile;  
     Req_t recievedReq;
-    char recievedData[max_req_len*UNIT_OF_REQUEST];
+    char recievedData[MAX_REQ_LEN*SECTOR_BYTES];
 
     Req_t transReq;
-    char transData[max_req_len*UNIT_OF_REQUEST];
 
-    double* latency_list;
 
     //Flag
     bool transDataFlag;
@@ -143,13 +135,8 @@ protected:                                                                      
     uint my_state;
     uint next_state;
 
-    uint totalWriteLength = 0;
-    uint totalReadLength = 0;
-    uint totalWriteCount = 0;
-    uint totalReadCount = 0;
 
     // Event & semaphore
-    sc_core::sc_event e_TrigMonitor;
     sc_core::sc_event e_TrigHost;
     sc_core::sc_event e_DeleteReqBuffer;
     sc_core::sc_event e_TrigReqTrans;
@@ -158,17 +145,9 @@ protected:                                                                      
     sc_core::sc_event e_TransDataDone;
     sc_core::sc_event e_TransReqDone;
 
-    //inline Function
-    inline void Trace_File_Open(){
-        traceFile = fopen("./../trace/ex_trace.txt","r");
-    }
-
-    inline void Trace_File_Close(){
-        fclose(traceFile);
-    }
 
     inline uint Cal_repeatCount(uint length){
-        return ((length - 1) / max_req_len) + 1;
+        return ((length - 1) / MAX_REQ_LEN) + 1;
     }
 
     inline bool Check_Buffer_Full(){
@@ -196,58 +175,13 @@ protected:                                                                      
     }
 
 
-    double calculateAvgLatency(double* list){
 
-        int index = 0;
-        double sum = 0;
-        for (int i = 0; i< NUM_OF_REQUESTS; i++){
-
-            if(list[i] != 0){
-
-                index++;
-                sum += list[i];
-            }
-
-        }
-
-
-        return sum/index;
-
-
-
-    }
-
-    double calculateMaxLatency(double* list){
-
-        double max = 0;
-        for (int i = 0; i< NUM_OF_REQUESTS; i++){
-
-            if(list[i] > max){
-
-                max = list[i];
-            }
-
-        }
-
-
-        return max;
-
-    }
-
-    void view_latency_list(double* list){
-
-        cout << "******************View Latency List******************************" << endl << endl;
-        for (int i = 0; i< NUM_OF_REQUESTS; i++)
-            if(list[i] != 0 )cout << "At " << i << ", " << list[i] << endl;
-    }
 
     void Delete_Request(uint id);
     void Push_Request(int addr, uint len, uint op);
     void Create_Data(uint64 len);
     uint Find_Request(uint id);
-    void Write_Data_Map(uint addr, uint64 len);
-    void Compare_Data();
-
+    void insert_trace(FILE* fp, char* filename, SIMUL_MODE mode);
 
     double calculateBusTime(double* bus_time){
         
@@ -261,90 +195,6 @@ protected:                                                                      
     }
 
 
-    double calculateDRAMEnergy(long long int stats[2][2][2], double exec_time){
-
-        double dram_read_energy = 0.00000936; //uJ per 1B
-        double dram_write_energy = 0.00000936; //uJ per 1B
-//        double dram_leakage_energy = 1725 + 108; //(uW) 27.6mW per 256MB... current DRAM size is 16MB (1725uW) + cache (0.5MB ~ 8GB) 
-        double dram_leakage_energy = CURRENT_DRAM_SIZE * 108; //(uW) 27.6mW per 256MB... current DRAM size is 16MB (1725uW) + cache (0.5MB ~ 8GB) 
-        double sum = 0;
-        double ns_to_s = 1000000000;
-        double dram_dynamic_energy = 0;
-        double dram_static_energy = 0;
-
-        if(CACHE_BUFFER_METHOD == DRAM_ONLY){
-            dram_dynamic_energy = dram_read_energy*stats[TOTAL_ENERGY][0][0]+dram_read_energy*stats[TOTAL_ENERGY][1][0]+dram_write_energy*stats[TOTAL_ENERGY][0][1]+dram_write_energy*stats[TOTAL_ENERGY][1][1];
-            dram_static_energy = exec_time*dram_leakage_energy/ns_to_s;
-        }
-        else if(CACHE_BUFFER_METHOD == PRAM_ONLY){
-            dram_dynamic_energy = 0;
-            dram_static_energy = 0;
-        }
-        else if(CACHE_BUFFER_METHOD == HYBRID){
-             dram_dynamic_energy = dram_read_energy*stats[TOTAL_ENERGY][0][0]+dram_write_energy*stats[TOTAL_ENERGY][0][1];
-            dram_static_energy = exec_time*dram_leakage_energy/ns_to_s; // need to modify dram leakage energy according to modified dram size
-        }
-        return (dram_dynamic_energy + dram_static_energy)/exec_time*ns_to_s;//uW 
-    }
-
-     double calculatePRAMEnergy(long long int stats[2][2][2], double exec_time){
-
-        double pram_read_energy = 0.00001976; //uJ per 1B
-        double pram_write_energy = 0.00013456; //uJ per 1B
-        double pram_leakage_energy = 0; //(uW) 27.6mW per 256MB... current DRAM size is 16MB (1725uW) + cache (0.5MB ~ 8GB) 
-        double sum = 0;
-        double ns_to_s = 1000000000;
-        double pram_dynamic_energy = 0;
-        double pram_static_energy = 0;
-
-
-        if(CACHE_BUFFER_METHOD == DRAM_ONLY){
-            pram_dynamic_energy = 0;
-            pram_static_energy = 0;
-        }
-        else if(CACHE_BUFFER_METHOD == PRAM_ONLY){
-            pram_dynamic_energy = pram_read_energy*stats[TOTAL_ENERGY][0][0]+pram_read_energy*stats[TOTAL_ENERGY][1][0]+pram_write_energy*stats[TOTAL_ENERGY][0][1]+pram_write_energy*stats[TOTAL_ENERGY][1][1];
-            pram_static_energy = exec_time*pram_leakage_energy/ns_to_s;
-        }
-        else if(CACHE_BUFFER_METHOD == HYBRID){
-            pram_dynamic_energy = pram_read_energy*stats[TOTAL_ENERGY][1][0]+pram_write_energy*stats[TOTAL_ENERGY][1][1];
-            pram_static_energy = exec_time*pram_leakage_energy/ns_to_s;
-        }
-
-        return (pram_dynamic_energy + pram_static_energy)/exec_time*ns_to_s;//uW 
-    }
-
-   
-    double calculateNANDEnergy(){
-
-        double PROG_e = 20; //uW
-        double READ_e = 1.5; //uW
-        double BER_e = 230;
-        double sum = 0;
-        
-        for(int i=0; i<4; i++){
-
-            for(int j=0; j<4; j++){
-
-                for(int k=0; k<64; k++){
-
-                    sum += 0*NAND_STATS[0][i][j][k]; //nothing
-                    sum += PROG_e*NAND_STATS[1][i][j][k]; //program
-                    sum += READ_e*NAND_STATS[2][i][j][k]; //read
-                    sum += BER_e*NAND_STATS[3][i][j][k]; //erase
-                    sum += (READ_e + PROG_e)*NAND_STATS[4][i][j][k]; //copyback
-                    sum += PROG_e*NAND_STATS[5][i][j][k]; //copyback program
-                    sum += READ_e*NAND_STATS[6][i][j][k]; //copyback read
-                    
-                }
-
-            }
-        }
-
-        return sum;
-
-
-    }
    
     long long current_timestamp() {
         struct timeval te; 
@@ -386,9 +236,6 @@ HOST_IF::HOST_IF( const sc_core::sc_module_name & n)                            
 	 sensitive << rst_n.neg() ;                                             //%
 	 dont_initialize();                                                     //%
     
-    SC_THREAD(HOST_monitor);                                              //%
-	 sensitive << e_TrigMonitor;                                               //%
-	 dont_initialize();                                                     //%
 
     SC_THREAD(HOST_Interface);                                              //%
 	 sensitive << e_TrigHost;                                               //%
@@ -432,7 +279,6 @@ HOST_IF::~HOST_IF()                                                             
                                                                                 //%USERBEGIN DESTRUCTOR
 
     // TODO: Add destructor code here
-    fclose(traceFile);
 
 
                                                                                 //%USEREND DESTRUCTOR
@@ -460,7 +306,6 @@ HOST_IF::end_of_elaboration()                                                   
     this->initRegisters();
     this->initPorts();
 
-    Trace_File_Open();
 
     requestId = 0;
     operationCount = 0;
@@ -579,12 +424,6 @@ HOST_IF::rst_nHandler1()                                                        
 	// TODO: INSERT code for the rst_nHandler1 method here.
     while(1){
         
-        latency_list = (double*)malloc(sizeof(double) * NUM_OF_REQUESTS);
-        for(int i=0; i<NUM_OF_REQUESTS; i++){
-
-            latency_list[i] = 0;
-
-        }
         
         wait(SC_ZERO_TIME);
         e_TrigHost.notify(); 
@@ -659,16 +498,13 @@ HOST_IF::HOST_Callback(                                                         
                 memcpy(R_HOST_data, ptr, len);
                 memcpy(&recievedData, R_HOST_data, len);
 
-                if(COMPARISON)
-                    Compare_Data();
 
                 if(HOSTIF_DEBUG) cout << DEV_AND_TIME << "[HOST_Callback] id : " << recievedReq.iId << "  len :  " << recievedReq.iLen << endl;
-                dBusDelay = ((double)recievedReq.iLen * (double)UNIT_OF_REQUEST / (double)IF_BANDWIDTH) * 1000.0;
+                dBusDelay = ((double)recievedReq.iLen * (double)SECTOR_BYTES / (double)IF_BANDWIDTH) * 1000.0;
                 
                 if(g_initialize_end){
                     testTrack.done(recievedReq.iId, recievedReq.iAddr, recievedReq.iLen, SSDmetric::HOST_IF, sc_time_stamp().value()/1000.0); //skhds
                 }
-                latency_list[recievedReq.iId] += sc_time_stamp().value()/1000.0;
                 Delete_Request(recievedReq.iId);
                 break;
 
@@ -690,36 +526,8 @@ HOST_IF::HOST_Callback(                                                         
 
                                                                                 //%USERBEGIN MEMBER_DEFNS
 // TODO: Insert definitions of your member functions, etc. here.
-void
-HOST_IF::HOST_monitor()
-{
-    uint duration_time = 1000000;
-    uint prev_totalReadLength = 0;
-    uint prev_totalWriteLength = 0;
-    double cur_time = 0;
-    double accum_readBandwidth = 0;
-    double accum_writeBandwidth = 0;
-    double realtime_readBandwidth = 0;
-    double realtime_writeBandwidth = 0;
-    double start_time = sc_time_stamp().value()/1000;
-    ofstream REALTIME_BW("./../results/realtime_bw.txt");
 
-    REALTIME_BW <<"The time stamp is the time measured since the start of the simulation." <<endl;
-    REALTIME_BW <<"TimeStamp"<<"\t" <<"accum_readBandwidth" <<"\t"<< "accum_writeBandwidth" <<"\t" <<"realtime_readBandwidth" <<"\t"<< "realtime_writeBandwidth" <<endl;
-    while(1){
-        cur_time = sc_time_stamp().value()/1000 - start_time;
-        accum_readBandwidth = (double)((double)totalReadLength * 512 /1024/1024) / ((cur_time)/1000000000);
-        accum_writeBandwidth = (double)((double)totalWriteLength * 512 /1024/1024) / ((cur_time)/1000000000.0);
-        realtime_readBandwidth = (double)((double)(totalReadLength - prev_totalReadLength) * 512 /1024/1024) /((double)(duration_time)/1000000000);
-        realtime_writeBandwidth= (double)((double)(totalWriteLength - prev_totalWriteLength) * 512 /1024/1024) /((double)(duration_time)/1000000000);
-        prev_totalReadLength = totalReadLength;
-        prev_totalWriteLength = totalWriteLength;
-        REALTIME_BW <<cur_time<<"\t" <<accum_readBandwidth <<"\t"<< accum_writeBandwidth <<"\t" <<realtime_readBandwidth <<"\t"<< realtime_writeBandwidth <<endl;
-
-        wait(duration_time, SC_NS);
-    }
-}    
-void
+    void
 HOST_IF::HOST_Interface()
 {
 	if ( dbgFlag[PORTS] ) DBG_MSG( "HOST_Interface invoked because of e_TrigHost event" );
@@ -731,7 +539,7 @@ HOST_IF::HOST_Interface()
     uint    len;
     double opTime = 0;
     double startTime = 0;
-    
+    FILE* traceFile; 
     cout << "--------------------------------------------------------------" << endl;
     cout << "---------------------- Simulation Start ----------------------" << endl;
     
@@ -746,104 +554,19 @@ HOST_IF::HOST_Interface()
 
 
         cout << "---------------------- Simulation Initialize ----------------------" << endl;
-        while(!feof(traceFile)){
-            
-            fscanf(traceFile, "%lf\t%llu\t%u\t%u\n",&opTime,&addr, &len, &op);
-            
-            //align address
-            addr %= MAX_ADDR;
-
-            if(addr+len > MAX_ADDR)
-            {
-                addr = (addr + len) % MAX_ADDR;
-            }
-
-            if((operationCount % 100) == 0){
-                cout << "[" << sc_core::sc_time_stamp() << "] " << __FILE__ << ":" << __LINE__ << " " << "Operation Count =  "<< operationCount << endl;
-            }
-            operationCount++;
-                        
-            //////align request////////////
-            ABORT(len == 0, "Request length is 0");
-            if(op == HOST_READ){
-                repeatCount = Cal_repeatCount(len);
-
-                do{ 
-                    if(Check_Buffer_Full() == true)
-                        wait(e_DeleteReqBuffer);
-                    uint length = len > max_req_len ?  max_req_len : len;
-                    uint address = ((addr + length) > MAX_ADDR) ? ((addr + length) % MAX_ADDR) : addr;
-
-                    Push_Request(address, length, HOST_WRITE);
-
-                    e_TrigReqTrans.notify();
-
-                    addr = addr + max_req_len;
-                    len  = len - max_req_len;
-
-                    repeatCount--;
-
-                }while(repeatCount > 0);
-            }
-
-            
-        }
-
-        Trace_File_Close();
+        
+        insert_trace(traceFile, "./../trace/ex_trace.txt", SIMUL_RINIT);
 #ifdef G_INITIALIZE
-        initFile = fopen("./../trace/init_trace.txt","r"); 
-        while(!feof(initFile)){
-            
-            fscanf(initFile, "%lf\t%llu\t%u\t%u\n",&opTime,&addr, &len, &op);
-            
-            //align address
-            addr %= MAX_ADDR;
-
-            if(addr+len > MAX_ADDR)
-            {
-                addr = (addr + len) % MAX_ADDR;
-            }
-
-            if((operationCount % 100) == 0){
-                cout << "[" << sc_core::sc_time_stamp() << "] " << __FILE__ << ":" << __LINE__ << " " << "Operation Count =  "<< operationCount << endl;
-            }
-            operationCount++;
-                        
-            //////align request////////////
-            ABORT(len == 0, "Request length is 0");
-            repeatCount = Cal_repeatCount(len);
-
-            do{ 
-                if(Check_Buffer_Full() == true)
-                    wait(e_DeleteReqBuffer);
-                uint length = len > max_req_len ?  max_req_len : len;
-                uint address = ((addr + length) > MAX_ADDR) ? ((addr + length) % MAX_ADDR) : addr;
-
-                Push_Request(address, length, HOST_WRITE);
-
-                e_TrigReqTrans.notify();
-
-                addr = addr + max_req_len;
-                len  = len - max_req_len;
-
-                repeatCount--;
-
-            }while(repeatCount > 0);
-
-            
-        }
-
-        fclose(initFile);
+        insert_trace(traceFile, "./../trace/init_trace.txt", SIMUL_DINIT);
 #endif
-        Trace_File_Open();
-        //wait(1000000, SC_NS);
+        
         
         cout << "initialize end, cleaning up..." << endl;
-        //wait(2000000000, SC_NS);
+        wait(2000000000, SC_NS);
         g_initialize_end = true; 
         cout << "---------------------- Simulation Initialize End ----------------------" << endl;
         
-        e_TrigMonitor.notify();
+        
         //initialize
         long long initialize_duration = current_timestamp() - initialize_start_time;
         long long simulation_start_time = current_timestamp(); 
@@ -853,81 +576,16 @@ HOST_IF::HOST_Interface()
         SSDmetric::g_startTime = startTime;
         operationCount = 0;
 
+        insert_trace(traceFile, "./../trace/ex_trace.txt", SIMUL_ON);
         
-        while(!feof(traceFile)){
-            fscanf(traceFile, "%lf\t%llu\t%u\t%u\n",&opTime,&addr, &len, &op);
-
-            wait(opTime, SC_NS);
-            
-            //align address
-            addr %= MAX_ADDR;
-            if(addr+len > MAX_ADDR)
-            {
-                addr = (addr + len) % MAX_ADDR;
-            }
-
-            //for debug
-            if((operationCount % 100) == 0){
-                cout << "[" << sc_core::sc_time_stamp() << "] " << __FILE__ << ":" << __LINE__ << " " << "Operation Count =  "<< operationCount << endl;
-            }
-
-            testTrack.insertID(requestId, addr, len, (uint)op);
-            testTrack.start(requestId, addr, len, SSDmetric::HOST_IF, sc_time_stamp().value()/1000);
-
-            operationCount++;
-
-                              //%           //for result
-            if( op == HOST_READ){ 
-                latency_list[operationCount] -= sc_time_stamp().value()/1000.0; 
-            }
-
-            //////align request////////////
-            ABORT(len == 0, "Request length is 0");
-            repeatCount = Cal_repeatCount(len);
-            do{
-
-                if(Check_Buffer_Full() == true)
-                    wait(e_DeleteReqBuffer);
-
-                //testTrack.track(requestId, addr, len, SSDmetric::HOST_IF, sc_time_stamp().value()/1000);//track1
-                
-                uint length = len > max_req_len ?  max_req_len : len;
-                uint address = ((addr + length) > MAX_ADDR) ? ((addr + length) % MAX_ADDR) : addr;
-
-                if(HOSTIF_DEBUG) cout << DEV_AND_TIME <<  "[START] req #:  " << operationCount << " repeatCount : "<< repeatCount <<  " op: " << op << "  addr: " << address << "  length: " << length <<"   "  <<repeatCount <<endl;
-
-                if(op == HOST_WRITE){
-                    totalWriteLength += length;
-                    totalWriteCount++;
-                }else{
-                    totalReadLength += length;
-                    totalReadCount++;
-                }
-                Push_Request(address, length, op);
-
-                wait(CLOCK_PERIOD, SC_NS);
-                e_TrigReqTrans.notify();
-
-                addr = addr + max_req_len;
-                len  = len - max_req_len;
-
-                repeatCount--;
-
-            }while(repeatCount > 0);
-
-
-           testTrack.IDFinish();
-        }
-
+        
+        
         while(1){
             if(Check_Simulation_End() == true){
 
                 testTrack.IDFinish();
                 
-                
-                
                 long long simulation_elapsed_time = current_timestamp() - simulation_start_time;
-                //time(&simulation_end_timer);                
                 double end_time = sc_time_stamp().value()/1000;
                 double total_time = sc_time_stamp().value()/1000  - startTime;
                
@@ -943,8 +601,6 @@ HOST_IF::HOST_Interface()
                   assert(DTCMP::confirm_data());
 #endif
 
-//                ofstream temp_debug("./../results/test_result_debug.txt");
-//                testTrack.IDForceFinish(temp_debug);
 
                 cout << "Start time = " << startTime;
                 cout << "   End time = " << end_time << endl;
@@ -956,159 +612,12 @@ HOST_IF::HOST_Interface()
                 cout << "###################### Simulation Result #####################" << endl << endl;
                
 
-                cout << "Time Elapsed in Initialization = " << initialize_duration/1000.0 << " s" << endl;//difftime(simulation_end_timer, simulation_start_timer ) << endl;
-                cout << "Time Elapsed in Simulation = " << simulation_elapsed_time/1000.0 << " s" << endl;//difftime(simulation_end_timer, simulation_start_timer i << endl;
-                cout << "Average Time Elapsed per Operation = " << simulation_elapsed_time/(double)operationCount << " ms" << endl<<endl;//difftime(simulation_end_timer, simulation_start_timer ) << endl;
-                cout << "Start time = " << startTime<<" ns" << endl;
-                cout << "End time = " << sc_time_stamp().value()/1000 << " ns"<<endl;
-                cout << "Total time = " << sc_time_stamp().value()/1000  - startTime<<" ns"<< endl;
+                cout << "Time Elapsed in Initialization = " << initialize_duration/1000.0 << " s" << endl; 
+                cout << "Time Elapsed in Simulation = " << simulation_elapsed_time/1000.0 << " s" << endl;
+                cout << "Average Time Elapsed per Operation = " << simulation_elapsed_time/(double)operationCount << " ms" << endl<<endl;
                 cout << endl;
 
-                double readBandwidth = (double)((double)totalReadLength * 512 /1024/1024) / ((total_time)/1000000000);
-                double writeBandwidth = (double)((double)totalWriteLength * 512 /1024/1024) / ((total_time)/1000000000.0);
-                double readIOPS = ((double)totalReadCount) / ((total_time)/1000000000.0);
-                double writeIOPS = ((double)totalWriteCount) / ((total_time)/1000000000.0);
-                cout << "Write  : Bandwidth = " << writeBandwidth << " MB/s " << "  IOPS = " << writeIOPS << endl;
-                cout << "Read  : Bandwidth = " << readBandwidth << " MB/s " << "  IOPS = " << readIOPS << endl;
-                cout << "Read latency : mean - " << calculateAvgLatency(latency_list) << " ns\tmax - " << calculateMaxLatency(latency_list) << " ns" << endl;
-
-                // ympark0225
-                double meta_readBandwidth = (double)((double)(DRAM_STATS[TOTAL_LEN][1][1]) /1024/1024) / ((total_time)/1000000000);
-                double meta_writeBandwidth = (double)((double)(DRAM_STATS[TOTAL_LEN][1][0]) /1024/1024) / ((total_time)/1000000000);
-                double data_readBandwidth = (double)((double)(DRAM_STATS[TOTAL_LEN][0][1]) /1024/1024) / ((total_time)/1000000000);
-                double data_writeBandwidth = (double)((double)(DRAM_STATS[TOTAL_LEN][0][0]) /1024/1024) / ((total_time)/1000000000);
-                double cache_readBandwidth = (double)((double)(DRAM_STATS[TOTAL_LEN][0][1]+DRAM_STATS[TOTAL_LEN][1][1]) /1024/1024) / ((total_time)/1000000000);
-                double cache_writeBandwidth = (double)((double)(DRAM_STATS[TOTAL_LEN][0][0]+DRAM_STATS[TOTAL_LEN][1][0]) /1024/1024) / ((total_time)/1000000000);
-                cout << "Metadata  Bandwidth  : write =" << meta_writeBandwidth << " MB/s"<<"\t"<< ",Read = "<< meta_readBandwidth << " MB/s"<<endl;
-                cout << "databuffer  Bandwidth  : write =" << data_writeBandwidth << " MB/s"<<"\t"<< ",Read = "<< data_readBandwidth << " MB/s"<<endl;
-                cout << "Cache  Bandwidth  : write =" << cache_writeBandwidth << " MB/s"<<"\t"<< ",Read = "<< cache_readBandwidth << " MB/s"<<endl;
-
-                cout << "Bus times : CMD_BUS - " << calculateBusTime(CMD_BUS_TIME_CONSUMED) << " ns\t DATA_BUS - " << calculateBusTime(DATA_BUS_TIME_CONSUMED) << " ns\t Ratio(CMD/DATA) - "<< calculateBusTime(CMD_BUS_TIME_CONSUMED)/calculateBusTime(DATA_BUS_TIME_CONSUMED) << " : 1"  << endl;
-
-                //cout << "Bus times(SubReqMan) : CMD_BUS - " << CMD_BUS_TIME_CONSUMED[0] << " ns\t DATA_BUS - " << DATA_BUS_TIME_CONSUMED[0] << " ns" << endl;
-
-                //cout << "Bus times(DRAM_Ctrl) : CMD_BUS - " << CMD_BUS_TIME_CONSUMED[1] << " ns\t DATA_BUS - " << DATA_BUS_TIME_CONSUMED[1] << " ns" << endl;
-                //cout << "Bus times(NAND_Manager) : CMD_BUS - " << CMD_BUS_TIME_CONSUMED[2] << " ns\t DATA_BUS - " << DATA_BUS_TIME_CONSUMED[2] << " ns" << endl;
                 
-                
-                
-                //cout << "Power Consumption : Cache - " << calculateDRAMEnergy(DRAM_STATS, total_time)/1000.0  << " mW\tNAND - " << calculateNANDEnergy()/total_time*1000000 << " mW" << endl<<endl;
-                cout << "Power Consumption : Cache DRAM - " << calculateDRAMEnergy(DRAM_STATS, total_time)/1000.0  << " mW " <<endl;
-                cout << "Power Consumption : Cache PRAM - " << calculatePRAMEnergy(DRAM_STATS, total_time)/1000.0  << " mW " <<endl;
-                cout<< "Power Consumption : NAND - " << calculateNANDEnergy()/total_time*1000000 << " mW" << endl<<endl;
-
-                cout << "Cache Stats : " << endl << "\tCache buffer usage... write -  " << DRAM_STATS[TOTAL_LEN][0][0] << "  read - " <<  DRAM_STATS[TOTAL_LEN][0][1] << endl << "\tmetadata usage... write - " << DRAM_STATS[TOTAL_LEN][1][0] << "  read - " << DRAM_STATS[TOTAL_LEN][1][1] << endl;
-                cout << "###################### Simulation Result END #################" << endl << endl << endl;
-
-                cout << "Software time .... CPU1 : " << SOFTWARE_TIME[0] << "  count : " << SOFTWARE_count << " average : " << SOFTWARE_TIME[0]/SOFTWARE_count <<  endl;
-
-                cout << "buffer access count : " << buffer_write_count << "\tNAND write count : " << NAND_write_count << "\tmetadata count : "<< meta_write_count<<endl; 
-                cout << "bypasss count : " << cache_bypass_count << "\ttotal count : " << total_req_count << "\tpercentage : "<< (double)cache_bypass_count/total_req_count << endl; 
-
-
-                cout << "" <<endl;
-
-                ofstream SIMUL_RESULT("./../results/simul_result.txt");
-
-                SIMUL_RESULT << "Time Elapsed in Initialization = " << initialize_duration/1000.0 << endl;//difftime(simulation_end_timer, simulation_start_timer ) << endl;
-                SIMUL_RESULT << "Time Elapsed in Simulation = " << simulation_elapsed_time/1000.0 << endl;//difftime(simulation_end_timer, simulation_start_timer i << endl;
-                SIMUL_RESULT << "Average Time Elapsed per Operation = " << simulation_elapsed_time/(double)operationCount << endl<<endl;//difftime(simulation_end_timer, simulation_start_timer ) << endl;
-                SIMUL_RESULT << "Start time = " << startTime << endl;
-                SIMUL_RESULT << "End time = " << sc_time_stamp().value()/1000 <<endl;
-                SIMUL_RESULT << "Total time = " << sc_time_stamp().value()/1000  - startTime<< endl;
-
-                SIMUL_RESULT << "Write  : Bandwidth = " << writeBandwidth <<  endl;
-                SIMUL_RESULT << "Write  : IOPS = " << writeIOPS << endl;
-                SIMUL_RESULT << "Read  : Bandwidth = " << readBandwidth << endl;
-                SIMUL_RESULT << "Read  : IOPS = " << readIOPS << endl;
-                SIMUL_RESULT << "Read latency : mean = " << calculateAvgLatency(latency_list) <<  endl;
-                SIMUL_RESULT << "Read latency : max = " << calculateMaxLatency(latency_list) <<  endl;
-                SIMUL_RESULT << "Metadata  Bandwidth  : write = " << meta_writeBandwidth <<endl;
-                SIMUL_RESULT << "Metadata  Bandwidth  : Read = "<< meta_readBandwidth << endl;
-                SIMUL_RESULT << "databuffer  Bandwidth  : write =" << data_writeBandwidth << endl;
-                SIMUL_RESULT << "databuffer  Bandwidth  : Read = "<< data_readBandwidth <<endl;
-                SIMUL_RESULT << "Cache  Bandwidth  : write =" << cache_writeBandwidth << endl;
-                SIMUL_RESULT << "Cache  Bandwidth  : Read =" << cache_readBandwidth <<endl;
-
-                SIMUL_RESULT << "Bus times : CMD_BUS = " << calculateBusTime(CMD_BUS_TIME_CONSUMED) <<  endl;
-                SIMUL_RESULT << "Bus times : DATA_BUS = " << calculateBusTime(DATA_BUS_TIME_CONSUMED) << endl;
-                SIMUL_RESULT << "Bus times : Ratio(CMD/DATA) = "<< calculateBusTime(CMD_BUS_TIME_CONSUMED)/calculateBusTime(DATA_BUS_TIME_CONSUMED)  << endl;
-
-                //SIMUL_RESULT << "Bus times(SubReqMan) : CMD_BUS - " << CMD_BUS_TIME_CONSUMED[0] << " ns\t DATA_BUS - " << DATA_BUS_TIME_CONSUMED[0] << " ns" << endl;
-
-                //SIMUL_RESULT << "Bus times(DRAM_Ctrl) : CMD_BUS - " << CMD_BUS_TIME_CONSUMED[1] << " ns\t DATA_BUS - " << DATA_BUS_TIME_CONSUMED[1] << " ns" << endl;
-                //SIMUL_RESULT << "Bus times(NAND_Manager) : CMD_BUS - " << CMD_BUS_TIME_CONSUMED[2] << " ns\t DATA_BUS - " << DATA_BUS_TIME_CONSUMED[2] << " ns" << endl;
-                
-                
-                
-                //SIMUL_RESULT << "Power Consumption : Cache - " << calculateDRAMEnergy(DRAM_STATS, total_time)/1000.0  << " mW\tNAND - " << calculateNANDEnergy()/total_time*1000000 << " mW" << endl<<endl;
-                SIMUL_RESULT << "Power Consumption : Cache DRAM = " << calculateDRAMEnergy(DRAM_STATS, total_time)/1000.0  <<endl;
-                SIMUL_RESULT << "Power Consumption : Cache PRAM = " << calculatePRAMEnergy(DRAM_STATS, total_time)/1000.0  <<endl;
-                SIMUL_RESULT << "Power Consumption : NAND = " << calculateNANDEnergy()/total_time*1000000 <<endl;
-                SIMUL_RESULT << "Cache buffer usage : write =  " << DRAM_STATS[TOTAL_LEN][0][0] << endl;
-                SIMUL_RESULT << "Cache buffer usage : read = " <<  DRAM_STATS[TOTAL_LEN][0][1] << endl; 
-                SIMUL_RESULT << "metadata usage : write = " << DRAM_STATS[TOTAL_LEN][1][0] << endl;
-                SIMUL_RESULT << "metadata usage : read = " << DRAM_STATS[TOTAL_LEN][1][1] << endl;
-
-
-                ofstream ANALYSIS_FILE("./../results/analysis.txt");
-                ofstream NAND_STATS_FILE("./../results/nand_stats.txt");
-                ofstream DRAM_STATS_FILE("./../results/dram_stats.txt");
-               
-
-                ANALYSIS_FILE << "Software time .... CPU1 : " << SOFTWARE_TIME[0] << "  count : " << SOFTWARE_count << " average : " << SOFTWARE_TIME[0]/SOFTWARE_count <<  endl;
-
-
-
-                NAND_STATS_FILE << "Channel\tWay\t\tNothing\tProgram\tRead\tErase\tCopyback\tCopyback_Program\tCopyback_Read" << endl;
-
-
-                for(int i = 0; i < 4; i++){
-                    
-                    for(int j = 0; j < 4; j++){
-                        NAND_STATS_FILE <<  i << "\t" << j << "\t\t";
-                        for(int h =0; h<7; h++){
-                            int sum = 0;
-                            
-                            for(int k = 0; k< 1024; k++){
-                                sum += NAND_STATS[h][i][j][k];
-                            }
-
-
-                            NAND_STATS_FILE << sum << "\t";    
-                        }
-                        NAND_STATS_FILE << endl;
-                    }
-                    NAND_STATS_FILE << endl;
-
-                }
-
-                DRAM_STATS_FILE << ".\tWrite\tRead" << endl;
-                
-                DRAM_STATS_FILE << "CacheBuffer\t\t";
-
-                for(int j = 0; j<2; j++){
-
-                    DRAM_STATS_FILE << DRAM_STATS[0][j] << "\t";
-                }
-
-
-                DRAM_STATS_FILE << endl;
-                
-                
-                DRAM_STATS_FILE << "Metadata\t\t";
-
-                for(int j = 0; j<2; j++){
-
-                    DRAM_STATS_FILE << DRAM_STATS[1][j] << "\t";
-                }
-
-
-                DRAM_STATS_FILE << endl;
-                
-                
-                //view_latency_list(latency_list); 
-                //cout << "Write : Bandwidth = " << writeBandwidth << " MB/s " << "  IOPS = " << writeIOPS << endl;
 
                 sc_stop();
 
@@ -1201,10 +710,10 @@ HOST_IF::HOST_To_Device_Data_Trans()
             while(HOST_RnB_Slave.read() == 0x0){
                  wait(HOST_RnB_Slave.posedge_event());
             }
-            wait(((double)sectorCount * (double)UNIT_OF_REQUEST / (double)IF_BANDWIDTH) * 1000.0 , SC_NS);
+            wait(((double)sectorCount * (double)SECTOR_BYTES / (double)IF_BANDWIDTH) * 1000.0 , SC_NS);
 
 
-            if(!HOST_Master.write(DATA_ADDR, (void *)(requestData[transDataPoint] + writeCount*UNIT_OF_REQUEST ), (unsigned int)(sectorCount*UNIT_OF_REQUEST))){
+            if(!HOST_Master.write(DATA_ADDR, (void *)(requestData[transDataPoint] + writeCount*SECTOR_BYTES ), (unsigned int)(sectorCount*SECTOR_BYTES))){
                 ABORT(1, "Data trans fail");
             }
             writeCount++;
@@ -1214,7 +723,6 @@ HOST_IF::HOST_To_Device_Data_Trans()
         if(g_initialize_end && (transReq.Op == HOST_WRITE)){
             testTrack.done(transReq.iId, transReq.iAddr, transReq.iLen, SSDmetric::HOST_IF, sc_time_stamp().value()/1000.0);//skhds
         }
-
 
         Delete_Request(transReq.iId);
         transDataFlag = false;
@@ -1235,13 +743,13 @@ HOST_IF::Delete_Request(uint point)
     memset(&requestBuffer[deletePoint], 0x0, sizeof(Req_t));
 
     //cout<<"1"<<endl;
-    memset(&requestData[deletePoint], 0x0, max_req_len*UNIT_OF_REQUEST);
+    memset(&requestData[deletePoint], 0x0, MAX_REQ_LEN*SECTOR_BYTES);
     
     //cout<<"2"<<endl;
     //move request
     for(uint j=deletePoint; j != reqBufferHead; j = (j+Q_SIZE-1) %Q_SIZE){
         memcpy(&requestBuffer[j], &requestBuffer[(j+Q_SIZE-1)%Q_SIZE], sizeof(Req_t));
-        memcpy(&requestData[j], &requestData[(j+Q_SIZE-1)%Q_SIZE], max_req_len*UNIT_OF_REQUEST);
+        memcpy(&requestData[j], &requestData[(j+Q_SIZE-1)%Q_SIZE], MAX_REQ_LEN*SECTOR_BYTES);
     }
 
     //cout<<"3"<<endl;
@@ -1296,13 +804,11 @@ HOST_IF::Push_Request(int addr, uint len, uint op)
 
         DTCMP::writeData(DTCMP::mmLogical, 0, addr, len, (uchar*)requestData[reqBufferTail] );
 #endif
-        //if(COMPARISON)
-        //    Write_Data_Map(addr, len);            
 
     }else if(op == HOST_READ){
         requestBuffer[reqBufferTail].Op = HOST_READ;
         //memset
-        memset(requestData[reqBufferTail], 0x00, UNIT_OF_REQUEST*max_req_len);
+        memset(requestData[reqBufferTail], 0x00, SECTOR_BYTES*MAX_REQ_LEN);
     }
 
     reqBufferTail = (reqBufferTail + 1) % Q_SIZE;
@@ -1312,7 +818,7 @@ HOST_IF::Push_Request(int addr, uint len, uint op)
 void
 HOST_IF::Create_Data(uint64 len)
 {
-    for(uint i=0; i < len*UNIT_OF_REQUEST; i++){
+    for(uint i=0; i < len*SECTOR_BYTES; i++){
         requestData[reqBufferTail][i] = 'A' + rand()%26;
     }
     
@@ -1320,51 +826,74 @@ HOST_IF::Create_Data(uint64 len)
 }
             
 
-void
-HOST_IF::Compare_Data()
-{
-    uint addr = recievedReq.iAddr;
-    uint len  = recievedReq.iLen;
-    bool passFlag = false;
-    
-//    for(uint j=reqBufferHead; j != reqBufferPoint; j = (j+1) % Q_SIZE){
-//        if((requestBuffer[j].iAddr <= addr && requestBuffer[j].iAddr + requestBuffer[j].iLen >= addr)||(requestBuffer[j].iAddr <= addr+len && requestBuffer[j].iAddr + requestBuffer[j].iLen >= addr+len)){
-//            passFlag=true;
-//            break;
-//        }
-//    }
 
-    if(passFlag == true){
-//        for(uint i=0;i < len*UNIT_OF_REQUEST;i++){
-//
-//            if(data_map[addr*512+i] != recievedData[i]){
-//
-//                if(dbgFlag[GENERAL]){
-//                    cout << "Recieved data error!! addr  : " << addr << "  Length  :  " << len<< "  ADDR : " << addr+i/512 << endl;
-//                    cout << "Original Data  : "<<data_map[addr*512+i] << "   reciedved Data  : " << recievedData[i] << endl;  
-//                }
-//                wait(SC_ZERO_TIME);
-//                sc_stop();
-//
-//            }
-//        }
-    }
-
-    if(dbgFlag[GENERAL]){
-        cout << "Complete Reqeust ID : " << recievedReq.iId << endl;
-    }
-}
 
 
 void
-HOST_IF::Write_Data_Map(uint addr, uint64 len)
-{
-    for(uint i=0; i < len*UNIT_OF_REQUEST;i++){
-        //data_map[addr*UNIT_OF_REQUEST+i] = requestData[reqBufferTail][i];
-    }
+HOST_IF::insert_trace(FILE* fp, char* filename, SIMUL_MODE mode){
+
+        double opTime;
+        uint64 addr;
+        uint len;
+        uint op;
+        uint repeatCount;
+    //file open
+        fp = fopen(filename, "r");
+        
+        
+        while(!feof(fp)){
+            
+            fscanf(fp, "%lf\t%llu\t%u\t%u\n",&opTime,&addr, &len, &op);
+            
+            //align address
+            addr %= MAX_ADDR;
+
+            if(addr+len > MAX_ADDR)
+            {
+                addr = (addr + len) % MAX_ADDR;
+            }
+
+            if((operationCount % 100) == 0){
+                cout << "[" << sc_core::sc_time_stamp() << "] " << __FILE__ << ":" << __LINE__ << " " << "Operation Count =  "<< operationCount << endl;
+            }
+
+            if (mode == SIMUL_ON) {
+                testTrack.insertID(requestId, addr, len, (uint)op);
+                testTrack.start(requestId, addr, len, SSDmetric::HOST_IF, sc_time_stamp().value()/1000);
+            }
+
+            operationCount++;
+                        
+            //////align request////////////
+            ABORT(len == 0, "Request length is 0");
+            
+            if ( (mode != SIMUL_RINIT) || (op == HOST_READ)){
+                repeatCount = Cal_repeatCount(len);
+
+                do{ 
+                    if(Check_Buffer_Full() == true)
+                        wait(e_DeleteReqBuffer);
+                    uint length = len > MAX_REQ_LEN ?  MAX_REQ_LEN : len;
+                    uint address = ((addr + length) > MAX_ADDR) ? ((addr + length) % MAX_ADDR) : addr;
+
+                    if(mode == SIMUL_RINIT) Push_Request(address, length, HOST_WRITE);
+                    else Push_Request(address, length, op);
+                    e_TrigReqTrans.notify();
+
+                    addr = addr + MAX_REQ_LEN;
+                    len  = len - MAX_REQ_LEN;
+
+                    repeatCount--;
+
+                }while(repeatCount > 0);
+            }
+            if(mode == SIMUL_ON) testTrack.IDFinish();
+            
+        }
+
+        //file close
+        fclose(fp);
 }
-
-
 
 
                                                                                 //%USEREND MEMBER_DEFNS

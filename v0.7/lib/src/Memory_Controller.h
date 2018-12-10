@@ -23,13 +23,13 @@
 #include "scmlinc/scml_command_processor.h"                                     //%
                                                                                 //%USERBEGIN HEADER_H
 // TODO: Insert your includes, declarations, etc. here.
-#include "./header/global_flag.h"
+#include "./header/global_header.h"
 using namespace std;
 
 #define REQUEST 0x0
 #define GRANT   0x4
 #define RELEASE 0x8
-#define NUM_OF_CHANNEL  4
+#define NUM_OF_CHANNEL  CHANNEL_PER_SSD
 #define EMPTY           0xf
 
 unsigned int requestChannel[NUM_OF_CHANNEL];

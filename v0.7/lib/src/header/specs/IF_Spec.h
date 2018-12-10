@@ -12,8 +12,6 @@
 #define Q_SIZE          32
 
 //port address
-#define REQUEST_ADDR    0x0
-#define DATA_ADDR       0x28
 
 #define MEMORY_SIZE     ((DATA_PAGE_SIZE * NUM_OF_PAGE_PER_BLOCK * NUM_OF_BLOCK_PER_WAY) * NUM_OF_WAY * NUM_OF_CHANNEL)
 //#define MAX_ADDR        (62272 * 8)

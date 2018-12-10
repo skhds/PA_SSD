@@ -24,7 +24,8 @@
 #include <systemc>                                                              //%
 #include "scmlinc/scml_command_processor.h"                                     //%
                                                                                 //%USERBEGIN HEADER_H
-#include "./header/NAND_Ctrl_Spec.h"
+#include "./header/global_header.h"
+#include "./header/header_NAND.h"
 
 extern unsigned int iFileNumber;
                                                                                 //%USEREND HEADER_H

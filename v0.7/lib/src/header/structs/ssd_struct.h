@@ -14,12 +14,7 @@
 #ifndef _SSD_STRUCT_H_
 #define _SSD_STRUCT_H_
 
-// maximum number of sectors one request includes
-#define MAX_REQ_LEN         8192
 
-typedef unsigned int uint;
-typedef unsigned char uchar;
-typedef unsigned long long int uint64;
 
 // request: transaction given by host to SSD
 // command: sub-transaction or memory device transaction
@@ -136,6 +131,5 @@ typedef enum eWriteSlaveState{
     NOTHING     =       63
 }eWSState;
 
-#define UNIT_OF_REQUEST 512
 
 #endif

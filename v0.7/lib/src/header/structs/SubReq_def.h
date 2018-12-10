@@ -3,18 +3,8 @@
 
 #include "ssd_struct.h"
 
-#define KILO                    1024
-#define CLOCK_PERIOD_NS         5       // Assuming 200MHz? it should be parameterized
-
-/// Todo: find definition from other files
-#define SECTOR_PER_PAGE         32
 
 
-#define _ADDR_DRAM_CMD_ 0xd0000000 
-#define _ADDR_DRAM_DATA_ 0x20000000
-#define _ADDR_NAND_CMD_ 0xf0000000
-#define _ADDR_NAND_DATA_ 0x30000000
-#define _OFFSET_DATA_REGION_ 0x4000000
 
 ///////// TH ////////
 typedef enum{

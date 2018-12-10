@@ -1,0 +1,8 @@
+
+Headers were a bit messy, so I decided to organize these.
+
+specs :     Configuration parameters for each HW components
+structs :   Defined structs used in HW modules
+addr :      Address spaces for communation between HW modules
+utils :     Utility tools, mainly for analysis
+etc :       Other defines

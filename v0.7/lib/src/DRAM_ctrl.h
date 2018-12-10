@@ -23,11 +23,8 @@
 #include "scmlinc/scml_command_processor.h"                                     //%
                                                                                 //%USERBEGIN HEADER_H
 // TODO: Insert your includes, declarations, etc. here.
-#include "./header/ssd_struct.h"
-#include "./header/memcpy.h"
-#include "./header/IF_Spec.h"
-#include "./header/global_flag.h"
-#include "./header/buffer_ctrl.h"
+#include "./header/global_header.h"
+#include "./header/header_DRAM.h"
 
 //For debugging
 
@@ -84,8 +81,6 @@ protected:                                                                      
 public:                                                                         //%
 	// Process declarations                                                 //%
 	void rst_nHandler1();                                                   //%
-    void Scheduler();
-    void NotifyDataRead();
 
     
                                                                                 //%
@@ -110,46 +105,7 @@ protected:                                                                      
 
     // TODO: Insert declarations of member data and functions here.
     //Event
-    sc_core::sc_event e_TrigScheduler;
-    sc_core::sc_event e_TrigTransData;
-    sc_core::sc_event e_WriteCMDQPop;
-    sc_core::sc_event e_ReadCMDQPop;
 
-
-    //CMD Queue
-    CacheCMD readCMDQ[READ_Q_SIZE];
-    CacheCMD writeCMDQ[WRITE_Q_SIZE];
-
-    //Data Queue
-    uchar readDataQ[READ_Q_SIZE][DATA_PAGE_SIZE];
-    uchar writeDataQ[WRITE_Q_SIZE][DATA_PAGE_SIZE];
-
-    uint readQPoint;
-    uint readQHead, readQTail;
-    uint writeQHead, writeQTail;
-
-    bool PushWriteCMDQ(CacheCMD req);
-    bool PushReadCMDQ(CacheCMD req);
-
-    bool PopWriteCMDQ(uint index);
-    bool PopReadCMDQ(uint index);
-
-    bool CheckReadCMDQEmpty();
-    bool CheckWriteCMDQEmpty();
-
-    uint CheckWriteQSize();
-    uint CheckReadQSize();
-
-    bool CheckExistTransCMD();
-    uint PushDataQIndex(SOURCE_DEVICE source, DRAM_CMD op_type);
-    
-    uint FindWQindex();
-    uint FindRQindex();
-    uint FindRDQindex(SOURCE_DEVICE source);
-    int FindWQindexByCmd(CacheTrans_t cmd);
-
-    sc_core::sc_semaphore sem_RCMD;
-    sc_core::sc_semaphore sem_WCMD;
     sc_core::sc_semaphore sem_Mem;
 
 
@@ -179,8 +135,6 @@ DRAM_ctrl::DRAM_ctrl( const sc_core::sc_module_name & n)                        
  R_DATA("R_DATA", 1048576ULL)                                                       //%
 
  // TODO: Add your class initialization here.
-    ,sem_RCMD(1)
-    ,sem_WCMD(1)
     ,sem_Mem(1)
     //%USEREND INITIALIZER
                                                                                 //%
@@ -190,13 +144,7 @@ DRAM_ctrl::DRAM_ctrl( const sc_core::sc_module_name & n)                        
 	 sensitive << rst_n.neg() ;                                             //%
 	 dont_initialize();                                                     //%
  
-    SC_THREAD(Scheduler);
-     sensitive << e_TrigScheduler;
-     dont_initialize();
      
-    SC_THREAD(NotifyDataRead);
-     sensitive << e_TrigTransData;
-     dont_initialize();
 
                                                                             //%
 	// bind target ports to memories                                        //%
@@ -379,453 +327,6 @@ DRAM_ctrl::rst_nHandler1()                                                      
 }
                                                                                 //%USEREND rst_nHandler1
 
-bool
-DRAM_ctrl::PushWriteCMDQ(CacheCMD req)
-{
-    sem_WCMD.wait();
-    if(writeQHead == (writeQTail + 1) % WRITE_Q_SIZE){
-        if(DRAM_DEBUG) cout << DEV_AND_TIME <<  "[PushWriteCMDQ] write q full writeQHead = " 
-            <<writeQHead << " tail = " << writeQTail << endl;
-        wait(e_WriteCMDQPop); // full
-    }
-
-    memcpy(&writeCMDQ[writeQTail], &req, sizeof(CacheCMD));
-    writeCMDQ[writeQTail].isDataReady = false;
-    writeQTail = (writeQTail + 1) % WRITE_Q_SIZE;
-    sem_WCMD.post();
-    return true;
-    
-
-}
-
-/*
-bool
-DRAM_ctrl::PushWriteCMDQ(CacheCMD req)
-{
-    if(writeQHead == (writeQTail + 1) % WRITE_Q_SIZE){
-        if(DRAM_DEBUG) cout << DEV_AND_TIME <<  "[PushWriteCMDQ] write q full writeQHead = " 
-            <<writeQHead << " tail = " << writeQTail << endl;
-        return false; // full
-    }else{ 
-        memcpy(&writeCMDQ[writeQTail], &req, sizeof(CacheCMD));
-        writeCMDQ[writeQTail].isDataReady = false;
-        writeQTail = (writeQTail + 1) % WRITE_Q_SIZE;
-        return true;
-    }
-}
-*/
-bool
-DRAM_ctrl::PushReadCMDQ(CacheCMD req)
-{
-    sem_RCMD.wait();
-    if(readQHead == (readQTail + 1) % READ_Q_SIZE){
-        if(DRAM_DEBUG) cout << DEV_AND_TIME <<  "[PushReadCMDQ] read q full readQHead = " 
-            <<readQHead << " tail = " << readQTail << endl;
-        wait(e_ReadCMDQPop); // full
-    }
-
-    memcpy(&readCMDQ[readQTail], &req, sizeof(CacheCMD));
-    readCMDQ[readQTail].isCMDTrans = false;
-    readCMDQ[readQTail].isDataReady = false;
-    readQTail = (readQTail + 1) % READ_Q_SIZE;
-    sem_RCMD.post();
-    return true;
-}
-
-
-/*bool
-DRAM_ctrl::PushReadCMDQ(CacheCMD req)
-{
-    if(readQHead == (readQTail + 1) % READ_Q_SIZE){
-        //if(DRAM_DEBUG) cout << DEV_AND_TIME <<  "[PushReadCMDQ] read q full readQHead = " 
-        //    <<readQHead << " tail = " << readQTail << endl;
-        return false; // full
-    }else{
-        memcpy(&readCMDQ[readQTail], &req, sizeof(CacheCMD));
-        readCMDQ[readQTail].isCMDTrans = false;
-        readCMDQ[readQTail].isDataReady = false;
-        readQTail = (readQTail + 1) % READ_Q_SIZE;
-        return true;
-    }
-}
-*/
-bool
-DRAM_ctrl::PopWriteCMDQ(uint index)
-{
-    if(index == writeQHead){
-        writeQHead = (writeQHead + 1) % WRITE_Q_SIZE;
-    }else{
-        for(int i = (index + 1)%WRITE_Q_SIZE; i != writeQTail; i = (i+1)%WRITE_Q_SIZE){
-            memcpy(&writeCMDQ[(WRITE_Q_SIZE+i-1)%WRITE_Q_SIZE], &writeCMDQ[i], sizeof(CacheCMD));
-            memcpy(writeDataQ[(WRITE_Q_SIZE+i-1)%WRITE_Q_SIZE], writeDataQ[i], DATA_PAGE_SIZE);
-        }
-        writeQTail = (writeQTail + WRITE_Q_SIZE - 1) % WRITE_Q_SIZE;
-    }
-
-    e_WriteCMDQPop.notify();
-}
-
-bool
-DRAM_ctrl::PopReadCMDQ(uint index)
-{
-    if(index == readQHead){
-        readQHead = (readQHead + 1) % READ_Q_SIZE;
-    }else{
-        for(int i = (index + 1)%READ_Q_SIZE; i != readQTail; i = (i+1)%READ_Q_SIZE){
-            memcpy(&readCMDQ[(READ_Q_SIZE+i-1)%READ_Q_SIZE], &readCMDQ[i], sizeof(CacheCMD));
-            memcpy(readDataQ[(READ_Q_SIZE+i-1)%READ_Q_SIZE], readDataQ[i], DATA_PAGE_SIZE);
-        }
-        readQTail = (readQTail + READ_Q_SIZE - 1) % READ_Q_SIZE;
-    }
-
-    e_ReadCMDQPop.notify();
-}
-
-
-bool
-DRAM_ctrl::CheckReadCMDQEmpty()
-{
-    for(int i=readQHead; i != readQTail; i = (i + 1) % READ_Q_SIZE){
-        if(readCMDQ[i].isDataReady == false && readCMDQ[i].isCMDTrans == false){
-            return false;
-        }
-    }
-    return true;
-}
-
-bool
-DRAM_ctrl::CheckWriteCMDQEmpty()
-{
-    for(int i=writeQHead; i != writeQTail; i = (i + 1) % WRITE_Q_SIZE){
-        if(writeCMDQ[i].isDataReady == true){
-            return false;
-        }
-    }
-    return true;
-}
-
-uint
-DRAM_ctrl::CheckWriteQSize()
-{
-    uint tempCount = 0;
-    for(int i=writeQHead; i != writeQTail; i = (i + 1) % WRITE_Q_SIZE){
-        tempCount++;
-    }
-    return tempCount;
-}
-
-uint
-DRAM_ctrl::CheckReadQSize()
-{
-    uint tempCount = 0;
-    for(int i=readQHead; i != readQTail; i = (i + 1) % READ_Q_SIZE){
-        if(readCMDQ[i].isDataReady == false)
-            tempCount++;
-    }
-    return tempCount;
-}
-
-bool
-DRAM_ctrl::CheckExistTransCMD()
-{
-    for(int i=readQHead; i != readQTail; i = (i + 1) % READ_Q_SIZE){
-        if(readCMDQ[i].isDataReady == true && readCMDQ[i].isCMDTrans == false){
-            return true;
-        }
-    }
-    return false;
-
-}
-
-uint
-DRAM_ctrl::PushDataQIndex(SOURCE_DEVICE source, DRAM_CMD op_type)
-{
-    //if(DRAM_DEBUG)cout << DEV_AND_TIME <<  "[PushDataQIndex] head  = " << writeQHead << " tail = " << writeQTail << " op_type = "<< op_type <<endl;
-    if(op_type == DRAM_WRITE){
-        for(int i=writeQHead; i != writeQTail; i = (i + 1) % WRITE_Q_SIZE){
-            if(writeCMDQ[i].SourceDevice == source && writeCMDQ[i].isDataReady == false){
-                return i;
-            }
-        }
-    }else{ //read data
-        for(int i=readQHead; i != readQTail; i = (i + 1) % READ_Q_SIZE){
-            if(readCMDQ[i].SourceDevice == source && readCMDQ[i].isDataReady == false){
-                return i;
-            }
-        }
-    }
-
-    cout << DEV_AND_TIME <<"[PushDataQIndex] Don't find data q index!!" <<endl;
-    assert(0);
-        
-    sc_stop();
-
-}
-
-uint 
-DRAM_ctrl::FindWQindex()
-{
-    for(int i=writeQHead; i != writeQTail; i = (i + 1) % WRITE_Q_SIZE){
-        if(writeCMDQ[i].isDataReady == true){
-            return i;
-        }
-    }
-    
-    cout << DEV_AND_TIME <<"[FindWQindex] Don't find write cmd q index!!"<< endl;
-    sc_stop();
-}
-
-int 
-DRAM_ctrl::FindWQindexByCmd(CacheTrans_t cmd)
-{
-    for(int i=writeQHead; i != writeQTail; i = (i + 1) % WRITE_Q_SIZE){
-        if((writeCMDQ[i].cmd.lba == cmd.lba) && (writeCMDQ[i].cmd.Id == cmd.Id)){
-            if(writeCMDQ[i].isDataReady == true)
-                return (int)i;
-            else{
-                //testTrack.done(cmd.Id, cmd.lba, cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::SubReqMan , sc_time_stamp().value()/1000.0); 
-             //   testTrack.done(cmd.Id, cmd.lba, cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::DRAM_ctrl, sc_time_stamp().value()/1000.0); 
-              //  testTrack.done(cmd.Id, cmd.lba, cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::NAND_Manager, sc_time_stamp().value()/1000.0); 
-               // testTrack.IDFinish();
-                assert(0 && "Request came before data was transferred to DRAM_ctrl (check WriteCmd_Write at SubReqMan");
-            }
-        }
-    }
-    
-    return -1;
-}
-
-uint 
-DRAM_ctrl::FindRQindex()
-{
-    for(int i=readQHead; i != readQTail; i = (i + 1) % READ_Q_SIZE){
-        if(readCMDQ[i].isDataReady == false){
-
-            return i;
-        }
-    }
-    
-    cout << DEV_AND_TIME <<"[FindRQindex] Don't find read cmd q index!!" <<endl;
-    sc_stop();
-
-}
-
-uint 
-DRAM_ctrl::FindRDQindex(SOURCE_DEVICE source)
-{
-    for(int i=readQHead; i != readQTail; i = (i + 1) % READ_Q_SIZE){
-        if(readCMDQ[i].SourceDevice == source){
-            return i;
-        }
-    }
-    cout << DEV_AND_TIME <<"[FindRDQindex] Don't find read data q index!!" <<endl;
-    sc_stop();
-}
-
-void
-DRAM_ctrl::Scheduler()
-{
-    while(1){
-
-        while(!CheckReadCMDQEmpty() || !CheckWriteCMDQEmpty()){
-           
-            //cout<<DEV_AND_TIME<<"write q size = " << CheckWriteQSize() <<" read q size = " << CheckReadQSize()<< endl;
-            if(CheckReadCMDQEmpty() && !CheckWriteCMDQEmpty()){
-                //operate write cmd
-                //FIFO
-                uint index = FindWQindex();
-                if(DRAM_DEBUG){
-                    cout << DEV_AND_TIME << "[Scheduler] DRAM WRITE : ID = " << writeCMDQ[index].cmd.Id 
-                        << " OP = " << writeCMDQ[index].cmd.Op 
-                        << " ADR = " << writeCMDQ[index].cmd.Addr 
-                        << " LEN =  "  <<writeCMDQ[index].cmd.Len
-                        << " SOURCE = " << writeCMDQ[index].SourceDevice  <<endl;
-                    
-                    cout << DEV_AND_TIME <<  "[Scheduler] DRAM write Data = ";
-                    for(int i =0; i < writeCMDQ[index].cmd.Len/SECTOR_SIZE_BYTE; i++){
-                        cout << writeDataQ[index][i*SECTOR_SIZE_BYTE];
-                    }
-                    cout << endl;
-                }
-
-                if(g_initialize_end) {
-                    DRAM_STATS[TOTAL_LEN][BUFFER][cacheWRITE] += writeCMDQ[index].cmd.Len; //0 : Cache Buffer, 0 : Write
-                    
-                    if(writeCMDQ[index].cmd.Len <= DRAM_PAGE) DRAM_STATS[TOTAL_ENERGY][BUFFER][cacheWRITE] += DRAM_PAGE; 
-                    else DRAM_STATS[TOTAL_ENERGY][BUFFER][cacheWRITE] += writeCMDQ[index].cmd.Len; 
-                }
-
-                
-                    
-                wait(memLatency(writeCMDQ[index].cmd.Len, BUFFER, cacheWRITE), SC_NS);
-                sem_Mem.wait();
-                MemoryMasterPort.write(writeCMDQ[index].cmd.Addr + CACHE_DATA_REGION_OFFSET , 
-                        (uchar *)&writeDataQ[index], writeCMDQ[index].cmd.Len);
-                sem_Mem.post();
-
-                
-                if(DRAM_DEBUG){
-                    cout <<DEV_AND_TIME<<"[Scheduler] DRAM WRITE END" <<endl;
-                }
-
-                //remove cmd q
-                PopWriteCMDQ(index);
-
-            }else{
-                //when write Q is filled with more than xx%(current: 80%), operate write cmd
-//                if((CheckWriteQSize() >= WRITE_Q_SIZE * WRITE_Q_LIMIT_FACTOR && !CheckWriteCMDQEmpty()) 
-//                        && (CheckReadQSize() <= READ_Q_SIZE * READ_Q_LIMIT_FACTOR)){
-//                    //operate write cmd
-//                    uint index = FindWQindex();
-//                    if(DRAM_DEBUG){
-//                        cout << DEV_AND_TIME << "[Scheduler] DRAM WRITE : ID = " << writeCMDQ[index].cmd.Id 
-//                            << " OP = " << writeCMDQ[index].cmd.Op 
-//                            << " ADR = " << writeCMDQ[index].cmd.Addr 
-//                            << " LEN =  "  <<writeCMDQ[index].cmd.Len
-//                            << " SOURCE = " << writeCMDQ[index].SourceDevice  <<endl;
-//
-//                        cout << DEV_AND_TIME <<  "[Scheduler] DRAM write Data = ";
-//                        for(int i =0; i < writeCMDQ[index].cmd.Len/SECTOR_SIZE_BYTE; i++){
-//                            cout << writeDataQ[index][i*SECTOR_SIZE_BYTE];
-//                        }
-//                        cout << endl;
-//                    }
-//   
-//                    if(g_initialize_end)DRAM_STATS[0][0]+= writeCMDQ[index].cmd.Len; //0 : Cache Buffer, 0 : Write
-//                    MemoryMasterPort.write(writeCMDQ[index].cmd.Addr + CACHE_DATA_REGION_OFFSET , 
-//                       (uchar *)&writeDataQ[index], writeCMDQ[index].cmd.Len);
-//
-//                    cout <<DEV_AND_TIME<<"[Scheduler] DRAM WRITE END" <<endl;
-//                    PopWriteCMDQ(index);
-
-                //}else{
-                    //operate read cmd
-                    //find read request. check dependency
-                uint index = FindRQindex();
-                //cout<<DEV_AND_TIME<<"[Scheduler] debug id = "<<debug_id<<endl;
-
-                if(DRAM_DEBUG){
-                    cout << DEV_AND_TIME << " [Scheduler] DRAM READ : ID = " << readCMDQ[index].cmd.Id 
-                        << " OP = " << readCMDQ[index].cmd.Op 
-                        << " ADR = " << readCMDQ[index].cmd.Addr 
-                        << " LEN =  "  <<readCMDQ[index].cmd.Len
-                        << " SOURCE = " << readCMDQ[index].SourceDevice  <<endl;
-                }
-
-                if(g_initialize_end){
-                    DRAM_STATS[TOTAL_LEN][BUFFER][cacheREAD]+= readCMDQ[index].cmd.Len; //0 : Cache Buffer, 1 : Read
-                    if(readCMDQ[index].cmd.Len <= DRAM_PAGE) DRAM_STATS[TOTAL_ENERGY][BUFFER][cacheREAD] += DRAM_PAGE; 
-                    else DRAM_STATS[TOTAL_ENERGY][BUFFER][cacheREAD] += readCMDQ[index].cmd.Len; 
-                }
-
-               // if( (readCMDQ[index].SourceDevice == NAND) && g_initialize_end) testTrack.track(readCMDQ[index].cmd.Id, readCMDQ[index].cmd.lba, readCMDQ[index].cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::DRAM_ctrl, sc_time_stamp().value()/1000.0); //track 4
-
-                //write q check
-                int write_index = FindWQindexByCmd(readCMDQ[index].cmd);
-                if(write_index >= 0){
-
-                    //write data -> read q data
-                    memcpy(readDataQ[index], writeDataQ[write_index], readCMDQ[index].cmd.Len); 
-
-                }
-                else{
-
-
-                    index = FindRQindex();
-                    wait(memLatency(readCMDQ[index].cmd.Len, BUFFER, cacheREAD), SC_NS);
-                    sem_Mem.wait();
-                    index = FindRQindex();
-                    MemoryMasterPort.read(readCMDQ[index].cmd.Addr + CACHE_DATA_REGION_OFFSET , 
-                            (uchar *)&readDataQ[index], readCMDQ[index].cmd.Len);
-                    sem_Mem.post();
-
-                }
-
-                index=FindRQindex();
-                
-               // if((readCMDQ[index].SourceDevice == NAND) && g_initialize_end) testTrack.track(readCMDQ[index].cmd.Id, readCMDQ[index].cmd.lba, readCMDQ[index].cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::DRAM_ctrl, sc_time_stamp().value()/1000.0); //track 5
-
-                if(DRAM_DEBUG){
-                    cout <<DEV_AND_TIME<<"  [Scheduler] DRAM read Data = ";
-                    for(int i =0; i < readCMDQ[index].cmd.Len/SECTOR_SIZE_BYTE; i++){
-                        cout << readDataQ[index][i*SECTOR_SIZE_BYTE];
-                    }
-                    cout << endl;
-                }
-
-                readCMDQ[index].isDataReady = true;
-
-                e_TrigTransData.notify();
-                //}
-            }
-
-            wait(SC_ZERO_TIME);
-        }
-        wait();
-    }
-}
-
-void
-DRAM_ctrl::NotifyDataRead()
-{
-    while(1){
-        if(DRAM_DEBUG) cout<<DEV_AND_TIME<< "[NotifyDataRead] Thread is started"<<endl;
-
-        while(CheckExistTransCMD()){
-            bool tempFlag = false;
-            for(int i = readQHead; i != readQTail; i = (i+1)%READ_Q_SIZE){
-                //cout<< readCMDQ[i].cmd.Addr<<"\t" << readCMDQ[i].isCMDTrans <<"\t"<< readCMDQ[i].isDataReady <<"\t"<< readCMDQ[i].SourceDevice << "\t"<<tempFlag<<endl;
-                if((readCMDQ[i].isCMDTrans == true) && (readCMDQ[i].isDataReady == true) && (readCMDQ[i].SourceDevice == HOST)){
-                    tempFlag = true;
-                    continue;
-                }
-                if(!(tempFlag == true && readCMDQ[i].SourceDevice == HOST)){
-                    if(readCMDQ[i].isCMDTrans == false && readCMDQ[i].isDataReady == true){
-
-                        //cout<<DEV_AND_TIME<<"[NotifyDataRead] is running 222"<<endl;
-                        if(DRAM_DEBUG){
-                            //cout << DEV_AND_TIME << " [NotifyDataRead] SEND READ CMD : ID = " << debug_id <<endl;
-                            cout << DEV_AND_TIME << " [NotifyDataRead] SEND READ CMD : ID = " << readCMDQ[i].cmd.Id 
-                                << " OP = " << readCMDQ[i].cmd.Op 
-                                << " ADR = " << readCMDQ[i].cmd.Addr 
-                                << " LEN =  "  <<readCMDQ[i].cmd.Len
-                                << " SOURCE = " << readCMDQ[i].SourceDevice  <<endl;
-                        }
-
-                        if(readCMDQ[i].SourceDevice == HOST){
-                            while(!StateInform.write(0xe0000018, &readCMDQ[i], sizeof(CacheCMD))){
-                                //wait(CLOCK_PERIOD_NS, SC_NS);
-                                wait(1, SC_NS);
-                            }
-
-                        }else if(readCMDQ[i].SourceDevice == NAND){
-
-
-
-                            while(!StateInform.write(0xf0000050, &readCMDQ[i], sizeof(CacheCMD))){
-                                //wait(CLOCK_PERIOD_NS, SC_NS);
-                                wait(1, SC_NS);
-                            }
-
-                        }else{
-                            cout << DEV_AND_TIME <<" [NotifyDataRead] Wrong source device!!!" <<endl;
-                            sc_stop();
-                        }
-                        if(DRAM_DEBUG){
-                            cout << DEV_AND_TIME <<" [NotifyDataRead] SEND READ CMD END" <<endl;
-                        }
-                        readCMDQ[i].isCMDTrans = true;
-                    }
-                }
-            }
-
-            wait(10, SC_NS);
-        }
-
-        if(DRAM_DEBUG) cout<<DEV_AND_TIME<< "[NotifyDataRead] Thread is ended"<<endl;
-        wait();
-    }
-}
 
 
 void                                                                            //%
@@ -862,139 +363,44 @@ DRAM_ctrl::CMD_Callback(                                                     //%
     wait( len/CMD_BUS_TOTAL_BW, SC_NS);
     if (cmd == tlm::TLM_WRITE_COMMAND) {
         if(adr < CACHE_DATA_REGION_OFFSET ){
-//            //Initialize FTL mapping table
-//            if(g_isFtlReady == false){
-//                MemoryMasterPort.write(adr, ptr, len);
-//                trans.set_response_status( tlm::TLM_OK_RESPONSE );
-//            }
             if(g_initialize_end){            
                 if(buffer_write_count >= (uint)(0x0 - 0x200)) cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
-                if(len) {
+                if(len) { // this part is a little bit fishy, I'm going to change this soon....
                     buffer_write_count += (len - 1)/32 + 1;
                     meta_write_count += (len - 1)/32 + 1;
                 }
             }
+            sem_Mem.wait();
             if(g_initialize_end) {
 
                 wait(memLatency(len, META, cacheWRITE), SC_NS);
 
             }   
-            sem_Mem.wait();
             MemoryMasterPort.write(adr, ptr, len);
             sem_Mem.post();
-            //for result
-            if(CACHE_BUFFER_METHOD == DRAM_ONLY){
-                //if(g_initialize_end) DRAM_STATS[1][0]+= DRAM_PAGE; //0 : Metadata, 0 : Write
-                if(g_initialize_end) {
-                    DRAM_STATS[TOTAL_LEN][META][cacheWRITE]+= len; //0 : Metadata, 0 : Write
-                    if(len <= DRAM_PAGE) DRAM_STATS[TOTAL_ENERGY][META][cacheWRITE] += DRAM_PAGE; 
-                    else DRAM_STATS[TOTAL_ENERGY][META][cacheWRITE] += len; 
-                
-                }
-            }
-            else if(CACHE_BUFFER_METHOD == PRAM_ONLY || CACHE_BUFFER_METHOD == HYBRID){
-                
-                if(g_initialize_end) {
-
-                    DRAM_STATS[TOTAL_LEN][META][cacheWRITE]+= len; //0 : Metadata, 0 : Write
-                    DRAM_STATS[TOTAL_ENERGY][META][cacheWRITE] += len; // considering byte access enable
-                
-                }
-            }
-            //cout<<DEV_AND_TIME <<"meta data write, length = "<<len<<endl;
             trans.set_response_status( tlm::TLM_OK_RESPONSE );
 
         }else{
             
-            CacheCMD tempReq;
-            memcpy(&tempReq.cmd, ptr, len);
+            cout << "somethings wrong... " << endl;
+            assert(0);
 
-            if(adr == HOST_SIDE_CALLBACK_OFFSET + CACHE_DATA_REGION_OFFSET){
-                tempReq.SourceDevice = HOST;
-            }else if(adr == NAND_SIDE_CALLBACK_OFFSET + CACHE_DATA_REGION_OFFSET){
-                tempReq.SourceDevice = NAND;
-            }else{
-                cout << DEV_AND_TIME << "[CMD_Callback] Don't know source device, addr = " << hex << adr << dec << endl;
-                assert(0);
-                sc_stop();
-            }
             
-            if(DRAM_DEBUG){
-                cout << DEV_AND_TIME << "[CMD_Callback] Received CMD: ID = " << tempReq.cmd.Id 
-                    << " OP = " << tempReq.cmd.Op << " ADR = " << tempReq.cmd.Addr 
-                    << " LEN =  "  <<tempReq.cmd.Len <<" SOURCE = " << tempReq.SourceDevice <<endl;
-            }
-
-            tempReq.isDataReady = false;
-
-            if(tempReq.cmd.Op == DRAM_WRITE){
-                if(PushWriteCMDQ(tempReq)){
-
-                    //if( (tempReq.SourceDevice == HOST) && g_initialize_end) testTrack.start(tempReq.cmd.Id, tempReq.cmd.lba, tempReq.cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::DRAM_ctrl, sc_time_stamp().value()/1000.0);
-                    trans.set_response_status( tlm::TLM_OK_RESPONSE );
-                }else{
-                    trans.set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
-                }
-            }else{
-                if(PushReadCMDQ(tempReq)){
-
-                   // if( (tempReq.SourceDevice == NAND) && g_initialize_end) testTrack.track(tempReq.cmd.Id, tempReq.cmd.lba, tempReq.cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::DRAM_ctrl, sc_time_stamp().value()/1000.0); //track 3
-                    //else if ( (tempReq.SourceDevice == HOST) && g_initialize_end) testTrack.start(tempReq.cmd.Id, tempReq.cmd.lba, tempReq.cmd.Len/SECTOR_SIZE_BYTE, SSDmetric::DRAM_ctrl, sc_time_stamp().value()/1000.0);
-                    
-                    trans.set_response_status( tlm::TLM_OK_RESPONSE );
-                    if(DRAM_DEBUG) {
-                        if(tempReq.SourceDevice == HOST )
-                            cout<< DEV_AND_TIME <<"Received read dram cmd from SubReqMan"<<endl;
-                    }
-                }else{
-                    trans.set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
-                }
-                //call scheduler
-                e_TrigScheduler.notify();
-
-            }
         }
     } else if (cmd == tlm::TLM_READ_COMMAND) {
 
         
-//        if(g_initialize_end) cout << "cmd : "<< adr << "\t" << CACHE_DATA_REGION_OFFSET <<endl;
         
         if((adr < CACHE_DATA_REGION_OFFSET) && (adr >= 0x20)){
-//            //Initialize FTL mapping table
-//            if(g_isFtlReady == false){
-//                MemoryMasterPort.read(adr, ptr, len);
-//                trans.set_response_status( tlm::TLM_OK_RESPONSE );
-//            }
-            // ympark0225
+            
+            sem_Mem.wait();
             if(g_initialize_end){
             
                 wait(memLatency(len, META, cacheREAD), SC_NS);
             
             }
-            
-            sem_Mem.wait();
             MemoryMasterPort.read(adr, ptr, len);
             sem_Mem.post();
-            //for result
-            if(CACHE_BUFFER_METHOD == DRAM_ONLY){
-                //if(g_initialize_end) DRAM_STATS[1][0]+= DRAM_PAGE; //0 : Metadata, 0 : Write
-                if(g_initialize_end) {
-                    DRAM_STATS[TOTAL_LEN][META][cacheREAD]+= len; //0 : Metadata, 0 : Write
-                    if(len <= DRAM_PAGE) DRAM_STATS[TOTAL_ENERGY][META][cacheREAD] += DRAM_PAGE; 
-                    else DRAM_STATS[TOTAL_ENERGY][META][cacheREAD] += len; 
-                
-                }
-            }
-            else if(CACHE_BUFFER_METHOD == PRAM_ONLY || CACHE_BUFFER_METHOD == HYBRID){
-                if(g_initialize_end) {
-
-                    DRAM_STATS[TOTAL_LEN][META][cacheREAD]+= len; //0 : Metadata, 0 : Write
-                    DRAM_STATS[TOTAL_ENERGY][META][cacheREAD] += len; 
-                }
-
-            }
-
-            //cout<<DEV_AND_TIME <<"meta data read, length = "<<len<<endl;
             trans.set_response_status( tlm::TLM_OK_RESPONSE );
 
         }
@@ -1002,14 +408,11 @@ DRAM_ctrl::CMD_Callback(                                                     //%
 
             cout << DEV_AND_TIME 
                 <<"[CMD_Callback] ERROR: MEMORY ctrl don't receive TLM_READ_COMMAND!!" << endl;
-            sc_stop();
+            assert(0);
         }
     }
 
-    if(g_initialize_end) 
-        CMD_BUS_TIME_CONSUMED[1] += sc_time_stamp().value()/1000.0 - BW_time_start;
     
-    //%USEREND Device_Callback
 }//%
 
 void                                                                            //%
@@ -1025,7 +428,7 @@ DRAM_ctrl::DATA_Callback(                                                       
     tlm::tlm_command cmd = trans.get_command();                                 //%
     sc_dt::uint64 adr = trans.get_address();                                    //%
     unsigned char* ptr = trans.get_data_ptr();                                  //%
-    unsigned int len = trans.get_data_length()/SECTOR_SIZE_BYTE;                                 //%
+    unsigned int len = trans.get_data_length()/SECTOR_BYTES;                                 //%
     unsigned char* byt = trans.get_byte_enable_ptr();                           //%
     unsigned int wid = trans.get_streaming_width();                             //%
                                                                                 //%USERBEGIN CPU_Callback
@@ -1047,7 +450,7 @@ DRAM_ctrl::DATA_Callback(                                                       
     //Pipelining is not implemented for simplicity (will do later)
     //DRAM bandwidth will be lowered from 640MB/s to 460MB/s as a result..   
 
-    len = len*512;
+    len = len*SECTOR_BYTES;
     wait( (len)/DATA_BUS_TOTAL_BW, SC_NS);
     if (cmd == tlm::TLM_WRITE_COMMAND) { 
         // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
@@ -1056,32 +459,35 @@ DRAM_ctrl::DATA_Callback(                                                       
         
         
 
+
+        sem_Mem.wait();
+        MemoryMasterPort.write(adr + CACHE_DATA_REGION_OFFSET, ptr, len);
+        
         if(g_initialize_end){
 
             wait(memLatency(len, BUFFER, cacheWRITE), SC_NS);
 
         }
-
-        sem_Mem.wait();
-        MemoryMasterPort.write(adr + CACHE_DATA_REGION_OFFSET, ptr, len);
+        
         sem_Mem.post();
+    
+    
     } else if (cmd == tlm::TLM_READ_COMMAND) {
         // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);
       
          
+
+        sem_Mem.wait();
         if(g_initialize_end){
 
             wait(memLatency(len, BUFFER, cacheREAD), SC_NS);
 
         }
-
-        sem_Mem.wait();
         MemoryMasterPort.read(adr + CACHE_DATA_REGION_OFFSET, ptr, len);
         sem_Mem.post();
         
     }
     trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
-    if(g_initialize_end) DATA_BUS_TIME_CONSUMED[1] += sc_time_stamp().value()/1000.0 - BW_time_start;
 }                                                                               //%
                                                                                 //%USEREND MEMBER_DEFNS
                                                                                 //%

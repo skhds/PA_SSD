@@ -27,22 +27,10 @@
 #include "tlm.h"                                                                //%
                                                                                 //%USERBEGIN HEADER_H
 // TODO: Insert your includes, declarations, etc. here.
-#include "./header/SubReq_def.h"
-#include "./header/global_flag.h"
-#include "./header/buffer_ctrl.h"
-#include "./header/IF_Spec.h"
 
-#include "./header/NAND_Spec.h" //temp
-#include "./header/NAND_Struct.h" //temp
-#include "./header/Queue.h"
-#include <list>
-#include <cmath>
-#include <iostream>
+#include "./header/header_SUB.h"
+#include "./header/global_header.h"
 
-#define CPU2_BASE 0x100
-
-ofstream Subfile;
-ofstream Listfile;
 
 using namespace std;
 
@@ -61,9 +49,7 @@ class SubReqMan :                                                               
 {                                                                               //%
 public:                                                                         //%
 	// constructor                                                          //%
-	SubReqMan( const sc_core::sc_module_name & n ,                          //%
-		unsigned int MAX_OUTSTANDING_REQ = 4,                          //%
-		unsigned int MAX_DATA_BUF_KB = 16) ;                           //%
+	SubReqMan( const sc_core::sc_module_name & n);                          //%
 	SC_HAS_PROCESS( SubReqMan );                                            //%
 	// destructor                                                           //%
 	virtual ~SubReqMan();                                                   //%
@@ -96,8 +82,6 @@ public:                                                                         
 protected:                                                                      //%
                                                                                 //%
 	// Parameter/Property declarations                                      //%
-	scml_property< unsigned int > MAX_OUTSTANDING_REQ_;                     //%
-	scml_property< unsigned int > MAX_DATA_BUF_KB_;                         //%
                                                                                 //%
 protected:                                                                      //%
                                                                                 //%
@@ -120,15 +104,7 @@ public:                                                                         
 	void                                                                    //%
 	rst_nHandler();                                                         //%
     void
-    DivideSubReq();
-    void
     IRQThread();
-    void
-    ReadDataFromCache();
-	void                                                                    //%
-	ReadManager();
-    void
-    Copy_SFR_To_CMDList(uint size);    //%
                                                                                 //%
 protected:                                                                      //%
 	// Memory callback declarations                                         //%
@@ -157,28 +133,16 @@ protected:                                                                      
 
 protected:
     
-
-    // member methods
-    //
-    //
-    //
-
-        // debug methods
-
-        // member variable
-    //
-
     sc_core::sc_event eIRQThread;
     sc_core::sc_event eDataReady;
     sc_core::sc_event eCPUFinish;
     sc_core::sc_event eNANDRead;
 
     //hard coded for now
-    M_CREATEQUEUE(SubReqQueue, SubReq_t, 128);
-    M_CREATEQUEUE(cDataQueue, PageBuf_t, 4); 
+    M_CREATEQUEUE(SubReqQueue, SubReq_t, SUBREQ_QUEUE_SIZE);
+    M_CREATEQUEUE(cDataQueue, PageBuf_t, DATA_QUEUE_SIZE); 
     Req_t reqInQueue;
     bool isCPUFinish;
-
     bool bypass_cache;
     
 
@@ -191,8 +155,6 @@ protected:
     bool CPUReadSubReq(sc_dt::uint64 adr, unsigned char* ptr, SubReq_t subreq);
     bool CPUWriteSubReq(sc_dt::uint64 adr, unsigned char* ptr, SubReq_t& subreq);
     void software_Init(unsigned char* ptr);
-    void setCacheTrans(CacheTrans_t &cacheTrans, uint Id, uint Addr, uint Op, uint Len, uint lba);
-    void setCacheCMD(SubReq_t &subreq, CacheTrans_t cacheTrans);
     
                                                                                //%USEREND MEMBER_DECLS
 };                                                                              //%
@@ -204,10 +166,8 @@ protected:
 // TODO: Insert your includes, declarations, etc. here.
                                                                                 //%USEREND HEADER_CPP
                                                                                 //%
-SubReqMan::SubReqMan( const sc_core::sc_module_name & n,                        //%
-		unsigned int MAX_OUTSTANDING_REQ,                               //%
-		unsigned int MAX_DATA_BUF_KB)                                   //%
-		: sc_core::sc_module(n)                                         //%
+SubReqMan::SubReqMan( const sc_core::sc_module_name & n)                        //%
+		: sc_core::sc_module(n)                                                 //%
 ,                                                                               //%
  WriteSlave("WriteSlave"),                                                      //%
  ReadMaster("ReadMaster"),                                                      //%
@@ -220,8 +180,6 @@ SubReqMan::SubReqMan( const sc_core::sc_module_name & n,                        
  WriteSlave_WriteSlaveBuf_adapter("WriteSlave_WriteSlaveBuf_adapter", WriteSlave),//%
  CmdSlave_CmdSlaveBuf_adapter("CmdSlave_CmdSlaveBuf_adapter", CmdSlave),//%
  DataSlave_DataSlaveBuf_adapter("DataSlave_DataSlaveBuf_adapter", DataSlave),//%
- MAX_OUTSTANDING_REQ_("MAX_OUTSTANDING_REQ", MAX_OUTSTANDING_REQ),              //%
- MAX_DATA_BUF_KB_("MAX_DATA_BUF_KB", MAX_DATA_BUF_KB),                          //%
  WriteSlaveBuf("WriteSlaveBuf", 524288ULL),                                          //%
   WriteSlaveBuf_writeBuf("WriteSlaveBuf_writeBuf", WriteSlaveBuf, 0LL, 524288LL )                                                                              //%
 ,                                                                               //%
@@ -244,19 +202,10 @@ SubReqMan::SubReqMan( const sc_core::sc_module_name & n,                        
 	SC_METHOD(rst_nHandler);                                                //%
 	 sensitive << rst_n.neg() ;                                             //%
 	 dont_initialize();                                                     //%
-    SC_THREAD(DivideSubReq);
-     //sensitive << m_eNewHostReq;
-     dont_initialize();
     SC_THREAD(IRQThread);
      sensitive << eIRQThread;
      dont_initialize();
 
-    SC_THREAD(ReadDataFromCache);
-     //sensitive << m_Read_CacheData;
-     dont_initialize();
-	SC_THREAD(ReadManager);                                                 //%
-     //sensitive << m_eNewReadResp;
-	 dont_initialize();                                                     //%
                                                                                 //%
 	// bind target ports to memories                                        //%
 	WriteSlave_WriteSlaveBuf_adapter(WriteSlaveBuf);                        //%
@@ -304,8 +253,6 @@ SubReqMan::~SubReqMan()                                                         
                                                                                 //%USERBEGIN DESTRUCTOR
 
     // TODO: Add destructor code here.
-    Subfile.close();
-    Listfile.close();
 
                                                                                 //%USEREND DESTRUCTOR
 }                                                                               //%
@@ -338,8 +285,6 @@ SubReqMan::end_of_elaboration()                                                 
     // TODO: Add end_of_elaboration code here.
     this->initRegisters();
     this->initPorts();
-    Subfile.open("subfile.txt");
-    Listfile.open("Listfile.txt");
                                                                                 //%USEREND END_OF_ELAB
 }                                                                               //%
 // command processing method                                                    //%
@@ -466,12 +411,12 @@ SubReqMan::split_and_queue(Req_t req){
     for(int i = 0; i < split_count; i++){ 
         
         //divide req into subreq
-        memcpy(&(tmpSubReq.oriReq), &req, sizeof(Req_t));
+        tmpSubReq.op = (SUB_REQ_OP)req.Op;
+        tmpSubReq.iId = req.iId;
         tmpSubReq.iStartAddr = req.iAddr + i*SECTOR_PER_PAGE;
         tmpSubReq.iLen = (remaining_length > SECTOR_PER_PAGE ) ? SECTOR_PER_PAGE : remaining_length;
         assert(tmpSubReq.iLen > 0);
         remaining_length -= SECTOR_PER_PAGE;
-        tmpSubReq.Id = req.iId;
 
         //insert subreq into queue
         M_PUSH(SubReqQueue, &tmpSubReq);
@@ -482,12 +427,6 @@ SubReqMan::split_and_queue(Req_t req){
 
 }
 
-void SubReqMan::DivideSubReq()
-{
-    while(1){
-        wait();
-    }
-}
 
 void SubReqMan::IRQThread()
 {
@@ -515,17 +454,11 @@ void SubReqMan::IRQThread()
                 if(!bypass_cache){ //dest cache //testing for now... must change this later
                     SubReq_t* tmpSubReq = &M_GETELE(SubReqQueue);
                     PageBuf_t* tmpDataBuf = &M_GETELE(cDataQueue);
-                    if(SUB_DEBUG){
-                        cout << DEV_AND_TIME << "[IRQThread] cmd : " << endl;
-                        cout << DEV_AND_TIME << "[IRQThread] \tLBA(SubReq) : "<< tmpSubReq->iStartAddr <<endl;
-                        cout << DEV_AND_TIME << "[IRQThread] \tLBA(CacheTrans_t) : " << tmpSubReq->cmd.cmd.lba << endl;
-                        cout << DEV_AND_TIME << "[IRQThread] \tDRAM addr : "<< tmpSubReq->cmd.cmd.Addr << endl;
-                        cout << DEV_AND_TIME << "[IRQThread] \tDRAM id : "<< tmpSubReq->cmd.cmd.Id << endl;
-                        cout << DEV_AND_TIME << "[IRQThread] \tDRAM op : "<< tmpSubReq->cmd.cmd.Op << endl;
-                    }   
-                    DataMaster.write(_ADDR_DRAM_DATA_ + tmpSubReq->cmd.cmd.Id * DATA_PAGE_SIZE, (void*)tmpDataBuf, SECTOR_PER_PAGE);
+                    
+                    
+                    DataMaster.write(_ADDR_DRAM_DATA_ + tmpSubReq->dst * PAGE_BYTES, (void*)tmpDataBuf, SECTOR_PER_PAGE);
 #ifdef DATA_COMPARE_ON             
-                    DTCMP::writeData(DTCMP::mmDRAM, tmpSubReq->cmd.cmd.Id, tmpSubReq->cmd.cmd.Addr/UNIT_OF_REQUEST, SECTOR_PER_PAGE, tmpDataBuf->buf); 
+                    DTCMP::writeData(DTCMP::mmDRAM, tmpSubReq->dst, tmpSubReq->iStartAddr/UNIT_OF_REQUEST, SECTOR_PER_PAGE, tmpDataBuf->buf); 
 #endif
                     if(buffer_write_count >= (uint)(0x0 - 0x200)) cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
                     buffer_write_count += 512;
@@ -561,39 +494,9 @@ void SubReqMan::IRQThread()
     }
 }
 
-void
-SubReqMan::ReadDataFromCache()
-{
-    while(1){
-        wait();
-    }   
-}
-
-void                                                                            //%
-SubReqMan::ReadManager()                                                        //%
-                                                                                //%USERBEGIN ReadManager
-{
-	if ( dbgFlag[PORTS] ) DBG_MSG( "ReadManager invoked because of event on port " );
-
-	// TODO: INSERT code for the ReadManager method here.
-
-    while(1)
-    {       // when a host read request is completely read, transfer it to the host
-
-        
-        wait();
-    }
-}
-void
-SubReqMan::Copy_SFR_To_CMDList(uint size)
-{
-
-
-}
 
 
 
-//%USEREND ReadManager
 void                                                                            //%
 SubReqMan::WriteSlaveCB(                                                        //%
         tlm::tlm_generic_payload& trans, sc_core::sc_time& t)           //%
@@ -648,7 +551,7 @@ SubReqMan::WriteSlaveCB(                                                        
         case DATA_ADDR:
             //expected to receive data
             //receive one page at a time
-            assert(len <= DATA_PAGE_SIZE);
+            assert(len <= PAGE_BYTES);
             //wait?
             M_PUSH(cDataQueue, (PageBuf_t*)ptr);
             if(M_CHECKFULL(cDataQueue)) RnBMaster.write(0);  
@@ -728,18 +631,15 @@ SubReqMan::CPUReadSubReq(sc_dt::uint64 adr, unsigned char* ptr, SubReq_t subreq)
             
 
         case 0 : // op
-            *((uint*)ptr) = subreq.oriReq.Op;
+            *((uint*)ptr) = subreq.op;//check
             return false;
-            break;
         case 4 : //starting addr
             *((uint*)ptr) = subreq.iStartAddr;
             return false;
-            break;
 
         case 8: //length
             *((uint*)ptr) = subreq.iLen;
             return true;
-            break;
 
         default : //undefined 
             assert(0);
@@ -754,93 +654,41 @@ bool
 SubReqMan::CPUWriteSubReq(sc_dt::uint64 adr, unsigned char* ptr,SubReq_t& subreq){
 
     int offset = adr - 0x1C;
-    CacheTrans_t cacheTrans;
-    static uint Id;
-    static uint Addr;
-    static uint Op;
-    static uint Len;
-    static uint lba;
 
 
     switch (offset){
             
         case 0 : // op
-            Op = *((uint*)ptr);
+            subreq.op = (SUB_REQ_OP)*((uint*)ptr);
             return false;
-            break;
         case 4 : //LPA
-            lba = *((uint*)ptr) * SECTOR_PER_PAGE;
+            subreq.iStartAddr = *((uint*)ptr) * SECTOR_PER_PAGE;
             return false;
-            break;
         case 8 :
             return false;
-            break;
         case 12 ://DRAM id (# of node) 
-            Addr = *((uint*)ptr) * DATA_PAGE_SIZE;
+            subreq.dst = *((uint*)ptr);
             return false;
-            break;
         case 16 : 
             
             return false;
-            break;
-        case 20 ://everything went through, set cache cmd
+        case 20 ://everything went through
 
-            Len = subreq.iLen * SECTOR_SIZE_BYTE;
-            Id = subreq.oriReq.iId;
-            setCacheTrans(cacheTrans, Id, Addr, Op, Len, lba); 
-            setCacheCMD(subreq, cacheTrans);
             bypass_cache = *((uint*)ptr);            
-            if(SUB_DEBUG){
-
-               cout << DEV_AND_TIME << "[CPUWriteSubReq] \tbypass? : " << bypass_cache << endl;
-               cout << DEV_AND_TIME << "[CPUWriteSubReq] CacheTrans (received, inserted): " << endl;
-               cout << DEV_AND_TIME << "[CPUWriteSubReq] \tId : " << Id << "\t" << subreq.cmd.cmd.Id << endl;
-               cout << DEV_AND_TIME << "[CPUWriteSubReq] \tAddr : " << Addr << "\t" << subreq.cmd.cmd.Addr << endl;
-               cout << DEV_AND_TIME << "[CPUWriteSubReq] \tLen : " << Len << "\t" << subreq.cmd.cmd.Len << endl;
-               cout << DEV_AND_TIME << "[CPUWriteSubReq] \tlba : " << lba << "\t" << subreq.cmd.cmd.lba << endl;
-
-
-            }
 
             return true;
-            break;
         case 24 : //bypass cache;
             if(SUB_DEBUG) cout <<DEV_AND_TIME << "[CPUWriteSubReq] bypass cache" << endl; 
             bypass_cache = true;
             return true;
-            break;
         default : //undefined 
             assert(0);
             return false;
-            break;
     
     }
 
 }
 
-void
-SubReqMan::setCacheTrans(CacheTrans_t &cacheTrans, uint Id, uint Addr, uint Op, uint Len, uint lba){
-    
-    cacheTrans.Id = Id;
-    cacheTrans.Addr = Addr;
-    cacheTrans.Op = Op;
-    cacheTrans.Len = Len;
-    cacheTrans.lba = lba;
-        
-}
-
-
-void
-SubReqMan::setCacheCMD(SubReq_t &subreq, CacheTrans_t cacheTrans){
-
-    CacheCMD cacheCMD;
-    memcpy(&cacheCMD, &cacheTrans, sizeof(CacheTrans_t));
-    cacheCMD.SourceDevice = HOST;
-    cacheCMD.isDataReady = false;
-    //isCMDTrans is not considered..
-
-    memcpy(&subreq.cmd, &cacheCMD, sizeof(CacheCMD));
-}
 
 
 void

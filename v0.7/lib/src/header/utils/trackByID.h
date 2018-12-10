@@ -1,3 +1,7 @@
+#ifndef __TRACKBYID_H__
+#define __TRACKBYID_H__
+
+
 #include "trackByID_node.h"
 #include <string>
 
@@ -145,4 +149,4 @@ namespace SSDmetric{
 
 
 
-
+#endif

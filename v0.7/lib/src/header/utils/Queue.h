@@ -4,7 +4,7 @@
 //using macros because i dont like <><><> kind of shit (C++ templates)
 
 
-#define REF_M_QUEUE(atype, alen) sQueue_##atype##asize 
+#define REF_M_QUEUE(atype, asize) sQueue_##atype##asize 
 
 #define DEC_M_QUEUE(atype, asize) \
     typedef struct REF_M_QUEUE(atype, asize) \

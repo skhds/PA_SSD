@@ -23,10 +23,11 @@
 #include <systemc>                                                              //%
 #include "scmlinc/scml_command_processor.h"                                     //%
                                                                                 //%USERBEGIN HEADER_H
-#include "header/NAND_Ctrl_Spec.h"
                                                                                 //%USEREND HEADER_H
 #define CBR_QUEUE_SIZE 1000
 
+#include "./header/global_header.h"
+#include "./header/header_NAND.h"
 
 
 //------------------------                                                      //%
