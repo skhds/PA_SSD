@@ -41,3 +41,26 @@ To do :
 - Better format for error detections
 - Edit and fix whatever caused data errors
 - More lightweight simulation... only one char for each 512B sector
+
+
+
+v0.72
+
+Done :
+
+
+- Headers are re-organized, now you only have to look at configurables.h (hopefully) for editing simulation parameters
+- Modules are also re-organized
+- RAM latency modeling is corrected.. no concurrent RAM accesses are allowed now.
+
+Issues :
+
+- Different values for throughput, possible error in BW or latency modeling
+- Data compare is disabled for now
+
+To do :
+
+- Test and fix bandwidth-related things
+- Another metric for RAM lifetime (maybe "max counts" or "average counts of top 1%")
+- Implement start-gap
+- Data compare for later
