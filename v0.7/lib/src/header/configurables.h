@@ -24,7 +24,7 @@
 //#define CACHE_BUFFER_METHOD 0
 //#define G_INITIALIZE 
 
-//#define DATA_COMPARE_ON
+#define DATA_COMPARE_ON
 #define TRACK_ID_ON
 
 
@@ -51,7 +51,7 @@
 #define DRAM_READ_LATENCY   45 // in ns (DRAM : 45 ns, PRAM : 100 ns)
 #define DRAM_WRITE_LATENCY  45 // in ns (DRAM : 45 ns, PRAM : 100 ns)
 #define PRAM_READ_LATENCY   100 // in ns (DRAM : 45 ns, PRAM : 500 ns)
-#define PRAM_WRITE_LATENCY  500 // in ns (DRAM : 45 ns, PRAM : 500 ns)
+#define PRAM_WRITE_LATENCY  250 // in ns (DRAM : 45 ns, PRAM : 500 ns)
 
 
 
@@ -66,11 +66,10 @@
 
 
 
-
 /* HOST defines */
 
 #define IF_BANDWIDTH    768  //768MB/s (6Gbps) : SATA 3
-#define MAX_REQ_LEN     1024 //512KB
+#define MAX_REQ_LEN     1024 //1MB
 #define Q_SIZE          32
 
 #define MAX_ADDR (SSD_CAPACITY) / SECTOR_BYTES 

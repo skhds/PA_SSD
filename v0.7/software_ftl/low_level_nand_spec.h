@@ -10,7 +10,7 @@
 #define _LLN_NUM_CHANNEL_			4
 //#define _LLN_NUM_CHANNEL_			4
 #define _LLN_NAND_BITWIDTH_			8
-#define _LLN_BLOCK_PER_WAY_			1024
+#define _LLN_BLOCK_PER_WAY_			64
 #define _LLN_PAGE_PER_BLOCK_		64
 #define _LLN_PAGE_DATE_SIZE_		16384
 #define _LLN_PAGE_SPARE_SIZE_		128
@@ -36,7 +36,7 @@
 #define _LLN_BYTE_PER_SECTOR_BIT_		9
 #define _LLN_SECTOR_PER_PAGE_BIT_		5
 #define _LLN_PAGE_PER_BLOCK_BIT_		6
-#define _LLN_BLOCK_PER_WAY_BIT_			10
+#define _LLN_BLOCK_PER_WAY_BIT_			6
 #define _LLN_WAY_PER_CHANNEL_BIT_		2
 #define _LLN_CHANNEL_PER_SSD_BIT_		2
 //#define _LLN_CHANNEL_PER_SSD_BIT_		2

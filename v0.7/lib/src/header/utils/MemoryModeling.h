@@ -25,7 +25,7 @@ typedef enum CACHE_METHOD{
     HYBRID=2
 }cache_method;
 
-CACHE_METHOD CACHE_BUFFER_METHOD=DRAM_ONLY;
+CACHE_METHOD CACHE_BUFFER_METHOD=PRAM_ONLY;
 
 enum eCacheStat{
   
@@ -61,7 +61,7 @@ enum eMemType{
 
 
 
-unsigned int memLatency(uint len, eCacheType type, eCacheOp op){
+unsigned int memLatency(uint len, eCacheType type, eCacheOp op){ //len is in bytes
 
     //sortMemType
     eMemType memtype;

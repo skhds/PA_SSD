@@ -39,6 +39,7 @@ typedef struct sSubReq_t{
     uint            iLen;           // length (sector count)
     SUB_REQ_OP      op;
     int             dst;            //-1 : NAND, >0 : DRAM id
+    uint            bitmap;
 }SubReq_t;
 
 

@@ -155,7 +155,7 @@ protected:
     bool CPUReadSubReq(sc_dt::uint64 adr, unsigned char* ptr, SubReq_t subreq);
     bool CPUWriteSubReq(sc_dt::uint64 adr, unsigned char* ptr, SubReq_t& subreq);
     void software_Init(unsigned char* ptr);
-    
+    void write_to_DRAM(uint LPA, uint bitmap, uchar* ptr); 
                                                                                //%USEREND MEMBER_DECLS
 };                                                                              //%
                                                                                 //%
@@ -401,7 +401,7 @@ SubReqMan::rst_nHandler()                                                       
 
 void 
 SubReqMan::split_and_queue(Req_t req){
-
+/*
     int split_count = (req.iLen-1)/SECTOR_PER_PAGE + 1;
     int remaining_length = req.iLen;
     assert((split_count > 0)&& (split_count <= MAX_REQ_LEN/SECTOR_PER_PAGE)); 
@@ -423,8 +423,48 @@ SubReqMan::split_and_queue(Req_t req){
 
     }
     //
-    
+ */   
 
+
+    //modifications : requests split are alligned
+    
+    int remaining_length = req.iLen;
+    int split_count = 0;
+    int starting_addr = req.iAddr;
+    int addr_offset;
+    
+    SubReq_t tmpSubReq;
+    
+    do{
+       
+
+       tmpSubReq.op = (SUB_REQ_OP)req.Op;
+       tmpSubReq.iId = req.iId;
+       tmpSubReq.iStartAddr = starting_addr;
+
+       addr_offset = starting_addr % SECTOR_PER_PAGE + remaining_length - SECTOR_PER_PAGE; //determines for extra page
+       if(addr_offset > 0){
+         tmpSubReq.iLen = SECTOR_PER_PAGE - starting_addr % SECTOR_PER_PAGE;
+         remaining_length -= tmpSubReq.iLen;
+         starting_addr += tmpSubReq.iLen;
+
+       }
+       else{
+         tmpSubReq.iLen = remaining_length; 
+       }
+
+
+       M_PUSH(SubReqQueue, &tmpSubReq);
+
+    }while(addr_offset > 0);
+
+    
+    /* I honestly think spliting requests into page-sized requests can be done
+     * way more efficiently in software. The interface inside the software is
+     * actually already there, but somehow was not considered. I will make it 
+     * so that the cache software will split the requests, instead of making the
+     * hardware do it. For now, the request is decoded and split through this function.
+     */
 }
 
 
@@ -455,13 +495,16 @@ void SubReqMan::IRQThread()
                     SubReq_t* tmpSubReq = &M_GETELE(SubReqQueue);
                     PageBuf_t* tmpDataBuf = &M_GETELE(cDataQueue);
                     
-                    
-                    DataMaster.write(_ADDR_DRAM_DATA_ + tmpSubReq->dst * PAGE_BYTES, (void*)tmpDataBuf, SECTOR_PER_PAGE);
+                   
 #ifdef DATA_COMPARE_ON             
-                    DTCMP::writeData(DTCMP::mmDRAM, tmpSubReq->dst, tmpSubReq->iStartAddr/UNIT_OF_REQUEST, SECTOR_PER_PAGE, tmpDataBuf->buf); 
+                    DTCMP::updateMap(DTCMP::mmDRAM, tmpSubReq->dst, tmpSubReq->iStartAddr/SECTOR_PER_PAGE, tmpSubReq->bitmap); 
 #endif
+
+                    write_to_DRAM(tmpSubReq->dst, tmpSubReq->bitmap, tmpDataBuf->buf);
+                    
+                    
                     if(buffer_write_count >= (uint)(0x0 - 0x200)) cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
-                    buffer_write_count += 512;
+                    buffer_write_count += SECTOR_BYTES;
                 }
                 else{ //dest NAND
                 
@@ -495,7 +538,20 @@ void SubReqMan::IRQThread()
 }
 
 
+void 
+SubReqMan::write_to_DRAM(uint LPA, uint bitmap, uchar* tmpDataBuf){
 
+    int base_addr = _ADDR_DRAM_DATA_ + LPA*PAGE_BYTES; 
+    int j = 0;
+    for(int i=0; bitmap != 0; i++){
+
+        if(bitmap % 2) DataMaster.write(base_addr + i*SECTOR_BYTES, (void*)(tmpDataBuf + j++*SECTOR_BYTES), SECTOR_BYTES); //one sector at a time
+        bitmap >>= 1;
+    }
+
+
+
+}
 
 void                                                                            //%
 SubReqMan::WriteSlaveCB(                                                        //%
@@ -668,9 +724,10 @@ SubReqMan::CPUWriteSubReq(sc_dt::uint64 adr, unsigned char* ptr,SubReq_t& subreq
             return false;
         case 12 ://DRAM id (# of node) 
             subreq.dst = *((uint*)ptr);
+            assert(subreq.dst < DRAM_ENTRY_SIZE);
             return false;
-        case 16 : 
-            
+        case 16 ://DRAM bitmap 
+            subreq.bitmap = *((uint*)ptr);
             return false;
         case 20 ://everything went through
 
@@ -725,7 +782,7 @@ SubReqMan::DataSlaveCB(                                                        /
     tlm::tlm_command cmd = trans.get_command();                                 //%
     sc_dt::uint64 adr = trans.get_address();                                    //%
     unsigned char* ptr = trans.get_data_ptr();                                  //%
-    unsigned int len = trans.get_data_length()/4;                                 //%
+    unsigned int len = trans.get_data_length();                                 //%
     unsigned char* byt = trans.get_byte_enable_ptr();                           //%
     unsigned int wid = trans.get_streaming_width();                             //%
                                                                                 //%USERBEGIN CPU_Callback
@@ -740,7 +797,7 @@ SubReqMan::DataSlaveCB(                                                        /
         trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
         return;
     }
-    len = len*512; 
+    
     if(cmd == tlm::TLM_READ_COMMAND){
 
         if(M_CHECKEMPTY(cDataQueue)) wait(eDataReady); //wait for data to arrive

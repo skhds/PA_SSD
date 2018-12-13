@@ -428,7 +428,7 @@ DRAM_ctrl::DATA_Callback(                                                       
     tlm::tlm_command cmd = trans.get_command();                                 //%
     sc_dt::uint64 adr = trans.get_address();                                    //%
     unsigned char* ptr = trans.get_data_ptr();                                  //%
-    unsigned int len = trans.get_data_length()/SECTOR_BYTES;                                 //%
+    unsigned int len = trans.get_data_length();                                 //%
     unsigned char* byt = trans.get_byte_enable_ptr();                           //%
     unsigned int wid = trans.get_streaming_width();                             //%
                                                                                 //%USERBEGIN CPU_Callback
@@ -450,17 +450,16 @@ DRAM_ctrl::DATA_Callback(                                                       
     //Pipelining is not implemented for simplicity (will do later)
     //DRAM bandwidth will be lowered from 640MB/s to 460MB/s as a result..   
 
-    len = len*SECTOR_BYTES;
-    wait( (len)/DATA_BUS_TOTAL_BW, SC_NS);
+    //wait( (len)/DATA_BUS_TOTAL_BW, SC_NS);
     if (cmd == tlm::TLM_WRITE_COMMAND) { 
         // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
         
-       
-        
-        
 
+#ifdef DATA_COMPARE_ON             
+    DTCMP::writeData(DTCMP::mmDRAM, adr/SECTOR_BYTES, ptr, len/SECTOR_BYTES); 
+#endif
 
-        sem_Mem.wait();
+    sem_Mem.wait();
         MemoryMasterPort.write(adr + CACHE_DATA_REGION_OFFSET, ptr, len);
         
         if(g_initialize_end){

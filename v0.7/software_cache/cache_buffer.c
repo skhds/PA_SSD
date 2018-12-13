@@ -241,6 +241,7 @@ void Write_Page(uint addr, uint offset, uint size)
     uint i;
     NODE* ptr = (void *)NOTHING;
     HASH_NODE* hash_ptr;
+    uint tmp_bitmap = 0;
 
     if ((hash_ptr = Hash_Find_Node(&hash_front[addr%HASH_MAX], addr)) == (void *)NOTHING) //new write
     {
@@ -285,12 +286,13 @@ void Write_Page(uint addr, uint offset, uint size)
     }
 
     for (i = offset; i < offset + size; i++)
-        ptr->bitmap |= 1 << i;
-
+        tmp_bitmap |= 1 << i;
+    
+    ptr->bitmap |= tmp_bitmap;
 
     List_Push_Back(&node[USED_BACK_NODE], ptr);
     used_count++;
-    Create_Command(WRITE_DRAM, ptr->addr, 0, ptr->id, ptr->bitmap);
+    Create_Command(WRITE_DRAM, ptr->addr, 0, ptr->id, tmp_bitmap);
     //barePrintf("%d\t%d\n", ptr->addr, ptr->id);
     //
     //ptr : node to write
@@ -462,8 +464,8 @@ uint bypass_condition(){
     _nand_count = *((vuint*)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_NAND_COUNT_ ));
 
     gamma = (double)_buf_count / _nand_count;
-    return (gamma > gamma_thres);
-    //return 0;
+    //return (gamma > gamma_thres);
+    return 0;
 }
 
 

@@ -701,23 +701,40 @@ HOST_IF::HOST_To_Device_Data_Trans()
         //modified by skhds
         //HOST now sends one page (16KB) at a time
 
-        int writeCount = 0;
+        int writeCount = 0; //# of page sends
         int sectorCount = 0;
+        int remaining_len = transReq.iLen;
+        int start_addr = transReq.iAddr;
+        int tmp_offset; 
         uint transDataPoint = Find_Request(transReq.iId);
-        
+       /// do my own shit here
+
         do{
-            sectorCount = (writeCount != (transReq.iLen-1)/SECTOR_PER_PAGE) ? SECTOR_PER_PAGE : (transReq.iLen - 1) % SECTOR_PER_PAGE + 1; 
+            tmp_offset = start_addr % SECTOR_PER_PAGE + remaining_len - SECTOR_PER_PAGE;
+
+            if(tmp_offset > 0) {
+                sectorCount = SECTOR_PER_PAGE - start_addr % SECTOR_PER_PAGE;
+                remaining_len -= sectorCount;
+                start_addr += sectorCount;
+            }
+            else{
+                sectorCount = remaining_len; 
+                remaining_len = 0;
+            }
+            
             while(HOST_RnB_Slave.read() == 0x0){
                  wait(HOST_RnB_Slave.posedge_event());
             }
             wait(((double)sectorCount * (double)SECTOR_BYTES / (double)IF_BANDWIDTH) * 1000.0 , SC_NS);
 
-
-            if(!HOST_Master.write(DATA_ADDR, (void *)(requestData[transDataPoint] + writeCount*SECTOR_BYTES ), (unsigned int)(sectorCount*SECTOR_BYTES))){
+            if(!HOST_Master.write(DATA_ADDR, (void *)(requestData[transDataPoint] + (transReq.iLen - sectorCount - remaining_len)*SECTOR_BYTES ), (unsigned int)(sectorCount*SECTOR_BYTES))){
                 ABORT(1, "Data trans fail");
             }
-            writeCount++;
-        }while(writeCount < (transReq.iLen-1)/SECTOR_PER_PAGE + 1);
+        
+        
+        }while(tmp_offset > 0);
+
+       ///
 
 
         if(g_initialize_end && (transReq.Op == HOST_WRITE)){
@@ -802,7 +819,7 @@ HOST_IF::Push_Request(int addr, uint len, uint op)
         
 #ifdef DATA_COMPARE_ON
 
-        DTCMP::writeData(DTCMP::mmLogical, 0, addr, len, (uchar*)requestData[reqBufferTail] );
+        DTCMP::writeData(DTCMP::mmLogical, addr, (uchar*)requestData[reqBufferTail], len);
 #endif
 
     }else if(op == HOST_READ){

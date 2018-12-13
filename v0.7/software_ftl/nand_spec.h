@@ -6,7 +6,7 @@
 #define NAND_ARRAY_WAY					4
 #define NAND_PAGE_BYTE					16384
 #define NAND_PAGE_PER_BLOCK				64
-#define NAND_BLOCK_PER_PLANE			1024
+#define NAND_BLOCK_PER_PLANE			64
 #define NAND_PLANE_PER_WAY				1
 
 /*
