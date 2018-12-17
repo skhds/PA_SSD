@@ -503,8 +503,6 @@ void SubReqMan::IRQThread()
                     write_to_DRAM(tmpSubReq->dst, tmpSubReq->bitmap, tmpDataBuf->buf);
                     
                     
-                    if(buffer_write_count >= (uint)(0x0 - 0x200)) cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
-                    buffer_write_count += SECTOR_BYTES;
                 }
                 else{ //dest NAND
                 
@@ -666,14 +664,18 @@ SubReqMan::CmdSlaveCB(                                                        //
     
         //sends dest of cmd in HOST
         if((g_isFtlReady == false) ||(g_isCacheReady == false )) software_Init(ptr);
-        else{
+        else if(adr < 0x50) {
             //if(SUB_DEBUG) cout << DEV_AND_TIME << "[CmdSlaveCB] CPU write invoked, adr : " << adr << endl;   
             if(CPUWriteSubReq(adr, ptr, M_GETELE(SubReqQueue))){
                 isCPUFinish = true;
                 eCPUFinish.notify();
             }
         }
+        else if( adr == 0x50 ){ //notified from NAND
 
+            eNANDRead.notify();
+        }
+        else assert(0);
     } 
     trans.set_response_status( tlm::TLM_OK_RESPONSE ); // Successful completion
     //%USEREND CPU_Callback
@@ -805,7 +807,6 @@ SubReqMan::DataSlaveCB(                                                        /
         if (SUB_DEBUG) cout << DEV_AND_TIME << "[DataSlaveCB] with cmd : " << cmd << endl; 
         PageBuf_t* tmpDataBuf = &M_GETELE(cDataQueue);
         memcpy((void*)ptr, (void*)tmpDataBuf, len);
-        eNANDRead.notify();
     }
     else{
 

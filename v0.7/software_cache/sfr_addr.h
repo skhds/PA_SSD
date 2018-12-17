@@ -67,6 +67,7 @@ typedef volatile double	vdouble;
 //for direct NAND write
 #define _OFFSET_HOST_ID_         0x024
 #define _OFFSET_HOST_ADDR_       0x028
+#define _OFFSET_HOST_BITMAP_       0x02C
 
 
 ///////// Memory allocation controller

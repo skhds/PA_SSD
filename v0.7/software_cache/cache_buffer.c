@@ -440,14 +440,25 @@ uint issue_flush(){
 
 void direct_NAND_write(uint addr, uint len, uint op){
 
-    static uint id = 0;
+    static uint id = ENTRY_SIZE;
+    uint LPA = addr/SECTOR_PER_PAGE;
+    uint offset = addr%SECTOR_PER_PAGE;
+    uint bitmap;
+
 
     assert(op == 0); //read not supported yet
-    id = (id + 1) % 256 + ENTRY_SIZE;  //8 comes from the NAND data buffer entry size
+    id = (id - ENTRY_SIZE + 1) % 256 + ENTRY_SIZE;  //256 : just made it large (to avoid duplicates)
     //barePrintf("[CPU1] write directly to NAND, id : %d, addr : %d\n", id, addr);
+    
+    assert(id >= ENTRY_SIZE); //violating this causes flush/direct requests to have overlapped ids
+    
+    //calculate bitmap
+    bitmap = (0xFFFFFFFF << offset) ^ (0xFFFFFFFF << (offset + len));
+
 
     *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_HOST_ID_)) = id; //node ID
-    *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_HOST_ADDR_)) = addr/32; //LPA
+    *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_HOST_ADDR_)) = LPA; //LPA
+    *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_HOST_BITMAP_)) = bitmap; //LPA
 
     //bitmap must be added here
 
@@ -460,7 +471,7 @@ uint bypass_condition(){
     int gamma;
     uint _buf_count;
     uint _nand_count;
-    double gamma_thres = 754.65;
+    double gamma_thres = 4000;
 
     static int tmp_count = 0;
 
@@ -468,8 +479,8 @@ uint bypass_condition(){
     _nand_count = *((vuint*)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_NAND_COUNT_ ));
 
     gamma = (double)_buf_count / _nand_count;
-    //return (gamma > gamma_thres);
-    return 0;
+    return (gamma > gamma_thres);
+    //return 0;
 }
 
 

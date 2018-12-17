@@ -615,6 +615,15 @@ HOST_IF::HOST_Interface()
                 cout << "Time Elapsed in Initialization = " << initialize_duration/1000.0 << " s" << endl; 
                 cout << "Time Elapsed in Simulation = " << simulation_elapsed_time/1000.0 << " s" << endl;
                 cout << "Average Time Elapsed per Operation = " << simulation_elapsed_time/(double)operationCount << " ms" << endl<<endl;
+                
+                
+                cout << "Memory write access counts : " << endl;
+                cout << "\t\tBuffer access - " << buffer_write_count << endl;
+                cout << "\t\tMeta access - " << meta_write_count << endl;
+                cout << "\t\tNAND access - " << NAND_write_count << endl;
+                
+                
+                
                 cout << endl;
 
                 

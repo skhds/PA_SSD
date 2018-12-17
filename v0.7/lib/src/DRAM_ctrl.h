@@ -364,10 +364,12 @@ DRAM_ctrl::CMD_Callback(                                                     //%
     if (cmd == tlm::TLM_WRITE_COMMAND) {
         if(adr < CACHE_DATA_REGION_OFFSET ){
             if(g_initialize_end){            
-                if(buffer_write_count >= (uint)(0x0 - 0x200)) cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
+                if(buffer_write_count >= (uint)(0x0 - 0x200)) 
+                    cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
+                
                 if(len) { // this part is a little bit fishy, I'm going to change this soon....
-                    buffer_write_count += (len - 1)/32 + 1;
-                    meta_write_count += (len - 1)/32 + 1;
+                    buffer_write_count += len;
+                    meta_write_count += len;
                 }
             }
             sem_Mem.wait();
@@ -453,23 +455,28 @@ DRAM_ctrl::DATA_Callback(                                                       
     //wait( (len)/DATA_BUS_TOTAL_BW, SC_NS);
     if (cmd == tlm::TLM_WRITE_COMMAND) { 
         // copy from 'ptr' to your target's memory.  e.g.: memcpy(&mem[adr], ptr, num_bytes);
-        
+
 
 #ifdef DATA_COMPARE_ON             
-    DTCMP::writeData(DTCMP::mmDRAM, adr/SECTOR_BYTES, ptr, len/SECTOR_BYTES); 
+        DTCMP::writeData(DTCMP::mmDRAM, adr/SECTOR_BYTES, ptr, len/SECTOR_BYTES); 
 #endif
 
-    sem_Mem.wait();
+        if(buffer_write_count >= (uint)(0x0 - 0x200)) 
+            cout << "WARNING : POSSIBLE OVERFLOW ON COUNTING BUFFER WRITE COUNT!!!" << endl;
+        buffer_write_count += len;
+
+
+        sem_Mem.wait();
         MemoryMasterPort.write(adr + CACHE_DATA_REGION_OFFSET, ptr, len);
-        
+
         if(g_initialize_end){
 
             wait(memLatency(len, BUFFER, cacheWRITE), SC_NS);
 
         }
-        
+
         sem_Mem.post();
-    
+
     
     } else if (cmd == tlm::TLM_READ_COMMAND) {
         // copy from your target's memory to 'ptr', e.g.: memcpy(ptr, &mem[adr], num_bytes);

@@ -7,8 +7,8 @@
 ABORT	NAND_Manager.h	35;"	d
 ABORT	header/global_defines.h	13;"	d
 ACTIVE	header/utils/BTN_waitingTime.h	/^            ACTIVE$/;"	e	enum:BTN_Analysis::eWaitingState
-ADR_NAND_CMD	header/header_NAND.h	156;"	d
-ADR_NAND_DATA	header/header_NAND.h	157;"	d
+ADR_NAND_CMD	header/header_NAND.h	164;"	d
+ADR_NAND_DATA	header/header_NAND.h	165;"	d
 BACKGROUND_GC_INTERVAL	NAND_Manager.h	43;"	d
 BITWIDTH_NAND_CTRL	header/header_NAND.h	8;"	d
 BIT_FOR_BLOCK	header/header_NAND.h	/^const int BIT_FOR_BLOCK = BIT_FOR_PAGE + PAGE_PER_BLOCK_BIT; \/\/16$/;"	v
@@ -28,7 +28,7 @@ BUFFER_FREE	header/header_NAND.h	/^    BUFFER_FREE = 0,$/;"	e	enum:eDATA_STATE
 BUSY_WAITING	header/utils/BTN_waitingTime.h	/^            BUSY_WAITING,$/;"	e	enum:BTN_Analysis::eWaitingState
 BWC	header/header_NAND.h	6;"	d
 BYTE_PER_SECTOR_BIT	header/header_NAND.h	/^const int BYTE_PER_SECTOR_BIT = int_to_bit(SECTOR_BYTES);$/;"	v
-CACHE_BUFFER_METHOD	header/utils/MemoryModeling.h	/^CACHE_METHOD CACHE_BUFFER_METHOD=DRAM_ONLY;$/;"	v
+CACHE_BUFFER_METHOD	header/utils/MemoryModeling.h	/^CACHE_METHOD CACHE_BUFFER_METHOD=PRAM_ONLY;$/;"	v
 CACHE_DATA_REGION_OFFSET	header/header_DRAM.h	8;"	d
 CACHE_METHOD	header/utils/MemoryModeling.h	/^typedef enum CACHE_METHOD{$/;"	g
 CBR_QUEUE_SIZE	NAND_Ctrl.h	27;"	d
@@ -96,7 +96,6 @@ DATA	DRAM_ctrl.h	/^	tlm::tlm_target_socket< 32 > DATA;                          
 DATA_ADDR	header/header_HOSTIF.h	9;"	d
 DATA_ADDR	header/header_SUB.h	6;"	d
 DATA_BUS_TOTAL_BW	header/configurables.h	62;"	d
-DATA_COMPARE_ON	header/configurables.h	27;"	d
 DATA_Callback	DRAM_ctrl.h	/^DRAM_ctrl::DATA_Callback(                                                        \/\/%$/;"	f	class:DRAM_ctrl
 DATA_Callback	NAND_Ctrl.h	/^NAND_CTRL< NUM_WAY >::DATA_Callback(                                            \/\/%$/;"	f	class:NAND_CTRL
 DATA_Callback	NAND_Dev.h	/^NAND_Dev< NUM_WAY >::DATA_Callback(                                             \/\/%$/;"	f	class:NAND_Dev
@@ -133,7 +132,7 @@ DEV_IF	header/utils/trackByID_node.h	/^            DEV_IF = 1,$/;"	e	enum:SSDmet
 DONE	header/header_NAND.h	/^    DONE = 0,$/;"	e	enum:__anon1
 DRAM_ACCESS_BYTE	header/configurables.h	50;"	d
 DRAM_DEBUG	header/configurables.h	20;"	d
-DRAM_ENTRY_SIZE	header/utils/data_compare.h	10;"	d
+DRAM_ENTRY_SIZE	header/configurables.h	88;"	d
 DRAM_ONLY	header/utils/MemoryModeling.h	/^    DRAM_ONLY=0,$/;"	e	enum:CACHE_METHOD
 DRAM_READ_LATENCY	header/configurables.h	51;"	d
 DRAM_WRITE_LATENCY	header/configurables.h	52;"	d
@@ -313,9 +312,9 @@ Mutual_Exclustion_Callback	Memory_Controller.h	/^Memory_Controller::Mutual_Exclu
 NANDCtrl_DEBUG	header/configurables.h	22;"	d
 NANDData_t	header/header_NAND.h	/^}NANDData_t;$/;"	t	typeref:struct:sDataBufferEntry
 NANDFIN	Interrupt_Controller.h	/^    NANDFIN  = 17$/;"	e	enum:__anon2
-NAND_BUF_ENTRY	header/configurables.h	95;"	d
+NAND_BUF_ENTRY	header/configurables.h	97;"	d
 NAND_CLK_PERIOD	header/header_NAND.h	10;"	d
-NAND_CMD_QUEUE_SIZE	header/configurables.h	94;"	d
+NAND_CMD_QUEUE_SIZE	header/configurables.h	96;"	d
 NAND_CMD_SET	header/header_NAND.h	/^typedef enum NAND_CMD_SET$/;"	g
 NAND_CMD_SET	header/header_NAND.h	/^}NAND_CMD_SET;$/;"	t	typeref:enum:NAND_CMD_SET
 NAND_COMPLETE	Interrupt_Controller.h	78;"	d
@@ -368,7 +367,7 @@ NUM_OF_WAY	header/header_NAND.h	64;"	d
 NandDataBuffer	NAND_Manager.h	/^    NANDData_t NandDataBuffer[NAND_BUF_ENTRY]; \/\/data buffer$/;"	m	class:NAND_Manager
 NandQueue	NAND_Manager.h	/^    NAND_Cmd_Buffer NandQueue[NUM_CHANNEL][NAND_CMD_QUEUE_SIZE]; \/\/Command Queue implemented in FIFO$/;"	m	class:NAND_Manager
 Nothing	header/header_NAND.h	/^	Nothing             = 0,$/;"	e	enum:NAND_CMD_SET
-OCCUPIED	header/header_NAND.h	/^    OCCUPIED = 1$/;"	e	enum:eDATA_STATE
+OCCUPIED	header/header_NAND.h	/^    OCCUPIED = 2$/;"	e	enum:eDATA_STATE
 Op	header/global_structs.h	/^    HOST_REQ_OP     Op;             \/\/ opcode$/;"	m	struct:sReq_t
 PAGE_BYTES	header/configurables.h	43;"	d
 PAGE_PER_BLOCK	header/configurables.h	38;"	d
@@ -440,6 +439,10 @@ REQ_EMPTY	header/header_NAND.h	/^    REQ_EMPTY = 0,$/;"	e	enum:sReqHOSTState
 REQ_READY	header/header_NAND.h	/^    REQ_READY = 2$/;"	e	enum:sReqHOSTState
 RNM_DataRead	NAND_Ctrl.h	/^    inline void RNM_DataRead(int way){$/;"	f	class:NAND_CTRL
 RNM_Merge	NAND_Ctrl.h	/^    inline void RNM_Merge(int way, int len){ $/;"	f	class:NAND_CTRL
+RNM_Program	header/header_NAND.h	/^    RNM_Program = 14,$/;"	e	enum:NAND_CMD_SET
+RNM_Read	header/header_NAND.h	/^    RNM_Read = 13, \/\/for requests less than a page$/;"	e	enum:NAND_CMD_SET
+RNM_WAITING	header/header_NAND.h	/^    RNM_WAITING = 1,$/;"	e	enum:eDATA_STATE
+RNM_flag	NAND_Manager.h	/^    bool RNM_flag;$/;"	m	class:NAND_Manager
 R_CMD	DRAM_ctrl.h	/^	scml2::memory< unsigned int > R_CMD;                                    \/\/%$/;"	m	class:DRAM_ctrl
 R_CPU	Device_IF.h	/^	scml2::memory< unsigned int > R_CPU;                                    \/\/%$/;"	m	class:Device_IF
 R_CPU_COMPLETE_ADDR	Device_IF.h	33;"	d
@@ -487,9 +490,9 @@ SIMUL_DINIT	header/header_HOSTIF.h	/^    SIMUL_DINIT,$/;"	e	enum:eSimulMode
 SIMUL_MODE	header/header_HOSTIF.h	/^}SIMUL_MODE;$/;"	t	typeref:enum:eSimulMode
 SIMUL_ON	header/header_HOSTIF.h	/^    SIMUL_ON$/;"	e	enum:eSimulMode
 SIMUL_RINIT	header/header_HOSTIF.h	/^    SIMUL_RINIT = 0,$/;"	e	enum:eSimulMode
-SIZE_BUF_CACHE	header/configurables.h	88;"	d
-SIZE_BUF_ENTRY	header/configurables.h	90;"	d
-SIZE_BUF_EVICT	header/configurables.h	89;"	d
+SIZE_BUF_CACHE	header/configurables.h	90;"	d
+SIZE_BUF_ENTRY	header/configurables.h	92;"	d
+SIZE_BUF_EVICT	header/configurables.h	91;"	d
 SPARE_PAGE_SIZE	header/header_NAND.h	59;"	d
 SSD_CAPACITY	header/configurables.h	44;"	d
 SSDmetric	header/utils/trackByID.h	/^namespace SSDmetric{$/;"	n
@@ -566,49 +569,51 @@ WriteSlaveBuf_writeBuf	SubReqMan.h	/^	  scml2::memory_alias< unsigned int > Writ
 WriteSlaveCB	SubReqMan.h	/^SubReqMan::WriteSlaveCB(                                                        \/\/%$/;"	f	class:SubReqMan
 WriteSlave_WriteSlaveBuf_adapter	SubReqMan.h	/^	scml2::tlm2_gp_target_adapter< 32 > WriteSlave_WriteSlaveBuf_adapter;   \/\/%$/;"	m	class:SubReqMan
 XSTR	header/configurables.h	76;"	d
-_ADDR_CPU1_BASE_	header/header_NAND.h	200;"	d
-_ADDR_CPU2_BASE_	header/header_NAND.h	185;"	d
-_ADDR_DATA_DRAM_	header/header_NAND.h	174;"	d
-_ADDR_DATA_SUBM_	header/header_NAND.h	175;"	d
-_ADDR_DEVIF_BASE_	header/header_NAND.h	161;"	d
-_ADDR_DRAM_BASE_	header/header_NAND.h	165;"	d
+_ADDR_CPU1_BASE_	header/header_NAND.h	208;"	d
+_ADDR_CPU2_BASE_	header/header_NAND.h	193;"	d
+_ADDR_DATA_DRAM_	header/header_NAND.h	182;"	d
+_ADDR_DATA_SUBM_	header/header_NAND.h	183;"	d
+_ADDR_DEVIF_BASE_	header/header_NAND.h	169;"	d
+_ADDR_DRAM_BASE_	header/header_NAND.h	173;"	d
 _ADDR_DRAM_CMD_	header/header_HOSTIF.h	2;"	d
 _ADDR_DRAM_CMD_	header/header_SUB.h	8;"	d
 _ADDR_DRAM_DATA_	header/header_HOSTIF.h	3;"	d
 _ADDR_DRAM_DATA_	header/header_SUB.h	9;"	d
-_ADDR_IRQ_BASE_	header/header_NAND.h	162;"	d
-_ADDR_MEMCON_BASE_	header/header_NAND.h	163;"	d
+_ADDR_IRQ_BASE_	header/header_NAND.h	170;"	d
+_ADDR_MEMCON_BASE_	header/header_NAND.h	171;"	d
 _ADDR_NAND_CMD_	header/header_HOSTIF.h	4;"	d
 _ADDR_NAND_CMD_	header/header_SUB.h	10;"	d
 _ADDR_NAND_DATA_	header/header_HOSTIF.h	5;"	d
 _ADDR_NAND_DATA_	header/header_SUB.h	11;"	d
-_ADDR_NUMS_BASE_	header/header_NAND.h	160;"	d
-_ADDR_SUB_BASE_	header/header_NAND.h	164;"	d
-_CMDMASTER_OFFSET_NANDSIDE_	header/header_NAND.h	169;"	d
-_DATAMASTER_OFFSET_NANDSIDE_	header/header_NAND.h	179;"	d
+_ADDR_NUMS_BASE_	header/header_NAND.h	168;"	d
+_ADDR_SUB_BASE_	header/header_NAND.h	172;"	d
+_CMDMASTER_OFFSET_NANDSIDE_	header/header_NAND.h	177;"	d
+_DATAMASTER_OFFSET_NANDSIDE_	header/header_NAND.h	187;"	d
 _FILE_OFFSET_BITS	NAND_Dev.h	20;"	d
 _OFFSET_DATA_REGION_	header/header_HOSTIF.h	6;"	d
 _OFFSET_DATA_REGION_	header/header_SUB.h	12;"	d
-_OFFSET_DIRECT_	header/header_NAND.h	206;"	d
-_OFFSET_DIRECT_MAX_	header/header_NAND.h	209;"	d
-_OFFSET_DRAM_ADDR_	header/header_NAND.h	187;"	d
-_OFFSET_DRAM_LENGTH_	header/header_NAND.h	188;"	d
-_OFFSET_DRAM_REQ_ID_	header/header_NAND.h	189;"	d
-_OFFSET_FTL_MAX_	header/header_NAND.h	195;"	d
-_OFFSET_HOST_ADDR_	header/header_NAND.h	208;"	d
-_OFFSET_HOST_ID_	header/header_NAND.h	207;"	d
-_OFFSET_IRQ_ADDR_	header/header_NAND.h	202;"	d
-_OFFSET_IRQ_BASE_	header/header_NAND.h	198;"	d
-_OFFSET_IRQ_DONE_	header/header_NAND.h	203;"	d
-_OFFSET_IRQ_ID_	header/header_NAND.h	201;"	d
-_OFFSET_IRQ_MAX_	header/header_NAND.h	204;"	d
-_OFFSET_NAND_ADDR1_	header/header_NAND.h	191;"	d
-_OFFSET_NAND_ADDR2_	header/header_NAND.h	192;"	d
-_OFFSET_NAND_ADDR3_	header/header_NAND.h	193;"	d
-_OFFSET_NAND_ADDR4_	header/header_NAND.h	194;"	d
-_OFFSET_NAND_CMD_	header/header_NAND.h	190;"	d
-_OFFSET_NAND_COUNT_	header/header_NAND.h	211;"	d
-_OFFSET_RAM_COUNT_	header/header_NAND.h	212;"	d
+_OFFSET_DIRECT_	header/header_NAND.h	215;"	d
+_OFFSET_DIRECT_MAX_	header/header_NAND.h	219;"	d
+_OFFSET_DRAM_ADDR_	header/header_NAND.h	195;"	d
+_OFFSET_DRAM_LENGTH_	header/header_NAND.h	196;"	d
+_OFFSET_DRAM_REQ_ID_	header/header_NAND.h	197;"	d
+_OFFSET_FTL_MAX_	header/header_NAND.h	203;"	d
+_OFFSET_HOST_ADDR_	header/header_NAND.h	217;"	d
+_OFFSET_HOST_BITMAP_	header/header_NAND.h	218;"	d
+_OFFSET_HOST_ID_	header/header_NAND.h	216;"	d
+_OFFSET_IRQ_ADDR_	header/header_NAND.h	210;"	d
+_OFFSET_IRQ_BASE_	header/header_NAND.h	206;"	d
+_OFFSET_IRQ_BITMAP_	header/header_NAND.h	211;"	d
+_OFFSET_IRQ_DONE_	header/header_NAND.h	212;"	d
+_OFFSET_IRQ_ID_	header/header_NAND.h	209;"	d
+_OFFSET_IRQ_MAX_	header/header_NAND.h	213;"	d
+_OFFSET_NAND_ADDR1_	header/header_NAND.h	199;"	d
+_OFFSET_NAND_ADDR2_	header/header_NAND.h	200;"	d
+_OFFSET_NAND_ADDR3_	header/header_NAND.h	201;"	d
+_OFFSET_NAND_ADDR4_	header/header_NAND.h	202;"	d
+_OFFSET_NAND_CMD_	header/header_NAND.h	198;"	d
+_OFFSET_NAND_COUNT_	header/header_NAND.h	221;"	d
+_OFFSET_RAM_COUNT_	header/header_NAND.h	222;"	d
 _QUEUE_H_	header/utils/Queue.h	2;"	d
 __BARE_SCREEN_H__	bare_screen.h	14;"	d
 __BOTTLENECK_METRIC_H__	header/utils/BTN_waitingTime.h	2;"	d
@@ -639,6 +644,10 @@ bNandBufferUsed	NAND_Manager.h	/^    bool bNandBufferUsed[NUM_CHANNEL];$/;"	m	cl
 bare_screen	bare_screen.h	/^bare_screen::bare_screen( const sc_core::sc_module_name & n)                    \/\/%$/;"	f	class:bare_screen
 bare_screen	bare_screen.h	/^class bare_screen :                                                             \/\/%$/;"	c
 bitmap	header/global_structs.h	/^    uint            bitmap;$/;"	m	struct:sSubReq_t
+bitmap	header/header_NAND.h	/^    unsigned int    bitmap;$/;"	m	struct:NAND_Cmd_Buffer
+bitmap	header/header_NAND.h	/^    unsigned int    bitmap;$/;"	m	struct:sDataBufferEntry
+bitmap	header/header_NAND.h	/^    unsigned int bitmap; $/;"	m	struct:sDirectNANDReq
+bitmap	header/header_NAND.h	/^    unsigned int bitmap;$/;"	m	struct:sIRQReq_t
 bitmap	header/utils/data_compare.h	/^        uint bitmap;$/;"	m	struct:DTCMP::sMemory_map_entry
 buf	header/global_structs.h	/^    unsigned char buf[PAGE_BYTES];$/;"	m	struct:sPageBuf
 bufUsedCount	NAND_Manager.h	/^    int bufUsedCount;$/;"	m	class:NAND_Manager
@@ -672,11 +681,12 @@ commandProcessor	bare_screen.h	/^bare_screen::commandProcessor(const std::vector
 completeReqFlags	header/utils/trackByID_node.h	/^                unsigned long long int completeReqFlags; \/\/consider this as group of flags$/;"	m	class:SSDmetric::nodeReqID
 confirm_data	header/utils/data_compare.h	/^    bool confirm_data(){$/;"	f	namespace:DTCMP
 cpu_time	Interrupt_Controller.h	/^double cpu_time[10];$/;"	v
+cur_buf_index	NAND_Manager.h	/^    uint cur_buf_index;$/;"	m	class:NAND_Manager
 current_timestamp	HOST_IF.h	/^    long long current_timestamp() {$/;"	f	class:HOST_IF
 dIssueTime	header/global_structs.h	/^    double          dIssueTime;     \/\/ moment when this request comes into SSD$/;"	m	struct:sReq_t
 dIssuedTime	Interrupt_Controller.h	/^    double          dIssuedTime;        \/\/ issued time$/;"	m	struct:sInterruptSources
 dStartTime	bare_screen.h	/^        double dStartTime;$/;"	m	struct:bare_screen::sSoftwareTimeMeasure
-data	header/header_NAND.h	/^    unsigned char data[16384];$/;"	m	struct:sDataBufferEntry
+data	header/header_NAND.h	/^    unsigned char data[DATA_PAGE_SIZE];$/;"	m	struct:sDataBufferEntry
 dataCopyBtP	header/utils/data_compare.h	/^    void dataCopyBtP(uchar* dst, uchar* src, uint len){ \/\/from byte to page$/;"	f	namespace:DTCMP
 data_callback	NAND_Manager.h	/^NAND_Manager< NUM_CHANNEL >::data_callback(                            \/\/%$/;"	f	class:NAND_Manager
 data_queue_event	NAND_Manager.h	/^    sc_core::sc_event data_queue_event[NUM_CHANNEL];$/;"	m	class:NAND_Manager
@@ -718,6 +728,7 @@ eModuleType	header/utils/BTN_waitingTime.h	/^        enum eModuleType{$/;"	g	nam
 eModuleType	header/utils/trackByID_node.h	/^        enum eModuleType{$/;"	g	namespace:SSDmetric
 eNANDRead	SubReqMan.h	/^    sc_core::sc_event eNANDRead;$/;"	m	class:SubReqMan
 eNandQueueDelete	NAND_Manager.h	/^    sc_core::sc_event eNandQueueDelete;$/;"	m	class:NAND_Manager
+eRNM_finish	NAND_Manager.h	/^    sc_core::sc_event eRNM_finish;$/;"	m	class:NAND_Manager
 eSUB_REQ_OP	header/global_structs.h	/^typedef enum eSUB_REQ_OP{$/;"	g
 eSimulMode	header/header_HOSTIF.h	/^typedef enum eSimulMode{$/;"	g
 eSoftwareRoutineId	bare_screen.h	/^    typedef enum eSoftwareRoutineId{$/;"	g	class:bare_screen
@@ -866,6 +877,7 @@ memcpy	header/global_defines.h	/^static inline void memcpy(void* target, scml2::
 memcpy	header/global_defines.h	/^static inline void memcpy(void* target, scml2::reg<unsigned int> &src, int length)$/;"	f
 memory	Interrupt_Controller.h	/^	tlm::tlm_target_socket< 32 > memory;                                    \/\/%$/;"	m	class:Interrupt_Controller
 memory_REG_adapter	Interrupt_Controller.h	/^	scml2::tlm2_gp_target_adapter< 32 > memory_REG_adapter;                 \/\/%$/;"	m	class:Interrupt_Controller
+mergeRNM	NAND_Manager.h	/^void NAND_Manager< NUM_CHANNEL >::mergeRNM(uchar* dst, uchar* src, uint bitmap){$/;"	f	class:NAND_Manager
 meta_write_count	header/global_variables.h	/^unsigned int meta_write_count;$/;"	v
 mmDRAM	header/utils/data_compare.h	/^        mmDRAM = 1,$/;"	e	enum:DTCMP::sMemMapType
 mmLogical	header/utils/data_compare.h	/^        mmLogical = 0,$/;"	e	enum:DTCMP::sMemMapType
