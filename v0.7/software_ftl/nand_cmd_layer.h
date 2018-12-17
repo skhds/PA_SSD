@@ -34,6 +34,9 @@ typedef enum lowLevelNandOpCode
 
     LLN_MAP_ERASE = 12,
 
+    //hotfix
+    LLN_RNM_READ = 13,
+
 	LLN_CHIP_SEL = 99,
 	LLN_WAITING = 100
 

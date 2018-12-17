@@ -88,17 +88,22 @@ void irqHandler(){
 
     //temp
     DiskReq request;
-    uint dram_id; //dram node id
+    uint dram_id; //dram node id //declared as global
     uint addr; //lpa
+    uint bitmap; //bitmap
 
  //   barePrintf("[CPU2] Received IRQ!\n");
     dram_id = *((vuint*)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU2_BASE_ + _OFFSET_IRQ_BASE_ + _OFFSET_IRQ_ID_));
     addr = *((vuint*)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU2_BASE_ + _OFFSET_IRQ_BASE_ + _OFFSET_IRQ_ADDR_));
-
+    bitmap = *((vuint*)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU2_BASE_ + _OFFSET_IRQ_BASE_ + _OFFSET_IRQ_BITMAP_));
+    
+    
+    
     request.sectorAddr = addr*32;
-    request.sectorCount = 32;
+    request.bitmap = bitmap;
+    //request.sectorCount = 32;
     request.cmd = DISK_CMD_WRITE;
-  //  barePrintf("[CPU2] Eviction Request : id - %d, addr - %d\n", dram_id, addr);
+    //barePrintf("[CPU2] Eviction Request : id - %d, addr - %d, bitmap - %d\n", dram_id, addr, bitmap);
     
     callFtl(request);
     

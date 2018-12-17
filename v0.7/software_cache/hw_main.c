@@ -66,12 +66,12 @@ int main()
             issue_flush();
 
         }
-
+/*
         if(!EvictDoneEmpty()){
             Free_Evict_Nodes();
             //Print_Node_Counts();
         }
-
+*/
         sleepcp(1000);
 
     }
@@ -117,8 +117,8 @@ void irqHandler(){
             
 
             id = *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_));
-            Insert_EvictDone(id); 
-            
+            Insert_EvictDone(id); //these two will evict every possible node 
+            Free_Evict_Nodes();   //i'll change this to be more convenient
             *((vuint *)(_ADDR_INTCTRL_BASE_ + _OFFSET_NAND_COMPLETE_)) = 0x1;
             break;
         default : 

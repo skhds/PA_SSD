@@ -24,7 +24,7 @@
 //#define CACHE_BUFFER_METHOD 0
 //#define G_INITIALIZE 
 
-#define DATA_COMPARE_ON
+//#define DATA_COMPARE_ON
 #define TRACK_ID_ON
 
 
@@ -85,13 +85,15 @@
 
 /* DRAM defines */
 
+#define DRAM_ENTRY_SIZE 64
+
 #define SIZE_BUF_CACHE 64
 #define SIZE_BUF_EVICT 64
 #define SIZE_BUF_ENTRY SIZE_BUF_CACHE + SIZE_BUF_EVICT
 
 /* NAND defines */
 
-#define NAND_CMD_QUEUE_SIZE  8
+#define NAND_CMD_QUEUE_SIZE  16
 #define NAND_BUF_ENTRY       8
 
 #endif

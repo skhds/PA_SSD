@@ -377,9 +377,9 @@ uint Print_Node_Count(NODE* front){
 }
 
 void Print_Node_Counts(){
-     //       barePrintf("[CPU1] List count? %d, %d, %d\n", Print_Node_Count(&node[FREE_FRONT_NODE]), 
-     //               Print_Node_Count(&node[USED_FRONT_NODE]),
-     //               Print_Node_Count(&node[EVICT_FRONT_NODE]));
+            barePrintf("[CPU1] List count? %d, %d, %d\n", Print_Node_Count(&node[FREE_FRONT_NODE]), 
+                    Print_Node_Count(&node[USED_FRONT_NODE]),
+                    Print_Node_Count(&node[EVICT_FRONT_NODE]));
 }
 uint Cache_Buffer_Full(){
     
@@ -420,6 +420,8 @@ uint issue_flush(){
 
         *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_IRQ_ID_)) = ptr->id; //node ID
         *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_IRQ_ADDR_)) = ptr->addr; //LPA
+        *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_IRQ_BITMAP_)) = ptr->bitmap; //bitmap
+        
         ptr->state = EVICT_SENT;
         
         //things to send :
@@ -446,6 +448,8 @@ void direct_NAND_write(uint addr, uint len, uint op){
 
     *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_HOST_ID_)) = id; //node ID
     *((vuint *)(_ADDR_NAND_MAN_BASE_ + _ADDR_CPU1_BASE_ + _OFFSET_HOST_ADDR_)) = addr/32; //LPA
+
+    //bitmap must be added here
 
     nand_count++;
 
@@ -474,10 +478,16 @@ uint EvictDoneEmpty(){
     return M_CHECKEMPTY(EvictDone_Queue);
 }
 
+uint EvictDoneFull(){
+
+    return M_CHECKFULL(EvictDone_Queue);
+}
+
 void Insert_EvictDone(uint id){
 
     M_PUSH(EvictDone_Queue, &id);
 }
+
 
 
 void Free_Evict_Nodes(){

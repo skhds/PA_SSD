@@ -37,7 +37,8 @@ typedef volatile double	vdouble;
 #define _OFFSET_IRQ_BASE_                   (0x080)
 #define _OFFSET_IRQ_ID_                     (0x000)
 #define _OFFSET_IRQ_ADDR_                   (0x004)
-#define _OFFSET_IRQ_DONE_                   (0x008)
+#define _OFFSET_IRQ_BITMAP_                 (0x008)
+#define _OFFSET_IRQ_DONE_                   (0x00C)
 
 #define _OFFSET_R_BUS_						(0x000)
 #define _OFFSET_R_BUS_ID_					(0x000)

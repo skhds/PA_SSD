@@ -24,4 +24,10 @@
 
 #define _SORTING_GC_			0
 
+
+//by skhds
+//
+#define _FULL_PAGE_             0xffffffff
+
+
 #endif

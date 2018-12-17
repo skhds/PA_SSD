@@ -11,6 +11,8 @@
 
 uint getBitWidth(uint num);
 void computeSpecBitWidth(sNandSpec *spec);
+
+void setPageReq(uint *startSector, uchar *validMap, DiskReq cmd);
 uchar pageChunkGen(uint iStartAdr, uint iSectorCnt, uint iSectorPerPage, uint order,
 	uint *iAdr, uint *iLen, uchar *validMap);
 

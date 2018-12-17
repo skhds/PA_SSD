@@ -39,7 +39,7 @@ COpAnalyzer	nand_timing.h	/^class COpAnalyzer$/;"	c
 COpQ	struct_nand_timing.h	/^typedef std::queue<SSmallOp, deque<SSmallOp> > COpQ;$/;"	t
 CQueueInt	struct_nand_timing.h	/^typedef std::queue<int, deque<int> > CQueueInt;$/;"	t
 CXX	Makefile	/^CXX = armcc$/;"	m
-CXXFLAGS	Makefile	/^CXXFLAGS = -g -O2$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS = -g -O2 $/;"	m
 CacheSchedOffset	ftl_global_var.c	/^uint CacheSchedOffset;$/;"	v
 Cache_Buffer	cache_buffer.c	/^void Cache_Buffer(uint addr, uint len, uint op)$/;"	f
 CheckOverlap	device_if.c	/^int CheckOverlap(uint buffersize, Req_t* temp, int offset){ \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ Left\/R = 1, Left\/W = 2, Right\/R = 3, Right\/W = 4$/;"	f
@@ -168,7 +168,7 @@ NAND_CMD_TYPE_DUMMY	struct_sim_if.h	/^    NAND_CMD_TYPE_DUMMY = 4294967295$/;"	e
 NAND_CTRL_CLK_PERIOD	low_level_nand_spec.h	5;"	d
 NAND_ERASE	struct_nand_timing.h	/^	NAND_ERASE = 0,$/;"	e	enum:eNandCommand
 NAND_PAGE_BYTE	nand_spec.h	7;"	d
-NAND_PAGE_FREE	struct_meta.h	/^	NAND_PAGE_FREE			=	1,$/;"	e	enum:ePageStatus
+NAND_PAGE_FREE	struct_meta.h	/^	NAND_PAGE_FREE			= 1,$/;"	e	enum:ePageStatus
 NAND_PAGE_INVALID	struct_meta.h	/^	NAND_PAGE_INVALID		= 0,$/;"	e	enum:ePageStatus
 NAND_PAGE_NOTHING	struct_meta.h	/^	NAND_PAGE_NOTHING		= 3$/;"	e	enum:ePageStatus
 NAND_PAGE_PER_BLOCK	nand_spec.h	8;"	d
@@ -248,14 +248,14 @@ WAY_ADDR	addr_trans.h	/^	WAY_ADDR,$/;"	e	enum:eAddrType
 WRITE_DRAM	cache_buffer.h	/^	WRITE_DRAM = 1,$/;"	e	enum:__anon2
 WRITE_SLAVE	cache_buffer.h	/^	WRITE_SLAVE = 3,$/;"	e	enum:__anon2
 Write_Page	cache_buffer.c	/^void Write_Page(uint addr, uint offset, uint size)$/;"	f
-_ADDR_CACHE_BUFFER_BASE_	sfr_addr.h	95;"	d
+_ADDR_CACHE_BUFFER_BASE_	sfr_addr.h	97;"	d
 _ADDR_CPU2_BASE_	sfr_addr.h	36;"	d
-_ADDR_DEV_IF_BASE_	sfr_addr.h	88;"	d
+_ADDR_DEV_IF_BASE_	sfr_addr.h	90;"	d
 _ADDR_HEAP_BASE_	bare_utils.h	28;"	d
 _ADDR_HEAP_LIMIT_	bare_utils.h	29;"	d
 _ADDR_HEAP_SIZE_	bare_utils.h	30;"	d
-_ADDR_INTCTRL_BASE_	sfr_addr.h	76;"	d
-_ADDR_MEMCTRL_BASE_	sfr_addr.h	70;"	d
+_ADDR_INTCTRL_BASE_	sfr_addr.h	78;"	d
+_ADDR_MEMCTRL_BASE_	sfr_addr.h	72;"	d
 _ADDR_NAND_MAN_BASE_	sfr_addr.h	35;"	d
 _ADDR_PRINT_CHAR_	bare_utils.h	8;"	d
 _ADDR_PRINT_DOUBLE_LSB_	bare_utils.h	16;"	d
@@ -278,9 +278,11 @@ _DEBUG_PRINT_LV_	compile_flag.h	12;"	d
 _DEBUG_PRINT_LV_	compile_flag.h	8;"	d
 _DFTL_	ftl_type.h	6;"	d
 _DIST_FTL_	ftl_type.h	7;"	d
-_FTLMETA_SIZE_	ftl.c	4;"	d	file:
-_INTERVAL_CACHE_DATA_	sfr_addr.h	103;"	d
-_INTERVAL_R_DATA_	sfr_addr.h	89;"	d
+_FTLMETA_OFFSET_	ftl.c	4;"	d	file:
+_FTLMETA_SIZE_	ftl.c	5;"	d	file:
+_FULL_PAGE_	dist_ftl_spec.h	30;"	d
+_INTERVAL_CACHE_DATA_	sfr_addr.h	105;"	d
+_INTERVAL_R_DATA_	sfr_addr.h	91;"	d
 _LLN_BIT_FOR_BLOCK_	low_level_nand_spec.h	47;"	d
 _LLN_BIT_FOR_CHANNEL_	low_level_nand_spec.h	44;"	d
 _LLN_BIT_FOR_PAGE_	low_level_nand_spec.h	46;"	d
@@ -324,14 +326,14 @@ _NUM_ELE_IN_LINE_	ftl_spec.h	24;"	d
 _NUM_ELE_IN_LINE_	ftl_spec.h	27;"	d
 _NUM_ELE_IN_PAGE_	ftl_spec.h	38;"	d
 _NUM_GTD_ELEMENT_	ftl_spec.h	40;"	d
-_OFFSET_CACHE_ADDR_	sfr_addr.h	97;"	d
-_OFFSET_CACHE_BUFFER_COMPLETE_	sfr_addr.h	80;"	d
-_OFFSET_CACHE_COMPLETE_	sfr_addr.h	96;"	d
-_OFFSET_CACHE_DATA_	sfr_addr.h	101;"	d
-_OFFSET_CACHE_LEN_	sfr_addr.h	98;"	d
-_OFFSET_CACHE_OP_	sfr_addr.h	99;"	d
-_OFFSET_CACHE_QUEUE_SIZE_	sfr_addr.h	102;"	d
-_OFFSET_CACHE_SIZE_	sfr_addr.h	100;"	d
+_OFFSET_CACHE_ADDR_	sfr_addr.h	99;"	d
+_OFFSET_CACHE_BUFFER_COMPLETE_	sfr_addr.h	82;"	d
+_OFFSET_CACHE_COMPLETE_	sfr_addr.h	98;"	d
+_OFFSET_CACHE_DATA_	sfr_addr.h	103;"	d
+_OFFSET_CACHE_LEN_	sfr_addr.h	100;"	d
+_OFFSET_CACHE_OP_	sfr_addr.h	101;"	d
+_OFFSET_CACHE_QUEUE_SIZE_	sfr_addr.h	104;"	d
+_OFFSET_CACHE_SIZE_	sfr_addr.h	102;"	d
 _OFFSET_CMD_SIZE_	sfr_addr.h	24;"	d
 _OFFSET_CPU2_	sfr_addr.h	27;"	d
 _OFFSET_CPU2_ADDR_	sfr_addr.h	29;"	d
@@ -340,51 +342,53 @@ _OFFSET_CPU2_DRAM_LENGTH_	sfr_addr.h	32;"	d
 _OFFSET_CPU2_ID_	sfr_addr.h	33;"	d
 _OFFSET_CPU2_LENGTH_	sfr_addr.h	30;"	d
 _OFFSET_CPU2_OP_	sfr_addr.h	28;"	d
-_OFFSET_DEVICEIF_COMPLETE_	sfr_addr.h	79;"	d
-_OFFSET_FTL_0_COMPLETE_	sfr_addr.h	81;"	d
-_OFFSET_FTL_1_COMPLETE_	sfr_addr.h	82;"	d
-_OFFSET_FTL_2_COMPLETE_	sfr_addr.h	83;"	d
-_OFFSET_FTL_3_COMPLETE_	sfr_addr.h	84;"	d
-_OFFSET_FTL_COMPLETE_	sfr_addr.h	63;"	d
-_OFFSET_GRANT_	sfr_addr.h	72;"	d
+_OFFSET_DEVICEIF_COMPLETE_	sfr_addr.h	81;"	d
+_OFFSET_FTL_0_COMPLETE_	sfr_addr.h	83;"	d
+_OFFSET_FTL_1_COMPLETE_	sfr_addr.h	84;"	d
+_OFFSET_FTL_2_COMPLETE_	sfr_addr.h	85;"	d
+_OFFSET_FTL_3_COMPLETE_	sfr_addr.h	86;"	d
+_OFFSET_FTL_COMPLETE_	sfr_addr.h	65;"	d
+_OFFSET_GRANT_	sfr_addr.h	74;"	d
 _OFFSET_ILEN_ADDR_	sfr_addr.h	22;"	d
-_OFFSET_INITIAL_COMPLETE_	sfr_addr.h	85;"	d
-_OFFSET_INT_SOURCE_	sfr_addr.h	78;"	d
-_OFFSET_INT_TYPE_	sfr_addr.h	77;"	d
+_OFFSET_INITIAL_COMPLETE_	sfr_addr.h	87;"	d
+_OFFSET_INT_SOURCE_	sfr_addr.h	80;"	d
+_OFFSET_INT_TYPE_	sfr_addr.h	79;"	d
 _OFFSET_IRQ_ADDR_	sfr_addr.h	39;"	d
 _OFFSET_IRQ_BASE_	sfr_addr.h	37;"	d
+_OFFSET_IRQ_BITMAP_	sfr_addr.h	40;"	d
+_OFFSET_IRQ_DONE_	sfr_addr.h	41;"	d
 _OFFSET_IRQ_ID_	sfr_addr.h	38;"	d
 _OFFSET_ISTARTADDR_ADDR_	sfr_addr.h	21;"	d
 _OFFSET_OP_ADDR_	sfr_addr.h	23;"	d
-_OFFSET_RELEASE_	sfr_addr.h	73;"	d
-_OFFSET_REQ_SOURCE_	sfr_addr.h	71;"	d
-_OFFSET_R_BUS_	sfr_addr.h	41;"	d
-_OFFSET_R_BUS_ADDR_	sfr_addr.h	44;"	d
-_OFFSET_R_BUS_DRAM_ADDR_	sfr_addr.h	60;"	d
-_OFFSET_R_BUS_DRAM_LENGTH_	sfr_addr.h	61;"	d
-_OFFSET_R_BUS_DUMMY1_	sfr_addr.h	46;"	d
-_OFFSET_R_BUS_DUMMY2_	sfr_addr.h	47;"	d
-_OFFSET_R_BUS_DUMMY3_	sfr_addr.h	48;"	d
-_OFFSET_R_BUS_DUMMY4_	sfr_addr.h	49;"	d
-_OFFSET_R_BUS_ID_	sfr_addr.h	42;"	d
-_OFFSET_R_BUS_LEN_	sfr_addr.h	45;"	d
-_OFFSET_R_BUS_NAND_ADDR1_	sfr_addr.h	52;"	d
-_OFFSET_R_BUS_NAND_ADDR2_	sfr_addr.h	53;"	d
-_OFFSET_R_BUS_NAND_ADDR3_	sfr_addr.h	54;"	d
-_OFFSET_R_BUS_NAND_ADDR4_	sfr_addr.h	55;"	d
-_OFFSET_R_BUS_NAND_CMD_	sfr_addr.h	51;"	d
-_OFFSET_R_BUS_NAND_CMD_STATUS_	sfr_addr.h	64;"	d
-_OFFSET_R_BUS_NAND_FULL	sfr_addr.h	67;"	d
-_OFFSET_R_BUS_NAND_MAP_	sfr_addr.h	57;"	d
-_OFFSET_R_BUS_NAND_MAP_ADDR_	sfr_addr.h	58;"	d
-_OFFSET_R_BUS_OP_	sfr_addr.h	43;"	d
-_OFFSET_R_BUS_REQ_ID_	sfr_addr.h	62;"	d
-_OFFSET_R_COMPLETE_	sfr_addr.h	91;"	d
-_OFFSET_R_DATA_	sfr_addr.h	92;"	d
-_OFFSET_R_SIZE_	sfr_addr.h	90;"	d
+_OFFSET_RELEASE_	sfr_addr.h	75;"	d
+_OFFSET_REQ_SOURCE_	sfr_addr.h	73;"	d
+_OFFSET_R_BUS_	sfr_addr.h	43;"	d
+_OFFSET_R_BUS_ADDR_	sfr_addr.h	46;"	d
+_OFFSET_R_BUS_DRAM_ADDR_	sfr_addr.h	62;"	d
+_OFFSET_R_BUS_DRAM_LENGTH_	sfr_addr.h	63;"	d
+_OFFSET_R_BUS_DUMMY1_	sfr_addr.h	48;"	d
+_OFFSET_R_BUS_DUMMY2_	sfr_addr.h	49;"	d
+_OFFSET_R_BUS_DUMMY3_	sfr_addr.h	50;"	d
+_OFFSET_R_BUS_DUMMY4_	sfr_addr.h	51;"	d
+_OFFSET_R_BUS_ID_	sfr_addr.h	44;"	d
+_OFFSET_R_BUS_LEN_	sfr_addr.h	47;"	d
+_OFFSET_R_BUS_NAND_ADDR1_	sfr_addr.h	54;"	d
+_OFFSET_R_BUS_NAND_ADDR2_	sfr_addr.h	55;"	d
+_OFFSET_R_BUS_NAND_ADDR3_	sfr_addr.h	56;"	d
+_OFFSET_R_BUS_NAND_ADDR4_	sfr_addr.h	57;"	d
+_OFFSET_R_BUS_NAND_CMD_	sfr_addr.h	53;"	d
+_OFFSET_R_BUS_NAND_CMD_STATUS_	sfr_addr.h	66;"	d
+_OFFSET_R_BUS_NAND_FULL	sfr_addr.h	69;"	d
+_OFFSET_R_BUS_NAND_MAP_	sfr_addr.h	59;"	d
+_OFFSET_R_BUS_NAND_MAP_ADDR_	sfr_addr.h	60;"	d
+_OFFSET_R_BUS_OP_	sfr_addr.h	45;"	d
+_OFFSET_R_BUS_REQ_ID_	sfr_addr.h	64;"	d
+_OFFSET_R_COMPLETE_	sfr_addr.h	93;"	d
+_OFFSET_R_DATA_	sfr_addr.h	94;"	d
+_OFFSET_R_SIZE_	sfr_addr.h	92;"	d
 _OFFSET_SUB_REQ_CACHE_DATA_	sfr_addr.h	25;"	d
 _OFFSET_SUB_REQ_COMPLETE_	sfr_addr.h	20;"	d
-_OFFSEt_R_BUS_INT_	sfr_addr.h	65;"	d
+_OFFSEt_R_BUS_INT_	sfr_addr.h	67;"	d
 _RD_WR_PTR_CNT_	dist_ftl_spec.h	16;"	d
 _SEP_SEQ_BLK_	dist_ftl_spec.h	17;"	d
 _SEQ_TH_	dist_ftl_spec.h	20;"	d
@@ -457,6 +461,7 @@ bRnw	struct_nand_timing.h	/^	bool bRnw;$/;"	m	struct:SReq
 barePrintf	bare_utils.c	/^void barePrintf(const char* sentence, ...){$/;"	f
 base	bare_utils.h	/^	unsigned base, range;$/;"	m	struct:__heap_extent
 bitmap	cache_buffer.h	/^	uint bitmap; \/\/ sectir bit map$/;"	m	struct:NODE
+bitmap	struct_sim_if.h	/^	uint bitmap;                    \/\/ bitmap, assuming maximum 32 sectors per request $/;"	m	struct:sDiskRequest
 blkReclaim	ftl_global_var.c	/^void	(*blkReclaim)(uint iCh, uint iWy, uint iPl);$/;"	v
 blkReclaimBg	ftl_global_var.c	/^void	(*blkReclaimBg)(uint iCh, uint iWy, uint iPl);$/;"	v
 blockCluster	dy_wl_dist_ftl.h	/^typedef struct blockCluster{$/;"	s
@@ -755,7 +760,7 @@ isTgGtd	dist_ftl_utils.c	/^uchar isTgGtd(sDistGtd *gtd){$/;"	f
 isValid	struct_sim_if.h	/^	uchar isValid;$/;"	m	struct:sNandAddress
 l2pTable	struct_meta.h	/^	sMapTable		l2pTable[AVAIL_PG_CNT];$/;"	m	struct:sFtlMetaData
 l2pTranslate	addr_trans.c	/^sNandAddr l2pTranslate(uint adr)$/;"	f
-li_issuedTick	struct_sim_if.h	/^	uint li_issuedTick;           \/\/ 64-bit int for gem5 tick, do not need to use$/;"	m	struct:sDiskRequest
+li_issuedTick	struct_sim_if.h	/^    uint li_issuedTick;           \/\/ 64-bit int for gem5 tick, do not need to use$/;"	m	struct:sDiskRequest
 link	cache_buffer.h	/^    struct NODE* link;$/;"	m	struct:HASH_NODE	typeref:struct:HASH_NODE::NODE
 listConstruct	generic_list.c	/^sGenericList *listConstruct(unsigned int iHashSize){$/;"	f
 listDelete	generic_list.c	/^void listDelete(sGenericList *li){$/;"	f
@@ -898,8 +903,8 @@ setBlockFree	struct_meta.c	/^void setBlockFree(sBlockMeta *blk){$/;"	f
 setBlockUsed	struct_meta.c	/^void setBlockUsed(sBlockMeta *blk){$/;"	f
 setCurTgCnt	host_machine.h	/^	inline void setCurTgCnt(unsigned int val) { m_stat.dCachedTgCnt += val; }$/;"	f	class:cSsdHostMachine
 setEraseCnt	struct_meta.c	/^void setEraseCnt(sBlockMeta *blk, uint iVal){$/;"	f
-setFtlComplete	nand_cmd_layer.c	218;"	d	file:
-setFtlReady	nand_cmd_layer.c	226;"	d	file:
+setFtlComplete	nand_cmd_layer.c	215;"	d	file:
+setFtlReady	nand_cmd_layer.c	223;"	d	file:
 setL2p	addr_trans.c	/^void setL2p(uint adr, sNandAddr phyAdr)$/;"	f
 setLatency	host_machine.cpp	/^cSsdHostMachine::setLatency(double dLat){$/;"	f	class:cSsdHostMachine
 setMap	ftl_global_var.c	/^void (*setMap)(uint, sNandAddr);$/;"	v
@@ -910,6 +915,7 @@ setPageFree	struct_meta.c	/^void setPageFree(sPageMeta *page){$/;"	f
 setPageInvalid	struct_meta.c	/^void setPageInvalid(sPageMeta *page){$/;"	f
 setPageLogicalAdr	struct_meta.c	/^void setPageLogicalAdr(sPageMeta *page, uint iLogicalAdr){$/;"	f
 setPageMapData	dftl_meta.c	/^void setPageMapData(sPageMeta *page, sMapPage *mapData){$/;"	f
+setPageReq	ftl_utils.c	/^void setPageReq(uint *startSector, uchar* validMap, DiskReq cmd){$/;"	f
 setPageValid	struct_meta.c	/^void setPageValid(sPageMeta *page){$/;"	f
 setSectorInvalid	struct_meta.c	/^void setSectorInvalid(sPageMeta *page, uint iOffset){$/;"	f
 setSectorValid	struct_meta.c	/^void setSectorValid(sPageMeta *page, uint iOffset){$/;"	f

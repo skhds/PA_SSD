@@ -87,6 +87,10 @@ typedef enum NAND_CMD_SET
     MapTable_Copyback_Rd = 11,
     MapTable_Erase = 12,
 
+    //prolly a hotfix
+    RNM_Read = 13, //for requests less than a page
+    RNM_Program = 14,
+
 	Waiting             = 100,
 
 	Chip_Select         = 99 // Added by jun
@@ -104,20 +108,23 @@ typedef struct NAND_Cmd{
 typedef struct NAND_Cmd_Buffer{
     NAND_Cmd        cmd;
     unsigned int    DRAM_id;
+    unsigned int    bitmap;
 }NAND_Cmd_Buffer;
 
 typedef enum eDATA_STATE{
 
     BUFFER_FREE = 0,
-    OCCUPIED = 1
+    RNM_WAITING = 1,
+    OCCUPIED = 2
 
 }DATA_STATE;
 
 typedef struct sDataBufferEntry{
     
-    unsigned char data[16384];
+    unsigned char data[DATA_PAGE_SIZE];
     DATA_STATE state;
     unsigned int    DRAM_id;
+    unsigned int    bitmap;
 
 }NANDData_t;
 
@@ -133,6 +140,7 @@ typedef struct sIRQReq_t{
 
     unsigned int id;
     unsigned int addr;
+    unsigned int bitmap;
     eIRQState state;
 
 }IRQReq_t;
@@ -147,7 +155,7 @@ typedef struct sDirectNANDReq{
     reqHOSTState state;
     unsigned int id;
     unsigned int addr;
-    
+    unsigned int bitmap; 
 
 }directNANDReq_t;
 
@@ -200,12 +208,14 @@ typedef struct sDirectNANDReq{
 #define _ADDR_CPU1_BASE_         0x100
 #define _OFFSET_IRQ_ID_          0x000
 #define _OFFSET_IRQ_ADDR_        0x004
+#define _OFFSET_IRQ_BITMAP_      0x008
 #define _OFFSET_IRQ_DONE_        0x00C
 #define _OFFSET_IRQ_MAX_         0x010
 
 #define _OFFSET_DIRECT_         0x020
 #define _OFFSET_HOST_ID_        0x024
 #define _OFFSET_HOST_ADDR_      0x028
+#define _OFFSET_HOST_BITMAP_    0x02C
 #define _OFFSET_DIRECT_MAX_     0x030
 
 #define _OFFSET_NAND_COUNT_     0x040

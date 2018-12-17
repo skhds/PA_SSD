@@ -52,8 +52,27 @@ void computeSpecBitWidth(sNandSpec *spec)
 	//spec->iTotalByte = NAND_ARRAY_TOTAL_CAP;
 }
 
+//by skhds
+//
+
+void setPageReq(uint *startSector, uchar* validMap, DiskReq cmd){
+    
+    int i;
+    uchar tmp;
+    *startSector = cmd.sectorAddr;
+    
+    for(i =0; i<VALID_BITMAP_SIZE; i++){ //copying bitmap
+        tmp = ( cmd.bitmap >> (i*8) ) % 0x100; 
+        validMap[i] = ((tmp * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32;   
+    }
+    
+
+}
+
+
 uchar pageChunkGen(uint iStartAdr, uint iSectorCnt, uint iSectorPerPage, uint order, uint *iAdr, uint *iLen, uchar *validMap)
-{
+{ //this cuts over-page sized requests into pages. Current SSD architecture cuts requests in the interface, therefore we no longer need this function.
+
 	uint iCurAdr = iStartAdr + (iSectorPerPage * order);
 	uint iLow = (iCurAdr / iSectorPerPage) * iSectorPerPage;
 	uint iHigh = ((iCurAdr / iSectorPerPage) + 1) * iSectorPerPage;

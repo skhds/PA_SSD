@@ -117,6 +117,7 @@ uchar flush_condition();
 uint issue_flush();
 void Add_Evict_Page();
 uint EvictDoneEmpty();
+uint EvictDoneFull();
 void Insert_EvictDone();
 void Free_Evict_Nodes();
 

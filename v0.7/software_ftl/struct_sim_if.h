@@ -16,8 +16,9 @@ typedef struct sDiskRequest
 {
 	uint sectorAddr;	            // addr 
 	uint sectorCount;               // sector count
+	uint bitmap;                    // bitmap, assuming maximum 32 sectors per request 
 	DiskCmd cmd;                    // command
-	uint li_issuedTick;           // 64-bit int for gem5 tick, do not need to use
+    uint li_issuedTick;           // 64-bit int for gem5 tick, do not need to use
 	double dIssueTime;
 }DiskReq;
 

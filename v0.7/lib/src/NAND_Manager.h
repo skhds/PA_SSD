@@ -145,7 +145,7 @@ protected:                                                                      
     sc_core::sc_event eIRQ2;
     sc_core::sc_event eIRQ1end;
     sc_core::sc_event eIRQ2end;
-
+    sc_core::sc_event eRNM_finish;
 
     // Write Queue (it's actually data queue)
     NAND_Cmd_Buffer NandQueue[NUM_CHANNEL][NAND_CMD_QUEUE_SIZE]; //Command Queue implemented in FIFO
@@ -157,8 +157,7 @@ protected:                                                                      
     NANDData_t NandDataBuffer[NAND_BUF_ENTRY]; //data buffer
     int bufUsedCount;
     bool bNandBufferUsed[NUM_CHANNEL];
-    
-    
+
     //evict manager
     IRQReq_t reqIRQ;
     M_CREATEQUEUE(IRQ_Queue, IRQReq_t, SIZE_BUF_EVICT); //size should be the # of eviction entries
@@ -167,6 +166,9 @@ protected:                                                                      
     //direct NAND write
     directNANDReq_t reqHOST;
 
+    //RNM flag
+    bool RNM_flag;
+    uint cur_buf_index;
 
     //functions
 
@@ -177,8 +179,9 @@ protected:                                                                      
 
     int findEntryByID(int id);
     int findFreeEntry();
+    void mergeRNM(uchar*, uchar*, uint);
 
-    
+        
     inline unsigned int get_NAND_Channel(unsigned int addr)
     {
         //cout<< DEV_AND_TIME <<"MASK_CHANNEL : " << MASK_CHANNEL <<"\t";
@@ -449,6 +452,7 @@ NAND_Manager< NUM_CHANNEL >::Reset_Neg_Handler()                                
         reqHOST.addr = -1;
         reqHOST.state = REQ_EMPTY;
         bufUsedCount = 0; 
+        RNM_flag = false;
         for(unsigned int i=0; i<NUM_CHANNEL; i++){
             
             iNandQueueCount[i] = 0;
@@ -558,7 +562,6 @@ NAND_Manager< NUM_CHANNEL >::cmd_callback(                            //%
                 if(NAND_DEBUG){
                     cout << DEV_AND_TIME << "[cmd_callback] reqIRQ - id : " << reqIRQ.id << "  addr : " << reqIRQ.addr << endl;
                 }
-                eIRQ2end.notify();
             }
         }
         else{
@@ -570,6 +573,7 @@ NAND_Manager< NUM_CHANNEL >::cmd_callback(                            //%
         //CPU2 writes FTL request
         if(cmd == tlm::TLM_WRITE_COMMAND){
             if(collectFTLRequest(adr, ptr)){
+                eIRQ2end.notify();
             }   
         }else{
             cout << DEV_AND_TIME << "[cmd_callback] adr : " << adr << " val(ptr) : " << *ptr << endl;
@@ -592,8 +596,12 @@ NAND_Manager< NUM_CHANNEL >::collectHostRequest(sc_dt::uint64 adr, unsigned int*
                 reqHOST.id = *ptr;
                 return false;
 
-            case _OFFSET_HOST_ADDR_ : //LPA 
+            case _OFFSET_HOST_ADDR_ : //DRAM node ID
                 reqHOST.addr = *ptr;
+                return false;
+            
+            case _OFFSET_HOST_BITMAP_ : //LPA 
+                reqHOST.bitmap = *ptr;
                 assert(reqHOST.state == REQ_EMPTY);
                 reqHOST.state = NOT_READY;
                 if(NAND_DEBUG){
@@ -621,9 +629,13 @@ NAND_Manager< NUM_CHANNEL >::collectIRQRequest(sc_dt::uint64 adr, unsigned int* 
             case _OFFSET_IRQ_ID_ : //DRAM node ID
                 reqIRQ.id = *ptr;
                 return false;
-
-            case _OFFSET_IRQ_ADDR_ : //LPA 
+            
+            case _OFFSET_IRQ_ADDR_ : //DRAM node ID
                 reqIRQ.addr = *ptr;
+                return false;
+
+            case _OFFSET_IRQ_BITMAP_ : //LPA 
+                reqIRQ.bitmap = *ptr;
                 M_PUSH(IRQ_Queue, &reqIRQ);
                 if(NAND_DEBUG){
 
@@ -650,31 +662,37 @@ NAND_Manager< NUM_CHANNEL >::collectFTLRequest(sc_dt::uint64 adr, unsigned int* 
         int index;
         int ch;
         switch(offset){
-            case _OFFSET_NAND_CMD_ : //DRAM node ID
-                tmpNAND.cmd.opCode = (NAND_CMD_SET)*ptr;
+            case _OFFSET_NAND_CMD_ : //NAND OP
+                if(*ptr == RNM_Read) {RNM_flag = true; tmpNAND.cmd.opCode = (NAND_CMD_SET)*ptr;}
+                else if(RNM_flag && (*ptr == Program) ) {tmpNAND.cmd.opCode = RNM_Program; RNM_flag = false;}
+                else tmpNAND.cmd.opCode = (NAND_CMD_SET)*ptr;
                 return false;
 
-            case _OFFSET_NAND_ADDR1_ : //DRAM node ID
+            case _OFFSET_NAND_ADDR1_ : //dst addr
                 tmpNAND.cmd.iAddr1 = *ptr;
                 return false;
-            case _OFFSET_NAND_ADDR2_ : //DRAM node ID
+            case _OFFSET_NAND_ADDR2_ : //src addr (for copybacks)
                 tmpNAND.cmd.iAddr2 = *ptr;
                 return false;
-            case _OFFSET_NAND_ADDR3_ : //DRAM node ID
-                tmpNAND.cmd.iAddr3 = *ptr;
+            case _OFFSET_NAND_ADDR3_ : //DRAM ID         
                 return false;
-            case _OFFSET_NAND_ADDR4_ : //DRAM node ID
+            case _OFFSET_NAND_ADDR4_ : //bitmap (not sure)
                 tmpNAND.cmd.iAddr4 = *ptr;
-                return false;
-            case _OFFSET_DRAM_REQ_ID_ : //LPA 
-                
-                
-                
-                tmpNAND.DRAM_id = *ptr;
+            
+                tmpNAND.DRAM_id = NandDataBuffer[cur_buf_index].DRAM_id;
+                if(tmpNAND.cmd.opCode == RNM_Read) NandDataBuffer[cur_buf_index].state = RNM_WAITING;
+
                 ch = get_NAND_Channel(tmpNAND.cmd.iAddr1);
                 
                 index = (iNandQueuePtr[ch] + iNandQueueCount[ch]++) % NAND_CMD_QUEUE_SIZE;
+                assert(iNandQueueCount[ch] <= NAND_CMD_QUEUE_SIZE);
                 memcpy(&NandQueue[ch][index], &tmpNAND, sizeof(NAND_Cmd_Buffer));       
+
+                
+                
+
+                if(tmpNAND.cmd.opCode == RNM_Program) 
+
                 if(NAND_DEBUG){
                     cout << DEV_AND_TIME << "[collectFTLRequest] NAND CMD : " << endl;
                     cout << "\tDRAM id : " << tmpNAND.DRAM_id << endl;
@@ -685,6 +703,17 @@ NAND_Manager< NUM_CHANNEL >::collectFTLRequest(sc_dt::uint64 adr, unsigned int* 
                     cout << "\tiAddr4 : " << tmpNAND.cmd.iAddr4 << endl;
                 }
                 data_queue_event[ch].notify();
+                
+                return false;
+
+            
+            
+            case _OFFSET_DRAM_REQ_ID_ : //LPA 
+                
+                
+                
+                assert(tmpNAND.DRAM_id == *ptr);
+
                 return true;
             
             default :
@@ -708,8 +737,14 @@ NAND_Manager< NUM_CHANNEL >::sendIRQRequest(sc_dt::uint64 adr, unsigned int* ptr
                 return false;
 
             case _OFFSET_IRQ_ADDR_ : //LPA
+                
+                if(reqHOST.state != REQ_READY) *ptr = M_GETELE(IRQ_Queue).addr;
+                else *ptr = reqHOST.addr;
+                return false;
+            
+            case _OFFSET_IRQ_BITMAP_ : //bitmap
                 if(reqHOST.state != REQ_READY) {
-                    *ptr = M_GETELE(IRQ_Queue).addr;
+                    *ptr = M_GETELE(IRQ_Queue).bitmap;
                     if(NAND_DEBUG){
 
                         cout << DEV_AND_TIME << "[sendIRQRequest] reqIRQ - id : " << M_GETELE(IRQ_Queue).id << "  addr : " << M_GETELE(IRQ_Queue).addr << endl;
@@ -717,7 +752,7 @@ NAND_Manager< NUM_CHANNEL >::sendIRQRequest(sc_dt::uint64 adr, unsigned int* ptr
                     M_POP(IRQ_Queue);
                 }
                 else{
-                    *ptr = reqHOST.addr;
+                    *ptr = reqHOST.bitmap;
                     reqHOST.state = REQ_EMPTY;
                 }
                 return true;
@@ -765,17 +800,26 @@ void NAND_Manager< NUM_CHANNEL >::IRQ_Thread_CPU2(){
 
             if(reqHOST.state == REQ_EMPTY){ //normal flush requests
                 if(NAND_DEBUG) cout << DEV_AND_TIME << "[IRQ_Thread_CPU2] Eviction Request" << endl;
+                
+                //read DRAM (for flush)
                 tmpIRQ = &M_GETELE(IRQ_Queue);
                 index = findFreeEntry();
                 if(NAND_DEBUG) cout << DEV_AND_TIME << "[IRQ_Thread_CPU2] Send DRAM read" << endl;
-                Data_Master.read(_ADDR_DATA_DRAM_ + (tmpIRQ->id)*DATA_PAGE_SIZE, (void*)NandDataBuffer[index].data, PAGE_BYTES); 
+                Data_Master.read(_ADDR_DATA_DRAM_ + (tmpIRQ->id)*DATA_PAGE_SIZE, \
+                        (void*)NandDataBuffer[index].data, PAGE_BYTES); 
                 if(NAND_DEBUG) cout << DEV_AND_TIME << "[IRQ_Thread_CPU2] Send DRAM read done" << endl;
+               
+                //set buffer states
+                NandDataBuffer[index].bitmap = tmpIRQ->bitmap;
                 NandDataBuffer[index].DRAM_id = tmpIRQ->id;
-                NandDataBuffer[index].state = OCCUPIED;
+                NandDataBuffer[index].state = OCCUPIED; 
+
+                cur_buf_index = index;
+
                 M_PUSH(EvictDone_Queue, &tmpIRQ->id);
-                eIRQ1.notify();
-
-
+                eIRQ1.notify();//notify CPU1 
+                
+                //send CPU2 write request
                 IRQ_Master_CPU2.write(0);
                 if(NAND_DEBUG) cout << DEV_AND_TIME << "[IRQ_Thread_CPU2] Send IRQ to CPU2" << endl;
                 wait(eIRQ2end);
@@ -858,7 +902,26 @@ NAND_Manager< NUM_CHANNEL >::data_callback(                            //%
                                                                                 //%USERBEGIN MEMBER_DEFNS
                                                                                 //
 
-// todo: insert definitions of your member functions, etc. here.
+template < unsigned int NUM_CHANNEL >
+void NAND_Manager< NUM_CHANNEL >::mergeRNM(uchar* dst, uchar* src, uint bitmap){
+
+     //note : do we need to modify bitmap? (coz of endianness)
+     bitmap = ~bitmap; //inverse bitmap
+
+
+     for(int i=0; bitmap; i++){
+        
+         if(bitmap%2) memcpy(dst + i*SECTOR_BYTES, src + i*SECTOR_BYTES, SECTOR_BYTES);
+         bitmap >>= 1;
+         
+     }
+
+
+
+}
+ 
+    
+    // todo: insert definitions of your member functions, etc. here.
 template < unsigned int NUM_CHANNEL >
 void NAND_Manager< NUM_CHANNEL >::data_queue_thread()
 {
@@ -899,12 +962,15 @@ void NAND_Manager< NUM_CHANNEL >::data_queue_thread()
 #ifdef DATA_COMPARE_ON
                     //DTCMP::writeData(DTCMP::mmNAND, current_NAND_Cmd.iAddr1, current_NAND_Cmd.iAddr3, SECTOR_PER_PAGE, (uchar*)NandDataBuffer[bufIdx].data);
 #endif
+                    
+                    bufIdx =  findEntryByID(currentCmd->DRAM_id);  
+                    assert(NandDataBuffer[bufIdx].state == OCCUPIED);
+                    
                     NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&current_NAND_Cmd, sizeof(NAND_Cmd));
                     while((NAND_RnB[iChannel].read()&(1<<iWay))==0){ //wait for RnB
                         DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting for NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());
                         wait(NAND_RnB[iChannel].value_changed_event());
                     }
-                    bufIdx =  findEntryByID(currentCmd->DRAM_id);  
                     NAND_Master[iChannel].write(ADR_NAND_DATA, (void*) NandDataBuffer[bufIdx].data , PAGE_SIZE); 
 
                     NandDataBuffer[bufIdx].state = BUFFER_FREE;
@@ -914,6 +980,69 @@ void NAND_Manager< NUM_CHANNEL >::data_queue_thread()
                     if(NAND_DEBUG) {
                     }
 
+                    break;
+
+                case RNM_Program : //not done
+
+
+                    //RNM write
+                    current_NAND_Cmd.opCode = Program;
+                    bufIdx =  findEntryByID(currentCmd->DRAM_id);  
+                    //wait for RNM read finish
+                    
+                    while(NandDataBuffer[bufIdx].state == RNM_WAITING){
+                        wait(eRNM_finish);
+                    }
+                    assert(NandDataBuffer[bufIdx].state == OCCUPIED);
+                    
+                    while((NAND_RnB[iChannel].read()&(1<<iWay))==0){ //wait for RnB
+                        DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting for NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());
+                        wait(NAND_RnB[iChannel].value_changed_event());
+                    }
+                    NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&current_NAND_Cmd, sizeof(NAND_Cmd));
+                    while((NAND_RnB[iChannel].read()&(1<<iWay))==0){ //wait for RnB
+                        DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting for NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());
+                        wait(NAND_RnB[iChannel].value_changed_event());
+                    }
+                    
+                    NAND_Master[iChannel].write(ADR_NAND_DATA, (void*) NandDataBuffer[bufIdx].data , PAGE_SIZE); 
+
+                    NandDataBuffer[bufIdx].state = BUFFER_FREE;
+                    bufUsedCount--; 
+                    eNandQueueDelete.notify();
+
+                    if(NAND_DEBUG) {
+                    }
+
+                    break;
+
+
+                case RNM_Read:
+                    
+                    if(NAND_DEBUG)cout << DEV_AND_TIME <<"[data_queue_thread] (Channel " << iChannel << ") Current command : " << currentCmd->cmd.opCode << " on Channel " << iChannel << " iWay"<< iWay<< endl;
+
+#ifdef DATA_COMPARE_ON
+                    //DTCMP::writeData(DTCMP::mmNAND, current_NAND_Cmd.iAddr1, current_NAND_Cmd.iAddr3, SECTOR_PER_PAGE, (uchar*)NandDataBuffer[bufIdx].data);
+#endif
+
+                    //RNM read
+                    uchar tmpBuffer[PAGE_SIZE];
+                    current_NAND_Cmd.opCode = Read;
+
+                    NAND_Master[iChannel].write(ADR_NAND_CMD, (void*)&current_NAND_Cmd, sizeof(NAND_Cmd));
+                    while((NAND_RnB[iChannel].read()&(1<<iWay))==0){ //wait for RnB
+                        DEBUG("[Ch " << iChannel << " Wy " << iWay << "] Waiting for NAND RnB. Current RnB is " << NAND_RnB[iChannel].read());
+                        wait(NAND_RnB[iChannel].value_changed_event());
+                    }
+                    bufIdx =  findEntryByID(currentCmd->DRAM_id);  
+                    NAND_Master[iChannel].read(ADR_NAND_DATA, (void*) tmpBuffer, PAGE_SIZE); 
+                   
+                    //merge data
+                    mergeRNM(NandDataBuffer[bufIdx].data, tmpBuffer, NandDataBuffer[bufIdx].bitmap);
+                    NandDataBuffer[bufIdx].state = OCCUPIED;
+                    //notify event
+                    eRNM_finish.notify();
+                    
                     break;
 
                 case Nothing :
@@ -950,6 +1079,10 @@ void NAND_Manager< NUM_CHANNEL >::data_queue_thread()
 
     }
 }
+
+
+
+
 
 
 

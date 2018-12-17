@@ -14,6 +14,7 @@ extern DiskReq g_curReq;
 
 int transIrq[20] = {-1, -1, 0, -1, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1, -1, -1, -1, -1};
 
+
 uint transIrqToCh(uint irqType)
 {
     /*
@@ -90,6 +91,11 @@ sLowNandCmd toLlnCmd(sNandCmd cmd){
         retCmd.iAddr3 = logical_addr;
         retCmd.iAddr4 = NAND_PAGE_BYTE;
     }
+    else{
+        //added bitmap
+        retCmd.iAddr3 = *((uint*)cmd.cpValidMap);
+    }
+
 
 	return retCmd;
 }
@@ -119,7 +125,9 @@ eLowNandOp convertOp(eNandOp op){
 	case NAND_CMD_RNM_READ:
 		//return LLN_READ;
 		//// temporarily RNM -> COPYBACK read... this should be modified.
-		return LLN_COPYBACK_RD;
+		// update : hotfixed by making another LLN command
+        
+        return LLN_RNM_READ;
 		break;
 //////// map table operations   ///////////////////////////
     case NAND_CMD_MAP_READ:
@@ -171,32 +179,15 @@ void regLlnCmd(sLowNandCmd cmd, uint logicalAddr){
 	/// register cmd to nand manager
 
     uint numCh = logicalAddr & (NAND_ARRAY_CHANNEL - 1);
-    //barePrintf("SW: numCh: %d\n", (int)numCh);
-	//barePrintf("SW: Ch %d\tWy %d\tOpCode:%d\n", (int)getCh(cmd.iAddr1), (int)getWy(cmd.iAddr1), (int)cmd.opCode);
-    //barePrintf("[CPU 2] DRAM info in Ftl software : %d\t%d\n", DramInfo[dram_count].dram_addr, DramInfo[dram_count].dram_length);
+	
 
-	*((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_CMD_)) = cmd.opCode;
+    
+    *((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_CMD_)) = cmd.opCode;
 	*((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_ADDR1_)) = cmd.iAddr1;
 	*((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_ADDR2_)) = cmd.iAddr2;
-	*((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_ADDR3_)) = cmd.iAddr3;
-	*((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_ADDR4_)) = cmd.iAddr4;
+	*((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_ADDR3_)) = cmd.iAddr3; 
+    *((vuint *)(_ADDR_NAND_MAN_BASE_ + _OFFSET_R_BUS_NAND_ADDR4_)) = cmd.iAddr4;
 
-/* 
-    uint iRetAddr = 0;
-    uint numCh = logicalAddr & (NAND_ARRAY_CHANNEL - 1);
-
-	iRetAddr += (numCh << _LLN_BIT_FOR_CHANNEL_);
-	iRetAddr += ((rand()%8) << _LLN_BIT_FOR_WAY_);
-	iRetAddr += ((rand()%64) << _LLN_BIT_FOR_BLOCK_);
-	iRetAddr += ((rand()%64) << _LLN_BIT_FOR_PAGE_);
-
-
-	*((vuint *)(ADDR_NAND_MAN_BASE[numCh] + _OFFSET_R_BUS_NAND_CMD_)) = LLN_PROGRAM;
-	*((vuint *)(ADDR_NAND_MAN_BASE[numCh] + _OFFSET_R_BUS_NAND_ADDR1_)) = iRetAddr;
-	*((vuint *)(ADDR_NAND_MAN_BASE[numCh] + _OFFSET_R_BUS_NAND_ADDR2_)) = 0;
-	*((vuint *)(ADDR_NAND_MAN_BASE[numCh] + _OFFSET_R_BUS_NAND_ADDR3_)) = 0;
-	*((vuint *)(ADDR_NAND_MAN_BASE[numCh] + _OFFSET_R_BUS_NAND_ADDR4_)) = 0;
-*/
 }
 
 void activateNand(uchar cIsLast, uint logicalAddr){

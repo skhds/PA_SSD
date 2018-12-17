@@ -211,14 +211,24 @@ void callFtl(DiskReq req)
 	uint order = 0;
 	sPageReq curReq;
 	curReq.req = req;
-
+/*
 	if (req.sectorCount >= _SEQ_TH_){
 		g_isSequential = UCHAR_TRUE;
 	}
 	else{
 		g_isSequential = UCHAR_FALSE;
 	}
+*/
+    // modified to accept bitmaps
+    if (req.bitmap == _FULL_PAGE_){
+        g_isSequential = UCHAR_TRUE;
+    }
+    else{
+        g_isSequential = UCHAR_FALSE;
+    }
 
+    //
+/*
 	for(order = 0;pageChunkGen(req.sectorAddr, req.sectorCount, SECTOR_PER_PAGE, order, &curReq.startSector, &curReq.iLen, curReq.validMap); order++)
 	{
 		switch(curReq.req.cmd)
@@ -236,6 +246,25 @@ void callFtl(DiskReq req)
 			break;
 		}
 	}
+    */
+	//	
+    setPageReq(&(curReq.startSector), curReq.validMap, req);
+    switch(curReq.req.cmd)
+		{
+		case DISK_CMD_WRITE:
+			curReq.cmd = FTL_WRITE;
+			ftlWrite(curReq);
+			break;
+		case DISK_CMD_READ:
+			curReq.cmd = FTL_READ;
+			ftlRead(curReq);
+			
+			break;
+		default:
+			break;
+		}
+
+
 }
 
 void ftlWrite(sPageReq pageReq){

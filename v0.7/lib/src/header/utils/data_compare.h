@@ -7,7 +7,7 @@
 //ok, im going to have to clean up the headers, just wait...
 //
 
-#define DRAM_ENTRY_SIZE 64
+//#define DRAM_ENTRY_SIZE 64
 #define SECTOR_BYTES 512
 namespace DTCMP{
     typedef struct sMemory_map_entry{ //page
